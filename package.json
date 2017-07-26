@@ -1,0 +1,48 @@
+{
+  "name": "gxb-box",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "nodemon lib/index.js --exec babel-node",
+    "clean": "rm -rf ./dist/*",
+    "test:ipfs": "babel-node test/ipfs.js",
+    "test:faucet": "babel-node test/faucet.js",
+    "test:leveldb": "babel-node test/leveldb.js",
+    "test:league": "babel-node test/league.js",
+    "test:data_product": "babel-node test/data_product.js",
+    "test:encrypt_decrypt": "babel-node test/encrypt_decrypt.js",
+    "prebuild": "npm run clean",
+    "build": "webpack webpack.config.js",
+    "server": "node ./dist/gxb-box.js"
+  },
+  "engines": {
+    "node": ">= 6.0.0"
+  },
+  "dependencies": {
+    "async": "^2.5.0",
+    "bluebird": "^3.5.0",
+    "body-parser": "~1.13.2",
+    "colors": "^1.1.2",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "figlet": "^1.2.0",
+    "gxbjs": "^1.2.57",
+    "immutable": "^3.8.1",
+    "ipfs-api": "^14.0.4",
+    "level": "^1.7.0",
+    "morgan": "~1.6.1",
+    "require-ensure": "^1.0.2",
+    "superagent": "^3.5.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "json-loader": "^0.5.4",
+    "nodemon": "^1.11.0",
+    "webpack": "^3.4.0"
+  }
+}

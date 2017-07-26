@@ -1,0 +1,1 @@
+node dist/gxb-box.js
