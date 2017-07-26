@@ -14,6 +14,7 @@
 
 ```
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.30.2/install.sh | bash
+. ~/.nvm/nvm.sh
 nvm install v6
 nvm use v6
 ```
