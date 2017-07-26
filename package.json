@@ -43,6 +43,6 @@
     "babel-register": "^6.24.1",
     "json-loader": "^0.5.4",
     "nodemon": "^1.11.0",
-    "webpack": "^3.4.0"
+    "webpack": "^1.12.9"
   }
 }
