@@ -55,3 +55,52 @@ npm run server
 
 ### Q: 在设置了多重签名后,数据交易失败了
 A: 多重签名涉及到效率问题, 数据交易采用活跃权限进行单重签名, 请勿在参与数据交易的账户中设置多重签名,以免造成签名验证失败
+
+### Q: 发生错误:"获取初始信息失败,请检查:账号(merchant或者datasource)是否正确配置"
+A: 检查config.json文件是否配置了错误的merchant或者datasource账户名, 如果是商户则**不需要**datasource配置，如果是数据源则**不一定需要**商户配置
+
+商户配置示例:
+
+```
+{
+  "common": {
+    "port":"3000",
+    "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
+    "witnesses": [
+      "wss://node1.gxb.io","wss://node5.gxb.io","wss://node8.gxb.io","wss://node11.gxb.io"
+    ],
+    "faucet_url": "https://opengateway.gxb.io"
+  },
+  "merchant":{
+    "account_name": "sample_user",
+    "private_key":"5Ka9YjFQtfUUX2DdnqkaPWH1rVeSeby7Cj2VdjRt79S9kKLvXR7",
+    "callback_url":"http://localhost:3000/demo/callback",
+    "privacy_request_timeout":120000,
+    "default_timeout":8000
+  }
+}
+```
+
+数据源配置示例:
+
+```
+{
+  "common": {
+    "port":"3000",
+    "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
+    "witnesses": [
+      "wss://node1.gxb.io","wss://node5.gxb.io","wss://node8.gxb.io","wss://node11.gxb.io"
+    ],
+    "faucet_url": "https://opengateway.gxb.io"
+  },
+  "datasource": {
+    "account_name": "sample_datasource",
+    "private_key": "5JLL3mqAFt2YHVJf8W3h9oUPP2sjceLYSSyEbSt1yMjeucxGH98",
+    "service": "http://localhost:3000/demo/call",
+    "subscribed_data_product": [
+      "1.17.1"
+    ]
+  }
+ }
+```
+
