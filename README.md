@@ -22,7 +22,7 @@ nvm use v6
 ## 克隆项目
 
 ```
-git clone https://github.com/gxchain/gxbox.git
+git clone https://github.com/gxchain/gxb-box.git
 ```
 
 ## 依赖安装
