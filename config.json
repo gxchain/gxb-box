@@ -13,13 +13,5 @@
     "callback_url":"http://localhost:3000/demo/callback",
     "privacy_request_timeout":120000,
     "default_timeout":8000
-  },
-  "datasource": {
-    "account_name": "sample_datasource",
-    "private_key": "5JLL3mqAFt2YHVJf8W3h9oUPP2sjceLYSSyEbSt1yMjeucxGH98",
-    "service": "http://localhost:3000/demo/call",
-    "subscribed_data_product": [
-      "1.17.1"
-    ]
   }
 }
