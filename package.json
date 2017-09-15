@@ -4,7 +4,7 @@
   "scripts": {
     "start": "nodemon lib/index.js --exec babel-node",
     "clean": "rm -rf ./dist/*",
-    "test:connect": "babel-node test/test.js",
+    "test:connect": "babel-node test/connect.js",
     "test:ipfs": "babel-node test/ipfs.js",
     "test:faucet": "babel-node test/faucet.js",
     "test:leveldb": "babel-node test/leveldb.js",
