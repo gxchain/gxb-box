@@ -15,7 +15,7 @@ fs.readdirSync('node_modules')
 module.exports = {
     entry: ['./lib/index.js'],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'server-dist'),
         filename: 'gxb-box.js'
     },
     target: 'node',
@@ -38,7 +38,7 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['', '.js', '.json']
+        extensions: ['.js', '.json']
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin({
