@@ -1,15 +1,16 @@
-# Introduction （[中文](README-CN.md)）
-GXB-BOX is a client-side, deployed at local merchant and datasource, and based on Node.js.
-Merchant and datasource can trade data via locally call, data transfer is all the way encrypted, and GXB-BOX simplified this process.
-## System requirement
+# 产品介绍 ([For Eglish](README.md))
 
-(Required): Node 6+
+公信宝数据交易客户端GXB-Box是基于Nodejs开发的一个部署在商户和数据源本地的客户端，商户和数据源可以通过本地调用的方式购买和出售数据，数据交易的全程请求参数和回传数据都是经过加密处理的，而GXB-BOX简化了这样的一个流程。
 
-(Operation system): OSX、Linux
+## 环境依赖
 
-## Install under Node environment
+必要环境: Node 6+
 
-Recommend to use NVM([Node Version Manager](https://github.com/creationix/nvm)) for installation:
+建议系统: OSX、Linux
+
+## Node环境安装
+
+建议使用NVM([Node Version Manager](https://github.com/creationix/nvm))进行安装:
 
 ```
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.30.2/install.sh | bash
@@ -18,15 +19,15 @@ nvm install v6
 nvm use v6
 ```
 
-## Clone project
+## 克隆项目
 
 ```
 git clone https://github.com/gxchain/gxb-box.git
 ```
 
-## Install dependencies
+## 依赖安装
 
-Test mode depends on babel-node, execute the following commands to install dependencies under cloned engineering mode:
+调试模式依赖于babel-node, 在克隆的工程下执行以下命令安装依赖:
 
 
 ```
@@ -34,30 +35,31 @@ npm install -g babel-node
 npm install
 ```
 
-## Development mode start
+## 开发模式启动
 
 ```
 npm start
 ```
 
-## Deployment environment then start
+## 部署和生产环境启动
 
 ```
 npm run build
 npm run server
 ```
 
-## Docking files
+## 对接文档
 [https://doc.gxb.io/box/](https://doc.gxb.io/box/)
 
-## FAQ
+## 常见问题
 
-### Q: Data transaction failed after set multi-signature
-A: We recommend to use single signature for data transactions, due to the efficiency limitation of multi-signature
-### Q: Error: "failed to get initial information, please check configuration of merchant account and datasource account".
-A: Check config.json to see if the name of merchant or datasource is correct. For merchant, NO need for datasource configuration; for datasource, do not have to perform merchant configuration.
+### Q: 在设置了多重签名后,数据交易失败了
+A: 多重签名涉及到效率问题, 数据交易采用活跃权限进行单重签名, 请勿在参与数据交易的账户中设置多重签名,以免造成签名验证失败
 
-merchant configuration sample:
+### Q: 发生错误:"获取初始信息失败,请检查:账号(merchant或者datasource)是否正确配置"
+A: 检查config.json文件是否配置了错误的merchant或者datasource账户名, 如果是商户则**不需要**datasource配置，如果是数据源则**不一定需要**商户配置
+
+商户配置示例:
 
 ```
 {
@@ -79,7 +81,7 @@ merchant configuration sample:
 }
 ```
 
-Datasource configuration sample:
+数据源配置示例:
 
 ```
 {
@@ -101,3 +103,4 @@ Datasource configuration sample:
   }
  }
 ```
+
