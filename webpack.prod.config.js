@@ -1,9 +1,11 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const merge = require('webpack-merge');
 const webpackBaseConfig = require('./webpack.base.config.js');
 const fs = require('fs');
+const path = require('path');
 
 fs.open('./src/config/env.js', 'w', function(err, fd) {
     const buf = 'export default "production";';
@@ -33,6 +35,13 @@ module.exports = merge(webpackBaseConfig, {
             filename: 'static/css/[name].[hash].css',
             allChunks: true
         }),
+        new CopyWebpackPlugin([
+            {
+                from: path.join(__dirname, './static'),
+                to: './static',
+                ignore: ['.*']
+            }
+        ]),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendors',
             filename: 'static/js/vendors.[hash].js'

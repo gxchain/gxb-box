@@ -8,7 +8,7 @@ module.exports = {
         vendors: './src/vendors'
     },
     output: {
-        path: path.join(__dirname, './dist/static'),
+        path: path.join(__dirname, './dist'),
     },
     module: {
         rules: [{
@@ -16,16 +16,14 @@ module.exports = {
                 loader: 'vue-loader',
                 options: {
                     loaders: {
-
-                        sass: ExtractTextPlugin.extract({
+                        sass: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                             use: ['css-loader?minimize', 'autoprefixer-loader', 'sass-loader'],
                             fallback: 'vue-style-loader'
-                        }),
-
-                        css: ExtractTextPlugin.extract({
+                        })),
+                        css: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                             use: ['css-loader', 'autoprefixer-loader'],
                             fallback: 'vue-style-loader'
-                        })
+                        }))
                     }
                 }
             },
@@ -40,18 +38,17 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
+                use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     use: ['css-loader?minimize', 'autoprefixer-loader'],
                     fallback: 'style-loader'
-                })
+                }))
             },
-
             {
                 test: /\.sass/,
-                use: ExtractTextPlugin.extract({
+                use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                     use: ['autoprefixer-loader', 'sass-loader'],
                     fallback: 'style-loader'
-                })
+                }))
             },
             {
                 test: /\.(gif|jpg|png|svg)\??.*$/,
@@ -68,7 +65,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.vue'],
+        extensions: ['.js', '.vue', 'css'],
         alias: {
             'vue': 'vue/dist/vue.esm.js'
         }

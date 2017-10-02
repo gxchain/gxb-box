@@ -13,25 +13,13 @@ fs.open('./src/config/env.js', 'w', function(err, fd) {
 module.exports = merge(webpackBaseConfig, {
     devtool: '#source-map',
     entry: {
-        main: ['./src/main','webpack-hot-middleware/client'],
-        vendors: ['./src/vendors','webpack-hot-middleware/client']
+        main: ['./src/main','webpack-hot-middleware/client?reload=true'],
+        vendors: ['./src/vendors']
     },
     output: {
         publicPath: '/',
         filename: 'static/js/[name].js',
         chunkFilename: 'static/js/[name].chunk.js'
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(gif|jpg|png|svg)\??.*$/,
-                loader: 'url-loader?limit=1024&name=static/img/[name].[ext]'
-            },
-            {
-                test: /\.(woff|eot|ttf)\??.*$/,
-                loader: 'url-loader?limit=1024&name=static/fonts/[name].[ext]'
-            }
-        ]
     },
     plugins: [
         new ExtractTextPlugin({
