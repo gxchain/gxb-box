@@ -1,45 +1,51 @@
 <style scoped>
+    .layout-content-main{
+        padding: 10px;
+    }
     .index {
         width: 100%;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
+        min-height: 800px;
         text-align: center;
-    }
-
-    .index h1 {
-        height: 150px;
-    }
-
-    .index h1 img {
-        height: 100%;
-    }
-
-    .index h2 {
-        color: #666;
-        margin-bottom: 200px;
-    }
-
-    .index h2 p {
-        margin: 0 0 50px;
-    }
-
-    .index .ivu-row-flex {
-        height: 100%;
     }
 </style>
 <template>
     <div class="index">
-        <Row type="flex" justify="center" align="middle">
-            <Col span="24">
-                <h1>
-                    <img src="https://raw.githubusercontent.com/iview/iview/master/assets/logo.png">
-                </h1>
+        <Row>
+            <Col span="5">
+            <Menu active-name="1-2" width="auto" :open-names="['1']">
+                <Submenu name="1">
+                    <template slot="title">
+                        <Icon type="ios-navigate"></Icon>
+                        导航一
+                    </template>
+                    <MenuItem name="1-1">选项 1</MenuItem>
+                    <MenuItem name="1-2">选项 2</MenuItem>
+                    <MenuItem name="1-3">选项 3</MenuItem>
+                </Submenu>
+                <Submenu name="2">
+                    <template slot="title">
+                        <Icon type="ios-keypad"></Icon>
+                        导航二
+                    </template>
+                    <MenuItem name="2-1">选项 1</MenuItem>
+                    <MenuItem name="2-2">选项 2</MenuItem>
+                </Submenu>
+                <Submenu name="3">
+                    <template slot="title">
+                        <Icon type="ios-analytics"></Icon>
+                        导航三
+                    </template>
+                    <MenuItem name="3-1">选项 1</MenuItem>
+                    <MenuItem name="3-2">选项 2</MenuItem>
+                </Submenu>
+            </Menu>
+            </Col>
+            <Col span="19">
+            <div class="layout-content-main">
                 <h2>
-                    <p>Welcome to your iView app!</p>
-                    <Button type="ghost" @click="handleStart">xLogic</Button>
+                    <p>Welcome to GXB-BOX!</p>
                 </h2>
+            </div>
             </Col>
         </Row>
     </div>
@@ -47,12 +53,6 @@
 <script>
     export default {
         methods: {
-            handleStart() {
-                this.$Modal.info({
-                    title: 'Bravo',
-                    content: 'Now, enjoy the convenience of iView.'
-                });
-            }
         }
     };
 </script>

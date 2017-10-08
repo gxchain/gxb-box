@@ -9,8 +9,6 @@ import 'iview/dist/styles/iview.css';
 
 import VueI18n from 'vue-i18n';
 import Locales from './locale';
-import zhLocale from 'iview/src/locale/lang/zh-CN';
-import enLocale from 'iview/src/locale/lang/en-US';
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
@@ -22,15 +20,12 @@ const navLang = navigator.language;
 const localLang = (navLang === 'zh-CN' || navLang === 'en-US') ? navLang : false;
 const lang = window.localStorage.getItem('language') || localLang || 'zh-CN';
 
-Vue.config.lang = lang;
-
 // 多语言配置
-const locales = Locales;
-const mergeZH = Object.assign(zhLocale, locales['zh-CN']);
-const mergeEN = Object.assign(enLocale, locales['en-US']);
-Vue.locale('zh-CN', mergeZH);
-Vue.locale('en-US', mergeEN);
-
+const messages = Locales;
+const i18n = new VueI18n({
+    locale: lang,
+    messages
+})
 
 // 路由配置
 const RouterConfig = {
@@ -69,6 +64,7 @@ const store = new Vuex.Store({
 
 new Vue({
     el: '#app',
+    i18n,
     router: router,
     store: store,
     render: h => h(App)

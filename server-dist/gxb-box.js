@@ -3064,9 +3064,8 @@ _bluebird2.default.all([_ConfigStore2.default.init(), _MerchantTask2.default.ini
                 }
             });
             if (app.get('env') == 'production') {
-                var host = server.address().address;
                 var _port = server.address().port;
-                console.log("应用实例，访问地址为 http://%s:%s", host, _port);
+                console.log("> 应用实例，访问地址为 http://服务器外网IP:%s", _port);
             }
         });
         (0, _figlet2.default)('GXB-BOX', 'ANSI Shadow', function (err, text) {
@@ -3711,7 +3710,7 @@ module.exports = {
         vendors: './src/vendors'
     },
     output: {
-        path: path.join(__dirname, './dist/static')
+        path: path.join(__dirname, './dist')
     },
     module: {
         rules: [{
@@ -3719,16 +3718,14 @@ module.exports = {
             loader: 'vue-loader',
             options: {
                 loaders: {
-
-                    sass: ExtractTextPlugin.extract({
+                    sass: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                         use: ['css-loader?minimize', 'autoprefixer-loader', 'sass-loader'],
                         fallback: 'vue-style-loader'
-                    }),
-
-                    css: ExtractTextPlugin.extract({
+                    })),
+                    css: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                         use: ['css-loader', 'autoprefixer-loader'],
                         fallback: 'vue-style-loader'
-                    })
+                    }))
                 }
             }
         }, {
@@ -3740,16 +3737,16 @@ module.exports = {
             exclude: /node_modules/
         }, {
             test: /\.css$/,
-            use: ExtractTextPlugin.extract({
+            use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                 use: ['css-loader?minimize', 'autoprefixer-loader'],
                 fallback: 'style-loader'
-            })
+            }))
         }, {
             test: /\.sass/,
-            use: ExtractTextPlugin.extract({
+            use: ['css-hot-loader'].concat(ExtractTextPlugin.extract({
                 use: ['autoprefixer-loader', 'sass-loader'],
                 fallback: 'style-loader'
-            })
+            }))
         }, {
             test: /\.(gif|jpg|png|svg)\??.*$/,
             loader: 'url-loader?limit=1024'
@@ -3762,7 +3759,7 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['.js', '.vue'],
+        extensions: ['.js', '.vue', 'css'],
         alias: {
             'vue': 'vue/dist/vue.esm.js'
         }
@@ -3791,19 +3788,14 @@ fs.open('./src/config/env.js', 'w', function (err, fd) {
 
 module.exports = merge(webpackBaseConfig, {
     devtool: '#source-map',
+    entry: {
+        main: ['./src/main', 'webpack-hot-middleware/client?reload=true'],
+        vendors: ['./src/vendors']
+    },
     output: {
         publicPath: '/',
         filename: 'static/js/[name].js',
         chunkFilename: 'static/js/[name].chunk.js'
-    },
-    module: {
-        rules: [{
-            test: /\.(gif|jpg|png|svg)\??.*$/,
-            loader: 'url-loader?limit=1024&name=static/img/[name].[ext]'
-        }, {
-            test: /\.(woff|eot|ttf)\??.*$/,
-            loader: 'url-loader?limit=1024&name=static/fonts/[name].[ext]'
-        }]
     },
     plugins: [new ExtractTextPlugin({
         filename: 'static/css/[name].css',
@@ -3811,7 +3803,7 @@ module.exports = merge(webpackBaseConfig, {
     }), new webpack.optimize.CommonsChunkPlugin({
         name: 'vendors',
         filename: 'static/js/vendors.js'
-    }), new HtmlWebpackPlugin({
+    }), new webpack.HotModuleReplacementPlugin(), new webpack.NoErrorsPlugin(), new HtmlWebpackPlugin({
         filename: './index.html',
         template: './src/template/index.ejs',
         inject: false

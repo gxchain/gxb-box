@@ -5,7 +5,7 @@ let util = {
 
 };
 util.title = function(title) {
-    title = title ? title + ' - Home' : 'iView project';
+    title = title ? title + ' - GXB-BOX' : 'GXB-BOX';
     window.document.title = title;
 };
 
