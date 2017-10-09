@@ -22,8 +22,8 @@
     </div>
 </template>
 <script>
-    import header from './views/common/header'
-    import footer from './views/common/footer'
+    import header from './views/common/header';
+    import footer from './views/common/footer';
 
     export default {
         data() {

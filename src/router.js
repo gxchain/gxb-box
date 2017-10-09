@@ -12,6 +12,10 @@ const routers = [
             title: '初始化'
         },
         component: (resolve) => require(['./views/init.vue'], resolve)
+    },
+    {
+        path: '*',
+        redirect: '/'
     }
 ];
 export default routers;

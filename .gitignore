@@ -34,7 +34,11 @@ node_modules
 release
 .data
 sample
-.DS_Store 
-*/.DS_Store 
 
-
+# prod
+dist
+server-dist
+server-box-dist
+.DS_Store
+*/.DS_Store
+config/account-config.json

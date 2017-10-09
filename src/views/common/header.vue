@@ -22,16 +22,22 @@
         height: inherit;
         float: right;
     }
+
+    .layout-nav .account{
+        float: left;
+        padding: 0 20px;
+    }
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" active-name="1">
+        <Menu mode="horizontal" :active-name="account&&certified ? '2' : '1'">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
-                    <MenuItem name="1">
+                    <span class="account">{{account.account_name}}</span>
+                    <MenuItem name="1" v-show="!(account&&certified)">
                         <Icon type="key"></Icon>
-                        {{$t('navs.headerNav.createAccount')}}
+                        {{$t('navs.headerNav.accountSetting')}}
                     </MenuItem>
                     <MenuItem name="2">
                         <Icon type="ios-keypad"></Icon>
@@ -53,12 +59,19 @@
     </header>
 </template>
 <script>
+    import {mapGetters} from 'vuex';
     export default {
         methods: {
             switchLanguage(locale) {
-                this._i18n.locale = locale
-                window.localStorage.setItem('language',locale)
+                this._i18n.locale = locale;
+                window.localStorage.setItem('language',locale);
             },
+        },
+        computed: {
+            ...mapGetters({
+                account: 'account',
+                certified: 'certified'
+            })
         }
     };
 </script>

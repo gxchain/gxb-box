@@ -13,9 +13,9 @@ fs.readdirSync('node_modules')
     });
 
 module.exports = {
-    entry: ['./lib/index.js'],
+    entry: ['../lib/index.js'],
     output: {
-        path: path.resolve(__dirname, 'server-dist'),
+        path: path.resolve(__dirname, '../server-box-dist'),
         filename: 'gxb-box.js'
     },
     target: 'node',

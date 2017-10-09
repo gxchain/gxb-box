@@ -2,7 +2,7 @@ export default {
     'zh-CN': {
         navs: {
             headerNav:{
-                createAccount: '创建账号',
+                accountSetting: '账号配置',
                 dataMarket: '数据市场',
                 setting: '设置',
                 settingAccount: '账号管理',
@@ -12,12 +12,12 @@ export default {
         },
         init: {
             welcome: '欢迎使用GXB-BOX!',
-            initBtn: '初始化',
+            stepBtn: '下一步',
+            signBtn: '创建账号',
             step: '步骤',
-            step1: '创建账号',
-            step2: '密钥备份',
-            step3: '商户/数据源认证',
-            step4: '接口调试',
+            step1: '账号配置',
+            step2: '商户/数据源认证',
+            step3: '接口调试',
         },
         setting: {
             language: 'EN',
@@ -121,7 +121,7 @@ export default {
     'en-US': {
         navs: {
             headerNav:{
-                createAccount: 'Create Account',
+                accountSetting: 'Account Setting',
                 dataMarket: 'Data Market',
                 setting: 'Setting',
                 settingAccount: 'Account / Backup',
@@ -131,12 +131,12 @@ export default {
         },
         init: {
             welcome: 'Welcome to GXB-BOX!',
-            initBtn: 'Start Init',
+            stepBtn: 'Next Step',
+            signBtn: 'Create Account',
             step: 'Step',
             step1: 'Create Account',
-            step2: 'Key Backup',
-            step3: 'Merchant / Datasource Authentication',
-            step4: 'Interface Testing',
+            step2: 'Merchant / Datasource Authentication',
+            step3: 'Interface Testing',
         },
         setting: {
             language: '中文',

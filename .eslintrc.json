@@ -2,7 +2,10 @@
     "root": true,
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "experimentalObjectRestSpread": true
+        }
     },
     "env": {
         "browser": true
@@ -15,6 +18,6 @@
         }],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
-        "no-console": ["error"]
+        "no-console": ["off"]
     }
 }
