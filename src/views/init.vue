@@ -40,7 +40,7 @@
 
     .init .step-box{
         width: 80%;
-        margin-left: 20%;
+        margin-left: 18%;
     }
 
     .init .operation-box{
@@ -53,11 +53,9 @@
         text-align: center;
     }
 
-    .init .step-btn {
+    .init .step-box-1, .init .step-box-2, .init .step-box-3, .init .step-box-4{
         text-align: center;
-        margin-top: 50px;
     }
-
 </style>
 <template>
     <div class="init">
@@ -65,36 +63,28 @@
             <Col span="24">
                 <div class="layout-content-main">
                     <h1><img src="/static/img/init.svg"></h1>
-                    <h2><p>{{$t('init.welcome')}}</p></h2>
+                    <h2><p>欢迎使用GXB-BOX!</p></h2>
                     <div class="step-box">
                         <Steps :current="current">
-                            <Step :title="$t('init.step') + '1'" :content="$t('init.step1')"></Step>
-                            <Step :title="$t('init.step') + '2'" :content="$t('init.step2')"></Step>
-                            <Step :title="$t('init.step') + '3'" :content="$t('init.step3')"></Step>
+                            <Step title="步骤1" content="账号配置"></Step>
+                            <Step title="步骤2" content="商户/数据源认证"></Step>
+                            <Step title="步骤3" content="启动数据盒子"></Step>
+                            <Step title="步骤4" content="接口调试"></Step>
                         </Steps>
                     </div>
                     <div class="operation-box">
-                        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                            <FormItem label="账号" prop="account_name">
-                                <Input v-model="formValidate.account_name" placeholder="sample_user"></Input>
-                            </FormItem>
-                            <FormItem label="私钥" prop="private_key">
-                                <Input v-model="formValidate.private_key" placeholder="5Ka9YjFQtfUUX2DdnqkaPWH1rVeSeby7Cj2VdjRt79S9kKLvXR7"></Input>
-                            </FormItem>
-                            <FormItem label="回调地址" prop="callback_url">
-                                <Input v-model="formValidate.callback_url" placeholder="http://localhost:3000/demo/callback"></Input>
-                            </FormItem>
-                            <FormItem label="请求超时" prop="privacy_request_timeout">
-                                <Input v-model="formValidate.privacy_request_timeout" placeholder="120000"></Input>
-                            </FormItem>
-                            <FormItem label="默认超时" prop="default_timeout">
-                                <Input v-model="formValidate.default_timeout" placeholder="8000"></Input>
-                            </FormItem>
-                            <FormItem>
-                                <Button type="primary" @click="handleSubmit('formValidate')">{{$t('init.stepBtn')}}</Button>
-                                <Button type="ghost" @click="sign">{{$t('init.signBtn')}}</Button>
-                            </FormItem>
-                        </Form>
+                        <div class="step-box-1" v-show="(current === 0) ? true : false">
+                            <AccountSetting/>
+                        </div>
+                        <div class="step-box-2" v-show="(current === 1) ? true : false">
+                            <AccountCertification/>
+                        </div>
+                        <div class="step-box-3" v-show="(current === 2) ? true : false">
+                            <BoxStart/>
+                        </div>
+                        <div class="step-box-4" v-show="(current === 3) ? true : false">
+                            <p>接口测试</p>
+                        </div>
                     </div>
                 </div>
             </Col>
@@ -102,73 +92,20 @@
     </div>
 </template>
 <script>
-    import {mapGetters, mapActions} from 'vuex';
+    import AccountSetting from './components/AccountSetting.vue';
+    import AccountCertification from './components/AccountCertification.vue';
+    import BoxStart from './components/BoxStart.vue';
+
     export default {
         data () {
             return {
-                current: 0,
-                formValidate: {
-                    account_name: '',
-                    private_key: '',
-                    callback_url: '',
-                    privacy_request_timeout: 120000,
-                    default_timeout: 8000
-                },
-                ruleValidate: {
-                    account_name: [
-                        {required: true, message: '账号不能为空', trigger: 'blur'}
-                    ],
-                    private_key: [
-                        {required: true, message: '私钥不能为空', trigger: 'blur'}
-                    ],
-                    callback_url: [
-                        {required: true, message: '回调地址不能为空', trigger: 'blur'}
-                    ],
-                    privacy_request_timeout: [
-                        { type: 'integer', message: '只能输入数字', trigger: 'blur' }
-                    ],
-                    default_timeout: [
-                        { type: 'integer', message: '只能输入数字', trigger: 'blur' }
-                    ]
-                }
+                current: localStorage.getItem('init_step') ? Number(localStorage.getItem('init_step')) : 0,
             };
         },
-        methods: {
-            ...mapActions({
-                setAccount: 'setAccount'
-            }),
-            handleSubmit (name) {
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.$http({
-                            method: 'post',
-                            url: '/config',
-                            data: this.formValidate
-                        }).then((res) => {
-                            localStorage.setItem('account',JSON.stringify(this.formValidate));
-                            this.setAccount({account: this.formValidate});
-                            this.$Message.success(res.data.message);
-                        }).catch((err) => {
-                            this.$Message.error(err);
-                        });
-//                        if (this.current == 4) {
-//                            this.current = 0;
-//                        } else {
-//                            this.current += 1;
-//                        }
-                    } else {
-                        this.$Message.error('验证失败');
-                    }
-                });
-            },
-            sign () {
-                alert('创建账号');
-            }
-        },
-        computed: {
-            ...mapGetters({
-                account: 'account'
-            }),
+        components: {
+            AccountSetting: AccountSetting,
+            AccountCertification: AccountCertification,
+            BoxStart: BoxStart
         }
     };
 </script>

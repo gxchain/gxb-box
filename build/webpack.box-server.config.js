@@ -2,7 +2,6 @@ var webpack = require('webpack');
 var fs = require('fs');
 var path = require('path');
 
-
 var nodeModules = {};
 fs.readdirSync('node_modules')
     .filter(function(x) {
@@ -26,7 +25,7 @@ module.exports = {
             test: /\.js$/,
             loader: 'babel-loader',
             exclude: [
-                path.resolve(__dirname, "node_modules")
+                path.resolve(__dirname, "../node_modules")
             ],
             query: {
                 plugins: ['transform-runtime'],

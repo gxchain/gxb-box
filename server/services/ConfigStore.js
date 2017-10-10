@@ -20,7 +20,7 @@ export default{
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
-                self.config.merchant = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/account-config.json'),'utf-8'));
+                self.config.merchant = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/merchant-config.json'),'utf-8'));
                 resolve(self.config);
             }
             catch (ex){
@@ -32,7 +32,7 @@ export default{
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
-                self.config.datasource = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/account-config.json'),'utf-8'));
+                self.config.datasource = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/datasource-config.json'),'utf-8'));
                 resolve(self.config);
             }
             catch (ex){
@@ -40,11 +40,22 @@ export default{
             }
         })
     },
-    set(config) {
+    merchant_set(config) {
         return new Promise((resolve, reject)=> {
             try{
-                fs.writeFileSync(path.resolve(process.cwd(),'./config/account-config.json'),config);
-                resolve('账号配置保存成功');
+                fs.writeFileSync(path.resolve(process.cwd(),'./config/merchant-config.json'),config);
+                resolve('商户账号配置保存成功');
+            }
+            catch (ex){
+                reject(ex);
+            }
+        })
+    },
+    datasource_set(config) {
+        return new Promise((resolve, reject)=> {
+            try{
+                fs.writeFileSync(path.resolve(process.cwd(),'./config/datasource-config.json'),config);
+                resolve('数据源账号配置保存成功');
             }
             catch (ex){
                 reject(ex);

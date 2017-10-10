@@ -79,20 +79,30 @@ const connectedCheck = function (req, res, next) {
   }
 }
 
-app.post('/config',function (req, res) {
-    console.log(req.body);
+app.post('/config/:type',function (req, res) {
     if (req.body){
-        ConfigStore.set(JSON.stringify(req.body)).then((resp) => {
-            res.send({
-                message: resp
+        if (req.params.type === '1'){
+            ConfigStore.merchant_set(JSON.stringify(req.body)).then((resp) => {
+                res.send({
+                    message: resp
+                })
+            }).catch((err) => {
+                console.error(err);
             })
-        }).catch((err) => {
-            console.error(err);
-        })
+        }
+        if (req.params.type === '2'){
+            ConfigStore.datasource_set(JSON.stringify(req.body)).then((resp) => {
+                res.send({
+                    message: resp
+                })
+            }).catch((err) => {
+                console.error(err);
+            })
+        }
     }
 });
 
-// app.use('/api', connectedCheck, require('./routes/api'));
+app.use('/api', connectedCheck, require('./routes/api'));
 
 app.use(function (req, res, next) {
   var err = new Error('Not Found');

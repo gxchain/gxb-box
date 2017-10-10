@@ -30,29 +30,28 @@
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" :active-name="account&&certified ? '2' : '1'">
+        <Menu mode="horizontal" :active-name="account&&certified ? '2' : '1'" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
                     <span class="account">{{account.account_name}}</span>
                     <MenuItem name="1" v-show="!(account&&certified)">
                         <Icon type="key"></Icon>
-                        {{$t('navs.headerNav.accountSetting')}}
+                        账号配置
                     </MenuItem>
                     <MenuItem name="2">
                         <Icon type="ios-keypad"></Icon>
-                        {{$t('navs.headerNav.dataMarket')}}
+                        数据市场
                     </MenuItem>
                     <Submenu name="3">
                         <template slot="title">
                             <Icon type="gear"></Icon>
-                            {{$t('navs.headerNav.setting')}}
+                            设置
                         </template>
-                        <MenuItem name="3-1">{{$t('navs.headerNav.settingAccount')}}</MenuItem>
-                        <MenuItem name="3-2">{{$t('navs.headerNav.settingBak')}}</MenuItem>
-                        <MenuItem name="3-3">{{$t('navs.headerNav.settingNode')}}</MenuItem>
+                        <MenuItem name="3-1">账号管理</MenuItem>
+                        <MenuItem name="3-2">恢复 / 导入</MenuItem>
+                        <MenuItem name="3-3">接入点管理</MenuItem>
                     </Submenu>
-                    <Button type="ghost" size="small" @click="switchLanguage($t('setting.locale'))">{{$t('setting.language')}}</Button>
                 </div>
             </div>
         </Menu>
@@ -62,10 +61,16 @@
     import {mapGetters} from 'vuex';
     export default {
         methods: {
-            switchLanguage(locale) {
-                this._i18n.locale = locale;
-                window.localStorage.setItem('language',locale);
-            },
+            route(name) {
+                switch (name){
+                    case '1':
+                        this.$router.push('/init');
+                        break;
+                    case '2':
+                        this.$router.push('/');
+                        break;
+                }
+            }
         },
         computed: {
             ...mapGetters({
