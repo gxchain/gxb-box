@@ -1,4 +1,6 @@
 import Promise from 'bluebird'
+import readline from 'readline'
+import fs from 'fs'
 import path from 'path'
 import pm2 from 'pm2'
 
@@ -31,7 +33,7 @@ const box_start = function () {
 /**
  * 数据盒子服务 - 列表
  */
-const box_list = function () {
+const fetch_box_list = function () {
     return new Promise(function (resolve, reject) {
         pm2.connect(function(err) {
             if (err) {
@@ -50,7 +52,42 @@ const box_list = function () {
     })
 };
 
+/**
+ * 数据盒子服务 - 获取日志
+ */
+const fetch_log = function (pm_id, path) {
+    return new Promise(function (resolve, reject) {
+        let log = [];
+        try {
+            fs.exists(path, function(exists) {
+                if (exists) {
+                    let rl = readline.createInterface({
+                        input: fs.createReadStream(path),
+                    });
+
+                    rl.on('line', function(line) {
+                        let obj = {};
+                        obj.pm_id = pm_id;
+                        obj.tip = line;
+                        log.push(obj);
+                    });
+
+                    rl.on('close', ()=>{
+                        resolve(log);
+                    });
+                }else{
+                    resolve('');
+                }
+            });
+        }
+        catch(ex) {
+            reject(ex);
+        }
+    })
+};
+
 export default {
     box_start,
-    box_list
+    fetch_box_list,
+    fetch_log
 };

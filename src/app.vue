@@ -22,8 +22,8 @@
     </div>
 </template>
 <script>
-    import header from './views/common/header';
-    import footer from './views/common/footer';
+    import Header from './views/common/Header';
+    import Footer from './views/common/Footer';
 
     export default {
         data() {
@@ -41,8 +41,8 @@
 
         },
         components: {
-            vHeader: header,
-            vFooter: footer
+            vHeader: Header,
+            vFooter: Footer
         }
     };
 </script>

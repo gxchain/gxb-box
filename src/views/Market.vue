@@ -2,14 +2,14 @@
     .layout-content-main{
         padding: 10px;
     }
-    .index {
+    .market {
         width: 100%;
         min-height: 800px;
         text-align: center;
     }
 </style>
 <template>
-    <div class="index">
+    <div class="market">
         <Row>
             <Col span="5">
                 <Menu active-name="1-1" width="auto" :open-names="['1']">

@@ -4,14 +4,14 @@ const routers = [
         meta: {
             title: ''
         },
-        component: (resolve) => require(['./views/index.vue'], resolve)
+        component: (resolve) => require(['./views/Market.vue'], resolve)
     },
     {
         path: '/init',
         meta: {
-            title: '初始化'
+            title: '使用引导'
         },
-        component: (resolve) => require(['./views/init.vue'], resolve)
+        component: (resolve) => require(['./views/Init.vue'], resolve)
     },
     {
         path: '*',

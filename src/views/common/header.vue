@@ -36,8 +36,8 @@
                 <div class="layout-nav">
                     <span class="account">{{account.account_name}}</span>
                     <MenuItem name="1" v-show="!(account&&certified)">
-                        <Icon type="key"></Icon>
-                        账号配置
+                        <Icon type="compass"></Icon>
+                        使用引导
                     </MenuItem>
                     <MenuItem name="2">
                         <Icon type="ios-keypad"></Icon>
@@ -49,7 +49,7 @@
                             设置
                         </template>
                         <MenuItem name="3-1">账号管理</MenuItem>
-                        <MenuItem name="3-2">恢复 / 导入</MenuItem>
+                        <MenuItem name="3-2">配置管理</MenuItem>
                         <MenuItem name="3-3">接入点管理</MenuItem>
                     </Submenu>
                 </div>

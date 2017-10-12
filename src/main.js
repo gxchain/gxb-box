@@ -24,7 +24,6 @@ const router = new VueRouter(RouterConfig);
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
     Util.title(to.meta.title);
-
     if ((localStorage.getItem('init_step') != 4) && (to.path!='/init')){
         next('/init');
     }else{
@@ -44,10 +43,14 @@ const store = new Vuex.Store({
         certified: localStorage.getItem('certified') ? JSON.parse(localStorage.getItem('certified')) : false
     },
     getters: {
+        account_type: state => state.account_type,
         account: state => state.account,
         certified: state => state.certified
     },
     mutations: {
+        setAccountType(state, payload) {
+            state.account_type = payload.account_type;
+        },
         setAccount(state, payload) {
             state.account = payload.account;
         },
@@ -56,6 +59,9 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        setAccountType({commit}, payload) {
+            commit('setAccountType', payload);
+        },
         setAccount({commit}, payload) {
             commit('setAccount', payload);
         },

@@ -40,7 +40,7 @@
 
     .init .step-box{
         width: 80%;
-        margin-left: 18%;
+        margin-left: 15%;
     }
 
     .init .operation-box{
@@ -53,8 +53,12 @@
         text-align: center;
     }
 
-    .init .step-box-1, .init .step-box-2, .init .step-box-3, .init .step-box-4{
+    .init .step-box-1, .init .step-box-2, .init .step-box-3, .init .step-box-4,.init .step-box-5{
         text-align: center;
+    }
+
+    .init .step-box-1 .ivu-btn {
+        margin: 0 5px 20px 0;
     }
 </style>
 <template>
@@ -66,24 +70,33 @@
                     <h2><p>欢迎使用GXB-BOX!</p></h2>
                     <div class="step-box">
                         <Steps :current="current">
-                            <Step title="步骤1" content="账号配置"></Step>
-                            <Step title="步骤2" content="商户/数据源认证"></Step>
-                            <Step title="步骤3" content="启动数据盒子"></Step>
-                            <Step title="步骤4" content="接口调试"></Step>
+                            <Step title="步骤1" content="选择商户/数据源"></Step>
+                            <Step title="步骤2" content="创建账号"></Step>
+                            <Step title="步骤3" content="账号认证"></Step>
+                            <Step title="步骤4" content="账号配置"></Step>
+                            <Step title="步骤5" content="启动数据盒子"></Step>
                         </Steps>
                     </div>
                     <div class="operation-box">
-                        <div class="step-box-1" v-show="(current === 0) ? true : false">
-                            <AccountSetting/>
+                        <div class="step-box-1" v-if="(current === 0) ? true : false">
+                            <div class="account-type">
+                                <Alert type="info">商户指数据买方，在公信链上是购买数据的角色。</Alert>
+                                <Button type="primary" @click="changeType('merchant')">申请成为商户</Button>
+                                <Alert type="info">数据源指数据卖方，在公信链上是出售数据的角色。</Alert>
+                                <Button type="primary" @click="changeType('datasource')">申请成为数据源</Button>
+                            </div>
                         </div>
-                        <div class="step-box-2" v-show="(current === 1) ? true : false">
-                            <AccountCertification/>
+                        <div class="step-box-2" v-if="(current === 1) ? true : false">
+                            <AccountCreate v-on:last="lastStep" v-on:next="nextStep"></AccountCreate>
                         </div>
-                        <div class="step-box-3" v-show="(current === 2) ? true : false">
-                            <BoxStart/>
+                        <div class="step-box-3" v-if="(current === 2) ? true : false">
+                            <AccountCertification v-on:last="lastStep" v-on:next="nextStep" :account_type="account_type"></AccountCertification>
                         </div>
-                        <div class="step-box-4" v-show="(current === 3) ? true : false">
-                            <p>接口测试</p>
+                        <div class="step-box-4" v-if="(current === 3) ? true : false">
+                            <AccountSetting v-on:last="lastStep" v-on:next="nextStep" :account_type="account_type"></AccountSetting>
+                        </div>
+                        <div class="step-box-5" v-if="(current === 4) ? true : false">
+                            <BoxInitStart  v-on:next="nextStep"></BoxInitStart>
                         </div>
                     </div>
                 </div>
@@ -92,20 +105,37 @@
     </div>
 </template>
 <script>
+    import AccountCreate from './components/AccountCreate.vue';
     import AccountSetting from './components/AccountSetting.vue';
     import AccountCertification from './components/AccountCertification.vue';
-    import BoxStart from './components/BoxStart.vue';
+    import BoxInitStart from './components/BoxInitStart.vue';
 
     export default {
         data () {
             return {
                 current: localStorage.getItem('init_step') ? Number(localStorage.getItem('init_step')) : 0,
+                account_type: localStorage.getItem('account_type') ? localStorage.getItem('account_type') : '',
             };
         },
+        methods: {
+            changeType (type){
+                this.account_type = type;
+                localStorage.setItem('account_type',type);
+                this.nextStep();
+            },
+            lastStep (){
+                this.current -= 1;
+            },
+            nextStep (){
+                this.current += 1;
+                localStorage.setItem('init_step',this.current);
+            }
+        },
         components: {
+            AccountCreate: AccountCreate,
             AccountSetting: AccountSetting,
             AccountCertification: AccountCertification,
-            BoxStart: BoxStart
+            BoxInitStart: BoxInitStart,
         }
     };
 </script>
