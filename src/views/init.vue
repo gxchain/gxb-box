@@ -71,7 +71,7 @@
                     <div class="step-box">
                         <Steps :current="current">
                             <Step title="步骤1" content="选择商户/数据源"></Step>
-                            <Step title="步骤2" content="创建账号"></Step>
+                            <Step title="步骤2" content="创建/导入账号"></Step>
                             <Step title="步骤3" content="账号认证"></Step>
                             <Step title="步骤4" content="账号配置"></Step>
                             <Step title="步骤5" content="启动数据盒子"></Step>
@@ -87,7 +87,7 @@
                             </div>
                         </div>
                         <div class="step-box-2" v-if="(current === 1) ? true : false">
-                            <AccountCreate v-on:last="lastStep" v-on:next="nextStep"></AccountCreate>
+                            <AccountCreate v-on:last="lastStep" v-on:next="nextStep" :account_type="account_type"></AccountCreate>
                         </div>
                         <div class="step-box-3" v-if="(current === 2) ? true : false">
                             <AccountCertification v-on:last="lastStep" v-on:next="nextStep" :account_type="account_type"></AccountCertification>
@@ -96,7 +96,7 @@
                             <AccountSetting v-on:last="lastStep" v-on:next="nextStep" :account_type="account_type"></AccountSetting>
                         </div>
                         <div class="step-box-5" v-if="(current === 4) ? true : false">
-                            <BoxInitStart  v-on:next="nextStep"></BoxInitStart>
+                            <BoxInitStart v-on:last="lastStep" v-on:next="nextStep"></BoxInitStart>
                         </div>
                     </div>
                 </div>
@@ -105,6 +105,7 @@
     </div>
 </template>
 <script>
+    import {mapGetters, mapActions} from 'vuex';
     import AccountCreate from './components/AccountCreate.vue';
     import AccountSetting from './components/AccountSetting.vue';
     import AccountCertification from './components/AccountCertification.vue';
@@ -118,10 +119,22 @@
             };
         },
         methods: {
+            ...mapActions({
+                setAccount: 'setAccount'
+            }),
             changeType (type){
                 this.account_type = type;
                 localStorage.setItem('account_type',type);
-                this.nextStep();
+                this.$http.get('/api/fetch_config/' + type).then((res) => {
+                    if (res.data.account_name){
+                        this.setAccount({account: res.data});
+                    }else{
+                        this.setAccount({account: null});
+                    }
+                    this.nextStep();
+                }).catch((err)=> {
+                    console.error(err);
+                });
             },
             lastStep (){
                 this.current -= 1;
@@ -136,6 +149,12 @@
             AccountSetting: AccountSetting,
             AccountCertification: AccountCertification,
             BoxInitStart: BoxInitStart,
+        },
+        computed: {
+            ...mapGetters({
+                account: 'account',
+                certified: 'certified'
+            }),
         }
     };
 </script>

@@ -123,6 +123,22 @@
                 }
             };
         },
+        mounted (){
+            if (this.account){
+                if (localStorage.getItem('account_type') === 'merchant'){
+                    this.formValidate1.account_name = this.account.account_name;
+                    this.formValidate1.private_key = this.account.private_key;
+                    this.formValidate1.callback_url = this.account.callback_url;
+                    this.formValidate1.privacy_request_timeout = this.account.privacy_request_timeout ? this.account.privacy_request_timeout : 120000;
+                    this.formValidate1.default_timeout = this.account.default_timeout ? this.account.default_timeout : 8000;
+                }else{
+                    this.formValidate2.account_name = this.account.account_name;
+                    this.formValidate2.private_key = this.account.private_key;
+                    this.formValidate2.service = this.account.service;
+                    this.formValidate2.subscribed_data_product = this.account.subscribed_data_product;
+                }
+            }
+        },
         methods: {
             ...mapActions({
                 setAccount: 'setAccount'
@@ -135,7 +151,6 @@
                             url: '/config/1',
                             data: this.formValidate1
                         }).then((res) => {
-                            localStorage.setItem('account',JSON.stringify(this.formValidate1));
                             this.setAccount({account: this.formValidate1});
                             this.$Message.success(res.data.message);
                             this.$emit('next');
@@ -156,7 +171,6 @@
                             url: '/config/2',
                             data: this.formValidate2
                         }).then((res) => {
-                            localStorage.setItem('account',JSON.stringify(this.formValidate2));
                             this.setAccount({account: this.formValidate2});
                             this.$Message.success(res.data.message);
                             this.$emit('next');

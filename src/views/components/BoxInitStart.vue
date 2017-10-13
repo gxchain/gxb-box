@@ -124,6 +124,7 @@
             <Button type="primary" @click="lastStep()">上一步</Button>
         </div>
         <div class="step-btn-box" v-else>
+            <Button type="primary" @click="lastStep()">上一步</Button>
             <Button type="primary" @click="goToMarket()">完成</Button>
         </div>
     </div>

@@ -30,12 +30,12 @@
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" :active-name="account&&certified ? '2' : '1'" @on-select="route">
+        <Menu mode="horizontal" :active-name="active" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
-                    <span class="account">{{account.account_name}}</span>
-                    <MenuItem name="1" v-show="!(account&&certified)">
+                    <span class="account" v-if="account">{{account.account_name}}</span>
+                    <MenuItem name="1" v-show="init">
                         <Icon type="compass"></Icon>
                         使用引导
                     </MenuItem>
@@ -60,6 +60,21 @@
 <script>
     import {mapGetters} from 'vuex';
     export default {
+        data () {
+            return {
+                active: '1',
+                init: true
+            };
+        },
+        mounted (){
+            if ((localStorage.getItem('init_step')!= 4) || (!this.certified)){
+                this.active = '1';
+                this.init = true;
+            }else{
+                this.active = '2';
+                this.init = false;
+            }
+        },
         methods: {
             route(name) {
                 switch (name){

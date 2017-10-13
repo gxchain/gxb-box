@@ -14,6 +14,33 @@ Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(iView);
 
+const store = new Vuex.Store({
+    state: {
+        account: '',
+        certified: false
+    },
+    getters: {
+        account: state => state.account,
+        certified: state => state.certified
+    },
+    mutations: {
+        setAccount(state, payload) {
+            state.account = payload.account;
+        },
+        setCertified(state, payload) {
+            state.certified = payload.certified;
+        }
+    },
+    actions: {
+        setAccount({commit}, payload) {
+            commit('setAccount', payload);
+        },
+        setCertified({commit}, payload) {
+            commit('setCertified', payload);
+        }
+    }
+});
+
 // 路由配置
 const RouterConfig = {
     mode: 'history',
@@ -24,6 +51,29 @@ const router = new VueRouter(RouterConfig);
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
     Util.title(to.meta.title);
+    if (localStorage.getItem('account_type')){
+        if (!store.state.account){
+            //加载配置文件
+            axios.get('/api/fetch_config/' + localStorage.getItem('account_type')).then((res) => {
+                if (res.data.account_name){
+                    store.state.account = res.data;
+                    //是否已完成认证
+                    if (store.state.certified){
+                        //是否已完善配置
+                        if ((store.state.account.callback_url) || (store.state.account.service&&store.state.account.subscribed_data_product.length>0)){
+                            localStorage.setItem('init_step', 4);
+                        }else{
+                            localStorage.setItem('init_step', 3);
+                        }
+                    }else{
+                        localStorage.setItem('init_step', 2);
+                    }
+                }
+            }).catch((err)=> {
+                console.error(err);
+            });
+        }
+    }
     if ((localStorage.getItem('init_step') != 4) && (to.path!='/init')){
         next('/init');
     }else{
@@ -35,42 +85,6 @@ router.afterEach(() => {
     iView.LoadingBar.finish();
     window.scrollTo(0, 0);
 });
-
-
-const store = new Vuex.Store({
-    state: {
-        account: localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account')) : '',
-        certified: localStorage.getItem('certified') ? JSON.parse(localStorage.getItem('certified')) : false
-    },
-    getters: {
-        account_type: state => state.account_type,
-        account: state => state.account,
-        certified: state => state.certified
-    },
-    mutations: {
-        setAccountType(state, payload) {
-            state.account_type = payload.account_type;
-        },
-        setAccount(state, payload) {
-            state.account = payload.account;
-        },
-        setCertified(state, payload) {
-            state.certified = payload.certified;
-        }
-    },
-    actions: {
-        setAccountType({commit}, payload) {
-            commit('setAccountType', payload);
-        },
-        setAccount({commit}, payload) {
-            commit('setAccount', payload);
-        },
-        setCertified({commit}, payload) {
-            commit('setCertified', payload);
-        }
-    }
-});
-
 
 new Vue({
     el: '#app',

@@ -8,6 +8,7 @@ export default{
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
+                self.config = {};
                 self.config.common = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/common-config.json'),'utf-8'));
                 resolve(self.config);
             }
@@ -20,6 +21,7 @@ export default{
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
+                self.config = {};
                 self.config.merchant = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/merchant-config.json'),'utf-8'));
                 resolve(self.config);
             }
@@ -32,6 +34,7 @@ export default{
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
+                self.config = {};
                 self.config.datasource = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/datasource-config.json'),'utf-8'));
                 resolve(self.config);
             }
