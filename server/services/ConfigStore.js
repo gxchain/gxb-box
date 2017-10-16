@@ -4,38 +4,12 @@ import fs from 'fs'
 import path from 'path'
 
 export default{
-    common_init() {
+    init() {
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
                 self.config = {};
-                self.config.common = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/common-config.json'),'utf-8'));
-                resolve(self.config);
-            }
-            catch (ex){
-                reject(ex);
-            }
-        })
-    },
-    merchant_init() {
-        let self = this;
-        return new Promise((resolve, reject)=> {
-            try{
-                self.config = {};
-                self.config.merchant = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/merchant-config.json'),'utf-8'));
-                resolve(self.config);
-            }
-            catch (ex){
-                reject(ex);
-            }
-        })
-    },
-    datasource_init() {
-        let self = this;
-        return new Promise((resolve, reject)=> {
-            try{
-                self.config = {};
-                self.config.datasource = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/datasource-config.json'),'utf-8'));
+                self.config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
                 resolve(self.config);
             }
             catch (ex){
@@ -46,7 +20,12 @@ export default{
     merchant_set(config) {
         return new Promise((resolve, reject)=> {
             try{
-                fs.writeFileSync(path.resolve(process.cwd(),'./config/merchant-config.json'),config);
+                let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
+                if (_config.datasource){
+                    delete(_config.datasource);
+                }
+                _config.merchant = JSON.parse(config);
+                fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 resolve('商户账号配置保存成功');
             }
             catch (ex){
@@ -57,7 +36,13 @@ export default{
     datasource_set(config) {
         return new Promise((resolve, reject)=> {
             try{
-                fs.writeFileSync(path.resolve(process.cwd(),'./config/datasource-config.json'),config);
+                let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
+                let datasource = JSON.parse(config);
+                _config.datasource = datasource.config;
+                if (!datasource.is_merchant_open){
+                    delete(_config.merchant);
+                }
+                fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 resolve('数据源账号配置保存成功');
             }
             catch (ex){

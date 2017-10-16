@@ -78,7 +78,7 @@
                         </Steps>
                     </div>
                     <div class="operation-box">
-                        <div class="step-box-1" v-if="(current === 0) ? true : false">
+                        <div class="step-box-1" v-if="(current == 0) ? true : false">
                             <div class="account-type">
                                 <Alert type="info">商户指数据买方，在公信链上是购买数据的角色。</Alert>
                                 <Button type="primary" @click="changeType('merchant')">申请成为商户</Button>
@@ -114,13 +114,17 @@
     export default {
         data () {
             return {
-                current: localStorage.getItem('init_step') ? Number(localStorage.getItem('init_step')) : 0,
+                current: 0,
                 account_type: localStorage.getItem('account_type') ? localStorage.getItem('account_type') : '',
             };
         },
+        created() {
+            this.current = Number(this.init_step);
+        },
         methods: {
             ...mapActions({
-                setAccount: 'setAccount'
+                setAccount: 'setAccount',
+                setInitStep: 'setInitStep'
             }),
             changeType (type){
                 this.account_type = type;
@@ -141,7 +145,7 @@
             },
             nextStep (){
                 this.current += 1;
-                localStorage.setItem('init_step',this.current);
+                this.setInitStep({init_step: this.current});
             }
         },
         components: {
@@ -153,6 +157,7 @@
         computed: {
             ...mapGetters({
                 account: 'account',
+                init_step: 'init_step',
                 certified: 'certified'
             }),
         }

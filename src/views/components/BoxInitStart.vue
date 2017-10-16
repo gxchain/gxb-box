@@ -164,7 +164,7 @@
                 pm2_err_logs: []
             };
         },
-        mounted() {
+        created() {
             this.$http({
                 method: 'get',
                 url: '/api/fetch_box_list',

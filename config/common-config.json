@@ -1,8 +1,0 @@
-{
-  "port":"3000",
-  "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
-  "witnesses": [
-    "wss://node1.gxb.io","wss://node5.gxb.io","wss://node8.gxb.io","wss://node11.gxb.io"
-  ],
-  "faucet_url": "https://opengateway.gxb.io"
-}

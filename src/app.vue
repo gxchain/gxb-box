@@ -31,15 +31,6 @@
 
             };
         },
-        mounted() {
-
-        },
-        beforeDestroy() {
-
-        },
-        methods: {
-
-        },
         components: {
             vHeader: Header,
             vFooter: Footer

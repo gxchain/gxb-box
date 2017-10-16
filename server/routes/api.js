@@ -11,13 +11,13 @@ let router = express.Router();
 
 router.get('/fetch_config/:account_type', function (req, res) {
     if (req.params.account_type === 'merchant'){
-        ConfigStore.merchant_init().then((config)=>{
+        ConfigStore.init().then((config)=>{
             res.send(config.merchant);
         }).catch((err)=>{
             res.send({});
         });
     }else{
-        ConfigStore.datasource_init().then((config)=>{
+        ConfigStore.init().then((config)=>{
             res.send(config.datasource);
         }).catch((err)=>{
             res.send({});
@@ -43,6 +43,18 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
 
 router.post('/create_account', function (req, res) {
     AccountService.create_account(req.body.type, req.body.name).then((account) => {
+        res.send(account);
+    }).catch((err) => {
+        res.send({});
+    });
+});
+
+/**
+ * 导入账号
+ */
+
+router.post('/import_account', function (req, res) {
+    AccountService.import_account(req.body.type, req.body.private_key).then((account) => {
         res.send(account);
     }).catch((err) => {
         res.send({});

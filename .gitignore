@@ -41,5 +41,3 @@ server-dist
 server-box-dist
 .DS_Store
 */.DS_Store
-config/merchant-config.json
-config/datasource-config.json

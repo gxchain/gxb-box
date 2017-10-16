@@ -27,6 +27,7 @@
         float: left;
         padding: 0 20px;
     }
+
 </style>
 <template>
     <header id="header">
@@ -34,8 +35,10 @@
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
-                    <span class="account" v-if="account">{{account.account_name}}</span>
-                    <MenuItem name="1" v-show="init">
+                    <span class="account" v-if="account">
+                        {{account.account_name}}
+                    </span>
+                    <MenuItem name="1" v-if="init">
                         <Icon type="compass"></Icon>
                         使用引导
                     </MenuItem>
@@ -63,11 +66,11 @@
         data () {
             return {
                 active: '1',
-                init: true
+                init: true,
             };
         },
-        mounted (){
-            if ((localStorage.getItem('init_step')!= 4) || (!this.certified)){
+        created (){
+            if ((this.init_step != 4) || (!this.certified)){
                 this.active = '1';
                 this.init = true;
             }else{
@@ -90,6 +93,7 @@
         computed: {
             ...mapGetters({
                 account: 'account',
+                init_step: 'init_step',
                 certified: 'certified'
             })
         }
