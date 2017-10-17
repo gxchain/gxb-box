@@ -130,6 +130,7 @@
     </div>
 </template>
 <script>
+    import {mapActions} from 'vuex';
     export default {
         data () {
             return {
@@ -202,6 +203,9 @@
             clearInterval(this.pm2_err_log_interval);
         },
         methods: {
+            ...mapActions({
+                setInitStep: 'setInitStep'
+            }),
             boxStart (){
                 let self = this;
                 this.loading = true;
@@ -283,6 +287,7 @@
                 this.$emit('last');
             },
             goToMarket (){
+                this.setInitStep({init_step: 'finished'});
                 this.$router.push('/');
             }
         }

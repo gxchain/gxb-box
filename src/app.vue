@@ -1,13 +1,15 @@
 <style scoped>
-    #layout{
+    #layout {
         background: #eee;
     }
-    .layout-content{
+
+    .layout-content {
         background: #fff;
         width: 90%;
+        min-height: 800px;
         margin: 30px auto 20px;
         border-radius: 6px;
-        box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
     }
 </style>
 <template>
@@ -27,9 +29,7 @@
 
     export default {
         data() {
-            return {
-
-            };
+            return {};
         },
         components: {
             vHeader: Header,

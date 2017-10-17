@@ -31,22 +31,22 @@
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" :active-name="active" @on-select="route">
+        <Menu mode="horizontal" active-name="1" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
                     <span class="account" v-if="account">
-                        {{account.account_name}}
+                        {{account.account_name.toUpperCase()}}
                     </span>
-                    <MenuItem name="1" v-if="init">
+                    <MenuItem name="1" v-if="!((this.init_step == 'finished')&&this.certified)">
                         <Icon type="compass"></Icon>
                         使用引导
                     </MenuItem>
-                    <MenuItem name="2">
+                    <MenuItem name="2" v-if="((this.init_step == 'finished')&&this.certified)">
                         <Icon type="ios-keypad"></Icon>
                         数据市场
                     </MenuItem>
-                    <Submenu name="3">
+                    <Submenu name="3" v-if="((this.init_step == 'finished')&&this.certified)">
                         <template slot="title">
                             <Icon type="gear"></Icon>
                             设置
@@ -64,19 +64,7 @@
     import {mapGetters} from 'vuex';
     export default {
         data () {
-            return {
-                active: '1',
-                init: true,
-            };
-        },
-        created (){
-            if ((this.init_step != 4) || (!this.certified)){
-                this.active = '1';
-                this.init = true;
-            }else{
-                this.active = '2';
-                this.init = false;
-            }
+            return {};
         },
         methods: {
             route(name) {

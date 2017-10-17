@@ -84,26 +84,22 @@
         props: ['account_type'],
         data () {
             const validateAccount = (rule, value, callback) => {
-                if (value === '') {
-                    callback(new Error('账户名不能为空'));
-                }else{
-                    if (value.length < 3){
-                        callback(new Error('账户名长度不少于3位'));
-                    } else {
-                        if ((/[0-9-]/.test(value) || !/[aeiouy]/.test(value)
-                            )){
-                            this.$http.get('/api/fetch_account/' + value).then((res) => {
-                                if (res.data.name) {
-                                    callback(new Error('账户已存在'));
-                                } else {
-                                    callback();
-                                }
-                            }).catch((err) => {
-                                callback(new Error(err));
-                            });
-                        }else{
-                            callback(new Error('包含至少一个横杠、数字或者不含元音字母'));
-                        }
+                if (value.length < 3){
+                    callback(new Error('账户名长度不少于3位'));
+                } else {
+                    if ((/[0-9-]/.test(value) || !/[aeiouy]/.test(value)
+                        )){
+                        this.$http.get('/api/fetch_account/' + value).then((res) => {
+                            if (res.data.name) {
+                                callback(new Error('账户已存在'));
+                            } else {
+                                callback();
+                            }
+                        }).catch((err) => {
+                            callback(new Error(err));
+                        });
+                    }else{
+                        callback(new Error('包含至少一个横杠、数字或者不含元音字母'));
                     }
                 }
             };
@@ -118,6 +114,7 @@
                 },
                 ruleValidate: {
                     account_name: [
+                        {required: true, message: '账户名不能为空', trigger: 'blur'},
                         {validator: validateAccount, trigger: 'blur'}
                     ]
                 },

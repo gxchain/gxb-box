@@ -14,13 +14,13 @@ router.get('/fetch_config/:account_type', function (req, res) {
         ConfigStore.init().then((config)=>{
             res.send(config.merchant);
         }).catch((err)=>{
-            res.send({});
+            res.status(500).send(err);
         });
     }else{
         ConfigStore.init().then((config)=>{
             res.send(config.datasource);
         }).catch((err)=>{
-            res.send({});
+            res.status(500).send(err);
         });
     }
 });
@@ -33,7 +33,7 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
     AccountService.fetch_account(req.params.account_id_or_name).then((account) => {
         res.send(account.toJS());
     }).catch(err => {
-        res.send({});
+        res.status(500).send(err);
     })
 });
 
@@ -45,7 +45,7 @@ router.post('/create_account', function (req, res) {
     AccountService.create_account(req.body.type, req.body.name).then((account) => {
         res.send(account);
     }).catch((err) => {
-        res.send({});
+        res.status(500).send(err);
     });
 });
 
@@ -57,7 +57,7 @@ router.post('/import_account', function (req, res) {
     AccountService.import_account(req.body.type, req.body.private_key).then((account) => {
         res.send(account);
     }).catch((err) => {
-        res.send({});
+        res.status(500).send(err);
     });
 });
 

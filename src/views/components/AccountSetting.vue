@@ -292,8 +292,12 @@
                 }
             },
             handleAdd () {
-                this.formValidate2.subscribed_data_product.push(this.product_id);
-                this.product_id = '';
+                if (this.product_id != ''){
+                    this.formValidate2.subscribed_data_product.push(this.product_id);
+                    this.product_id = '';
+                }else{
+                    this.$Message.error('产品ID不能为空');
+                }
             },
             handleRemove (index) {
                 this.formValidate2.subscribed_data_product.splice(index, 1);
