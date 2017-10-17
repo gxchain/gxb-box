@@ -1,7 +1,7 @@
 {
   "common": {
     "port":"3000",
-    "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
+    "ipfs_addr": ["/ip4/139.196.138.193/tcp/5001","/ip4/106.14.194.229/tcp/5001"],
     "witnesses": [
       "wss://node1.gxb.io","wss://node5.gxb.io","wss://node8.gxb.io","wss://node11.gxb.io"
     ],
