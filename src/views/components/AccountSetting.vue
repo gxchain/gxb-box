@@ -202,15 +202,18 @@
                     if (valid) {
                         this.$http({
                             method: 'post',
-                            url: '/config/1',
-                            data: this.formValidate1
+                            url: '/api/write_config',
+                            data: {
+                                config: this.formValidate1,
+                                type: 'merchant'
+                            }
                         }).then(() => {
                             this.setAccount({account: this.formValidate1});
                             this.$Message.success('提交成功');
                             this.$emit('next');
                         }).catch((err) => {
                             console.error(err);
-                            this.$Message.error('提交失败');
+                            this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
                         });
                     } else {
                         this.$Message.error('验证失败');
@@ -220,7 +223,7 @@
             handleSubmit2 (name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
-                        if (this.formValidate2.subscribed_data_product.length == 0){
+                        if (this.formValidate2.subscribed_data_product.length === 0){
                             this.$Message.error('至少需要添加一个产品ID');
                         }else{
                             let merchant_config = {
@@ -239,14 +242,18 @@
                             if (this.is_merchant_open){
                                 this.$http({
                                     method: 'post',
-                                    url: '/config/1',
-                                    data: merchant_config
+                                    url: '/api/write_config',
+                                    data: {
+                                        config: merchant_config,
+                                        type: 'merchant'
+                                    }
                                 }).then(() => {
                                     this.$http({
                                         method: 'post',
-                                        url: '/config/2',
+                                        url: '/api/write_config',
                                         data: {
                                             config: datasource_config,
+                                            type: 'datasource',
                                             is_merchant_open: true,
                                         }
                                     }).then(() => {
@@ -255,18 +262,19 @@
                                         this.$emit('next');
                                     }).catch((err) => {
                                         console.error(err);
-                                        this.$Message.error('提交失败');
+                                        this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
                                     });
                                 }).catch((err) => {
                                     console.error(err);
-                                    this.$Message.error('提交失败');
+                                    this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
                                 });
                             }else{
                                 this.$http({
                                     method: 'post',
-                                    url: '/config/2',
+                                    url: '/api/write_config',
                                     data: {
                                         config: datasource_config,
+                                        type: 'datasource',
                                         is_merchant_open: false,
                                     }
                                 }).then(() => {
@@ -275,7 +283,7 @@
                                     this.$emit('next');
                                 }).catch((err) => {
                                     console.error(err);
-                                    this.$Message.error('提交失败');
+                                    this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
                                 });
                             }
                         }
@@ -285,14 +293,14 @@
                 });
             },
             changeShowType () {
-                if (this.show_type == 'password'){
+                if (this.show_type === 'password'){
                     this.show_type = 'text';
                 }else{
                     this.show_type = 'password';
                 }
             },
             handleAdd () {
-                if (this.product_id != ''){
+                if (this.product_id !== ''){
                     this.formValidate2.subscribed_data_product.push(this.product_id);
                     this.product_id = '';
                 }else{

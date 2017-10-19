@@ -118,8 +118,8 @@
         </div>
         <div class="service-btn-box" v-if="pm2_list.length === 0">
             <Button type="primary"  @click="boxStart()" :loading="loading">
-                <span v-if="!loading">启动服务</span>
-                <span v-else>启动中...</span>
+                <span v-show="!loading">启动服务</span>
+                <span v-show="loading">启动中...</span>
             </Button>
             <Button type="primary" @click="lastStep()">上一步</Button>
         </div>
@@ -171,28 +171,26 @@
                 url: '/api/fetch_box_list',
             }).then((res) => {
                 if (res.data.length > 0){
-                    for(let i=0; i<res.data.length; i++){
-                        res.data[i].state = res.data[i].pm2_env.status;
-                        res.data[i].mode = res.data[i].pm2_env.exec_mode;
-                        res.data[i].created_time = new Date(parseInt(res.data[i].pm2_env.created_at)).toLocaleString();
-                        switch (res.data[i].state){
-                            case 'online':
-                                res.data[i].cellClassName = {state: 'state-online'};
-                                break;
-                            case 'stopped':
-                                res.data[i].cellClassName = {state: 'state-stopped'};
-                                break;
-                            default:
-                                res.data[i].cellClassName = {state: 'state-info'};
-                        }
-                        this.pm2_out_log_interval = setInterval(() => {
-                            this.getOutLogs(res.data[i].pm_id, res.data[i].pm2_env.pm_out_log_path);
-                        }, 5000);
-                        this.pm2_err_log_interval = setInterval(() => {
-                            this.getErrLogs(res.data[i].pm_id, res.data[i].pm2_env.pm_err_log_path);
-                        }, 5000);
-                        this.pm2_list.push(res.data[i]);
+                    res.data[0].state = res.data[0].pm2_env.status;
+                    res.data[0].mode = res.data[0].pm2_env.exec_mode;
+                    res.data[0].created_time = new Date(parseInt(res.data[0].pm2_env.created_at)).toLocaleString();
+                    switch (res.data[0].state){
+                        case 'online':
+                            res.data[0].cellClassName = {state: 'state-online'};
+                            break;
+                        case 'stopped':
+                            res.data[0].cellClassName = {state: 'state-stopped'};
+                            break;
+                        default:
+                            res.data[0].cellClassName = {state: 'state-info'};
                     }
+                    this.pm2_out_log_interval = setInterval(() => {
+                        this.getOutLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_out_log_path);
+                    }, 5000);
+                    this.pm2_err_log_interval = setInterval(() => {
+                        this.getErrLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_err_log_path);
+                    }, 5000);
+                    this.pm2_list.push(res.data[0]);
                 }
             }).catch((err) => {
                 console.error(err);
@@ -212,37 +210,35 @@
                 this.$http.get('/api/box_start').then((res) => {
                     self.loading = false;
                     if (res.data.length > 0){
-                        for(let i=0; i<res.data.length; i++){
-                            res.data[i].pm_id = res.data[i].pm2_env.pm_id;
-                            res.data[i].name = res.data[i].pm2_env.npm_package_name;
-                            res.data[i].state = res.data[i].pm2_env.status;
-                            res.data[i].mode = res.data[i].pm2_env.exec_mode;
-                            res.data[i].created_time = new Date(parseInt(res.data[i].pm2_env.created_at)).toLocaleString();
-                            switch (res.data[i].state){
-                                case 'online':
-                                    res.data[i].cellClassName = {state: 'state-online'};
-                                    break;
-                                case 'stopped':
-                                    res.data[i].cellClassName = {state: 'state-stopped'};
-                                    break;
-                                default:
-                                    res.data[i].cellClassName = {state: 'state-info'};
-                            }
-                            this.pm2_out_log_interval = setInterval(() => {
-                                this.getOutLogs(res.data[i].pm_id, res.data[i].pm2_env.pm_out_log_path);
-                            }, 1000);
-                            this.pm2_err_log_interval = setInterval(() => {
-                                this.getErrLogs(res.data[i].pm_id, res.data[i].pm2_env.pm_err_log_path);
-                            }, 1000);
-                            this.pm2_list.push(res.data[i]);
+                        res.data[0].pm_id = res.data[0].pm2_env.pm_id;
+                        res.data[0].name = res.data[0].pm2_env.npm_package_name;
+                        res.data[0].state = res.data[0].pm2_env.status;
+                        res.data[0].mode = res.data[0].pm2_env.exec_mode;
+                        res.data[0].created_time = new Date(parseInt(res.data[0].pm2_env.created_at)).toLocaleString();
+                        switch (res.data[0].state){
+                            case 'online':
+                                res.data[0].cellClassName = {state: 'state-online'};
+                                break;
+                            case 'stopped':
+                                res.data[0].cellClassName = {state: 'state-stopped'};
+                                break;
+                            default:
+                                res.data[0].cellClassName = {state: 'state-info'};
                         }
+                        this.pm2_out_log_interval = setInterval(() => {
+                            this.getOutLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_out_log_path);
+                        }, 1000);
+                        this.pm2_err_log_interval = setInterval(() => {
+                            this.getErrLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_err_log_path);
+                        }, 1000);
+                        this.pm2_list.push(res.data[0]);
                         this.$Message.success('服务启动成功');
                     }else{
                         this.$Message.success('服务启动失败');
                     }
                 }).catch((err) => {
                     console.error(err);
-                    this.$Message.success('服务启动失败');
+                    this.$Message.error('服务启动失败:' + JSON.stringify(err.response.data));
                 });
             },
             getErrLogs (pm_id, path) {
@@ -262,6 +258,7 @@
                     }
                 }).catch((err)=>{
                     console.error(err);
+                    this.$Message.error('获取错误日志失败:' + JSON.stringify(err.response.data));
                 });
             },
             getOutLogs (pm_id, path) {
@@ -281,6 +278,7 @@
                     }
                 }).catch((err)=>{
                     console.error(err);
+                    this.$Message.error('获取输出日志失败:' + JSON.stringify(err.response.data));
                 });
             },
             lastStep (){

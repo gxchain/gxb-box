@@ -33,13 +33,12 @@ export default{
             }
         })
     },
-    datasource_set(config) {
+    datasource_set(config, is_merchant_open) {
         return new Promise((resolve, reject)=> {
             try{
                 let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
-                let datasource = JSON.parse(config);
-                _config.datasource = datasource.config;
-                if (!datasource.is_merchant_open){
+                _config.datasource = JSON.parse(config);
+                if (!is_merchant_open){
                     delete(_config.merchant);
                 }
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));

@@ -76,7 +76,7 @@ const fetch_log = function (pm_id, path) {
                         resolve(log);
                     });
                 }else{
-                    resolve('');
+                    reject(path+'文件不存在');
                 }
             });
         }

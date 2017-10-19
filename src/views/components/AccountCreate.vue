@@ -23,8 +23,8 @@
                                     <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user"></Input></Col>
                                     <Col span="4" offset="2">
                                     <Button type="ghost" @click="createAccount('formValidate')" class="no-margin" :loading="loading">
-                                        <span v-if="!loading">创建账号</span>
-                                        <span v-else>创建中...</span>
+                                        <span v-show="!loading">创建账号</span>
+                                        <span v-show="loading">创建中...</span>
                                     </Button>
                                     </Col>
                                 </Row>
@@ -46,8 +46,8 @@
                                     </Col>
                                     <Col span="4" offset="2">
                                     <Button type="ghost" @click="importAccount('formValidate2')" class="no-margin" :loading="loading">
-                                        <span v-if="!loading">导入</span>
-                                        <span v-else>导入...</span>
+                                        <span v-show="!loading">导入</span>
+                                        <span v-show="loading">导入...</span>
                                     </Button>
                                     </Col>
                                 </Row>
@@ -61,8 +61,8 @@
             <Alert type="warning">
                 {{account.account_name}}，请先备份账号私钥<span class="important">（重要！重要！重要）</span>，再进行下一步操作
             </Alert>
-            <Button type="ghost" v-if="!is_bak" @click="bakStep()">备份账号私钥</Button>
-            <Alert type="info" v-if="is_bak">
+            <Button type="ghost" v-show="!is_bak" @click="bakStep()">备份账号私钥</Button>
+            <Alert type="info" v-show="is_bak">
                 {{account.private_key}}
             </Alert>
         </div>
@@ -156,7 +156,7 @@
                             this.created = true;
                         }).catch((err)=>{
                             this.loading = false;
-                            this.$Message.error('账号创建失败');
+                            this.$Message.error('账号创建失败:' + JSON.stringify(err.response.data));
                             console.error(err);
                         });
                     } else {
@@ -185,7 +185,7 @@
                             this.imported = true;
                         }).catch((err)=>{
                             this.loading = false;
-                            this.$Message.error('账号导入失败');
+                            this.$Message.error('账号导入失败:' + JSON.stringify(err.response.data));
                             console.error(err);
                         });
                     } else {
@@ -195,7 +195,7 @@
                 });
             },
             changeShowType () {
-                if (this.show_type == 'password'){
+                if (this.show_type === 'password'){
                     this.show_type = 'text';
                 }else{
                     this.show_type = 'password';

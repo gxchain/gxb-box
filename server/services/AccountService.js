@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import {key, FetchChain, PublicKey, PrivateKey} from 'gxbjs';
+import {key, FetchChain, PrivateKey, Signature} from 'gxbjs';
 import {Apis} from "gxbjs-ws";
 import Immutable from 'immutable';
 import ConfigStroe from './ConfigStore';
@@ -20,7 +20,7 @@ const fetch_account = function (account_name) {
             reject(err);
         });
     })
-}
+};
 
 /**
  * 创建账号
@@ -35,7 +35,7 @@ const create_account = function (account_type, new_account_name) {
     let referrer =  config.common.referrer;
 
     return new Promise(function (resolve, reject) {
-        let create_account_promise = fetch( faucetAddress + "/account/register", {
+        fetch( faucetAddress + "/account/register", {
             method: "post",
             mode: "cors",
             headers: {
@@ -52,8 +52,7 @@ const create_account = function (account_type, new_account_name) {
                     "referrer": referrer
                 }
             })
-        }).then((r) => {
-            //r.json()
+        }).then(() => {
             let config = {
                 "account_name": new_account_name,
                 "private_key": private_key.toWif()
@@ -64,14 +63,9 @@ const create_account = function (account_type, new_account_name) {
                 }).catch((err) => {
                     reject(err);
                 });
-            }
-            if (account_type === 'datasource'){
-                let params = {
-                    config: config,
-                    is_merchant_open: false
-                };
-                ConfigStroe.datasource_set(JSON.stringify(params)).then(()=>{
-                    resolve(JSON.stringify(params.config));
+            }else{
+                ConfigStroe.datasource_set(JSON.stringify(config), false).then(()=>{
+                    resolve(JSON.stringify(config));
                 }).catch((err) => {
                     reject(err);
                 });
@@ -90,10 +84,10 @@ const import_account = function (account_type, private_key) {
     let public_key = PrivateKey.fromWif(private_key).toPublicKey().toPublicKeyString();
     return new Promise(function (resolve, reject) {
         Apis.instance().db_api().exec("get_key_references", [[public_key]]).then(function (vec_account_id) {
-            var refs = Immutable.Set();
+            let refs = Immutable.Set();
             vec_account_id = vec_account_id[0];
             refs = refs.withMutations(function (r) {
-                for (var i = 0; i < vec_account_id.length; ++i) {
+                for (let i = 0; i < vec_account_id.length; ++i) {
                     r.add(vec_account_id[i]);
                 }
             });
@@ -108,14 +102,9 @@ const import_account = function (account_type, private_key) {
                     }).catch((err) => {
                         reject(err);
                     });
-                }
-                if (account_type === 'datasource'){
-                    let params = {
-                        config: config,
-                        is_merchant_open: false
-                    };
-                    ConfigStroe.datasource_set(JSON.stringify(params)).then(()=>{
-                        resolve(JSON.stringify(params.config));
+                }else{
+                    ConfigStroe.datasource_set(JSON.stringify(config), false).then(()=>{
+                        resolve(JSON.stringify(config));
                     }).catch((err) => {
                         reject(err);
                     });
@@ -129,8 +118,151 @@ const import_account = function (account_type, private_key) {
     });
 };
 
+const sortJSON = function (json) {
+    let keys = Object.keys(json);
+    keys.sort();
+    let result = {};
+    keys.forEach(function (k) {
+        result[k] = json[k];
+    });
+    return result;
+};
+
+const getSign = function (body = '',type) {
+    return new Promise(function (resolve, reject) {
+        try {
+            let private_key;
+            if (type === 'merchant'){
+                private_key = ConfigStroe.get_merchant_private_key();
+            }else{
+                private_key = ConfigStroe.get_datasource_private_key();
+            }
+            let signature = Signature.sign(body, private_key).toHex();
+            resolve(signature);
+        }
+        catch (ex) {
+            reject(ex);
+        }
+    })
+};
+
+const fetch_merchant = function (account_name, account_type) {
+    let faucetAddress = config.common.faucet_url;
+    return new Promise(function (resolve, reject) {
+        fetch_account(account_name).then((account)=> {
+            let body = {};
+            body.account_id = account.get('id');
+            body = sortJSON(body);
+            getSign(JSON.stringify(body), account_type).then(function (signature) {
+                body.signature = signature;
+                let params = Object.keys(body)
+                    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(body[key]))
+                    .join("&")
+                    .replace(/%20/g, "+");
+                fetch(faucetAddress + "/merchant/info?" + params, {
+                    method: "get",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-type": "application/json"
+                    }
+                }).then(res => {
+                    if (res.status < 200 || res.status >= 400) {
+                        res.json().then(reject)
+                    }
+                    else {
+                        res.json().then(resolve);
+                    }
+                }).catch(err => {reject(err)});
+            }).catch(err=>reject(err));
+        }).catch(err=>reject(err));
+    });
+};
+
+const apply_merchant = function (body, account_name) {
+    let faucetAddress = config.common.faucet_url;
+    return new Promise(function (resolve, reject) {
+        fetch_account(account_name).then((account)=>{
+            body.account_id = account.get('id');
+            body = sortJSON(body);
+            getSign(JSON.stringify(body), 'merchant').then(function (signature) {
+                body.signature = signature;
+                fetch(faucetAddress + "/merchant/create", {
+                    method: "post",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                }).then((res) => {
+                    if (res.status < 200 || res.status >= 400) {
+                        res.json().then(reject)
+                    }
+                    else {
+                        res.json().then(resolve);
+                    }
+                }).catch(err=>reject(err));
+            }).catch(err=>reject(err));
+        }).catch(err=>reject(err));
+    });
+};
+
+const apply_datasource = function (body, account_name) {
+    let faucetAddress = config.common.faucet_url;
+    return new Promise(function (resolve, reject) {
+        fetch_account(account_name).then((account)=>{
+            body.account_id = account.get('id');
+            body = sortJSON(body);
+            getSign(JSON.stringify(body), 'datasource').then(function (signature) {
+                body.signature = signature;
+                fetch(faucetAddress + "/dataSource/create", {
+                    method: "post",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                }).then((res) => {
+                    if (res.status < 200 || res.status >= 400) {
+                        res.json().then(reject)
+                    }
+                    else {
+                        res.json().then(resolve);
+                    }
+                }).catch(err=>reject(err));
+            }).catch(err=>reject(err));
+        }).catch(err=>reject(err));
+    });
+};
+
+const is_applying = function (account_name) {
+    let faucetAddress = config.common.faucet_url;
+    return new Promise(function (resolve, reject) {
+        fetch_account(account_name).then((account) => {
+            let account_id = account.get('id');
+            fetch(faucetAddress + "/account/apply_status?account_id=" + account_id, {
+                method: "get",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-type": "application/json"
+                }
+            }).then(res => {
+                if (res.status < 200 || res.status >= 400) {
+                    res.json().then(reject)
+                }
+                else {
+                    res.json().then(resolve);
+                }
+            }).catch(err => reject(err));
+        }).catch(err => reject(err));
+    });
+};
+
 export default {
     fetch_account,
     create_account,
-    import_account
+    import_account,
+    fetch_merchant,
+    apply_merchant,
+    apply_datasource,
+    is_applying
 };

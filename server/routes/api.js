@@ -14,14 +14,34 @@ router.get('/fetch_config/:account_type', function (req, res) {
         ConfigStore.init().then((config)=>{
             res.send(config.merchant);
         }).catch((err)=>{
-            res.status(500).send(err);
+            res.status(400).send(err);
         });
     }else{
         ConfigStore.init().then((config)=>{
             res.send(config.datasource);
         }).catch((err)=>{
-            res.status(500).send(err);
+            res.status(400).send(err);
         });
+    }
+});
+
+/**
+ * 写入配置文件
+ */
+
+router.post('/write_config',function (req, res) {
+    if (req.body.type === 'merchant'){
+        ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((resp) => {
+            res.send(resp)
+        }).catch((err) => {
+            res.status(400).send(err);
+        })
+    }else{
+        ConfigStore.datasource_set(JSON.stringify(req.body.config), req.body.is_merchant_open).then((resp) => {
+            res.send(resp)
+        }).catch((err) => {
+            res.status(400).send(err);
+        })
     }
 });
 
@@ -33,7 +53,7 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
     AccountService.fetch_account(req.params.account_id_or_name).then((account) => {
         res.send(account.toJS());
     }).catch(err => {
-        res.status(500).send(err);
+        res.send({});
     })
 });
 
@@ -45,7 +65,7 @@ router.post('/create_account', function (req, res) {
     AccountService.create_account(req.body.type, req.body.name).then((account) => {
         res.send(account);
     }).catch((err) => {
-        res.status(500).send(err);
+        res.status(400).send(err);
     });
 });
 
@@ -57,7 +77,55 @@ router.post('/import_account', function (req, res) {
     AccountService.import_account(req.body.type, req.body.private_key).then((account) => {
         res.send(account);
     }).catch((err) => {
-        res.status(500).send(err);
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 申请认证商户
+ */
+
+router.post('/apply_merchant', function (req, res) {
+    AccountService.apply_merchant(req.body.apply_info, req.body.account_name).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 申请认证数据源
+ */
+
+router.post('/apply_datasource', function (req, res) {
+    AccountService.apply_datasource(req.body.apply_info, req.body.account_name).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 查询认证状态
+ */
+
+router.get('/is_applying/:account_name', function (req, res) {
+    AccountService.is_applying(req.params.account_name).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取认证商户信息
+ */
+
+router.post('/fetch_merchant', function (req, res) {
+    AccountService.fetch_merchant(req.body.account_name, req.body.account_type).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
     });
 });
 
@@ -69,7 +137,7 @@ router.get('/box_start', function (req, res) {
     BoxService.box_start().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
-        res.status(500).send(err);
+        res.status(400).send(err);
     })
 });
 
@@ -81,7 +149,7 @@ router.get('/fetch_box_list', function (req, res) {
     BoxService.fetch_box_list().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
-        res.status(500).send(err);
+        res.status(400).send(err);
     })
 });
 
@@ -93,7 +161,7 @@ router.post('/fetch_log', function (req, res) {
     BoxService.fetch_log(req.body.pm_id, req.body.path).then((log) => {
         res.send(log);
     }).catch((err) => {
-        res.status(500).send(err);
+        res.status(400).send(err);
     })
 });
 
