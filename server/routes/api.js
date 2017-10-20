@@ -159,7 +159,7 @@ router.get('/fetch_box_list', function (req, res) {
  */
 
 router.post('/fetch_log', function (req, res) {
-    BoxService.fetch_log(req.body.pm_id, req.body.path).then((log) => {
+    BoxService.fetch_log(req.body.path).then((log) => {
         res.send(log);
     }).catch((err) => {
         res.status(400).send(err);

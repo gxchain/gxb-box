@@ -55,7 +55,7 @@ const fetch_box_list = function () {
 /**
  * 数据盒子服务 - 获取日志
  */
-const fetch_log = function (pm_id, path) {
+const fetch_log = function (path) {
     return new Promise(function (resolve, reject) {
         let log = [];
         try {
@@ -67,7 +67,6 @@ const fetch_log = function (pm_id, path) {
 
                     rl.on('line', function(line) {
                         let obj = {};
-                        obj.pm_id = pm_id;
                         obj.tip = line;
                         log.push(obj);
                     });

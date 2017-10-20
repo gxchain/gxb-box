@@ -42,7 +42,7 @@
     }
 
     .init .operation-box{
-        width: 45%;
+        width: 65%;
         margin: 0 auto;
         margin-top: 50px;
     }

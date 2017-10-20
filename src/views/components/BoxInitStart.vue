@@ -7,16 +7,17 @@
         margin-bottom: 10px;
     }
 
-    .logs-box{
+    .server-logs{
         border: 1px solid #eee;
         border-radius: 6px;
-        margin-bottom: 20px;
         position: relative;
         transition: all .2s ease-in-out;
     }
 
 
     .log-header {
+        text-align: left;
+        padding-left: 10px;
         font-weight: 500;
         height: 40px;
         line-height: 40px;
@@ -26,11 +27,12 @@
     }
 
     .log-box {
-        padding: 0 20px;
-        margin: 10px 0;
+        padding-top: 5px;
         text-align: left;
-        height: 200px;
+        height: 400px;
         overflow-y: auto;
+        background: #333;
+        color: #fff;
     }
 
     .log-box .out{
@@ -41,22 +43,61 @@
         color: #ed3f14
     }
 
-    .split {
-        display: block;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        border: 1px dashed #eee;
+    .log-box ul:after {
+        content: "\2590";
+        -webkit-animation: blinker 1s linear infinite;
+        -moz-animation: blinker 1s linear infinite;
+        animation: blinker 1s linear infinite;
+    }
+    .log-box ul li {
+        font-size: 12px;
+        background-color: transparent;
+        color: #FFF;
+        line-height: 1.4;
+        white-space: pre;
+        padding: 1px 5px;
+        font-family: Airl;
     }
 
-    .spin-icon-load{
-        animation: ani-demo-spin 1s linear infinite;
+    .spin-container{
+        display: inline-block;
+        width: 200px;
+        height: 100px;
+        position: relative;
     }
-    @keyframes ani-demo-spin {
-        from { transform: rotate(0deg);}
-        50%  { transform: rotate(180deg);}
-        to   { transform: rotate(360deg);}
+
+    @-moz-keyframes blinker {
+        0% {
+            opacity: 1.0;
+        }
+        50% {
+            opacity: 0.0;
+        }
+        100% {
+            opacity: 1.0;
+        }
+    }
+    @-webkit-keyframes blinker {
+        0% {
+            opacity: 1.0;
+        }
+        50% {
+            opacity: 0.0;
+        }
+        100% {
+            opacity: 1.0;
+        }
+    }
+    @keyframes blinker {
+        0% {
+            opacity: 1.0;
+        }
+        50% {
+            opacity: 0.0;
+        }
+        100% {
+            opacity: 1.0;
+        }
     }
 </style>
 <style>
@@ -72,60 +113,48 @@
 </style>
 <template>
     <div class="box-start">
-        <Alert type="info">
-            启动数据盒子服务前，请检查服务器环境是否已全局安装
-            <a href="http://pm2.keymetrics.io/docs/usage/quick-start/" target="_blank">PM2</a>
-        </Alert>
-        <div class="server-status">
-            <Table stripe :columns="pm2_columns" :data="pm2_list" v-show="pm2_list.length > 0"></Table>
+        <div class="spin-container" v-show="!loaded">
+            <Spin fix></Spin>
         </div>
-        <div class="server-logs" v-show="pm2_list.length > 0">
-            <Row class="logs-box">
-                <Col span="12">
-                    <header class="log-header">Out</header>
-                    <div class="log-box">
-                        <Spin fix v-show="pm2_out_logs.length == 0">
-                            <Icon type="load-c" size=18 class="spin-icon-load"></Icon>
-                            <div>Loading</div>
-                        </Spin>
-                        <ul>
-                            <li v-for="(log,index) in pm2_out_logs" :key="index">
-                                <span class="out">ID:{{log.pm_id}}</span>
-                                <span class="out">|</span>
-                                <span>{{log.tip}}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </Col>
-                <div class="split"></div>
-                <Col span="12">
-                    <header class="log-header">Error</header>
-                    <div class="log-box">
-                        <Spin fix v-show="pm2_err_logs.length == 0">
-                            <Icon type="load-c" size=18 class="spin-icon-load"></Icon>
-                            <div>Loading</div>
-                        </Spin>
-                        <ul>
-                            <li v-for="(log,index) in pm2_err_logs" :key="index">
-                                <span class="err">ID:{{log.pm_id}}</span>
-                                <span class="err">|</span>
-                                <span>{{log.tip}}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </Col>
-            </Row>
-        </div>
-        <div class="service-btn-box" v-if="pm2_list.length === 0">
-            <Button type="primary"  @click="boxStart()" :loading="loading">
-                <span v-show="!loading">启动服务</span>
-                <span v-show="loading">启动中...</span>
-            </Button>
-            <Button type="primary" @click="lastStep()">上一步</Button>
-        </div>
-        <div class="step-btn-box" v-else>
-            <Button type="primary" @click="lastStep()">上一步</Button>
-            <Button type="primary" @click="goToMarket()">完成</Button>
+        <div v-show="loaded">
+            <Alert type="info" v-if="pm2_list.length === 0">
+                启动数据盒子服务前，请检查服务器环境是否已全局安装
+                <a href="http://pm2.keymetrics.io/docs/usage/quick-start/" target="_blank">PM2</a>
+            </Alert>
+            <Alert type="success" v-else>
+                恭喜您已完成所有初始化配置，请检查日志确认数据盒子服务是否正常启动
+            </Alert>
+            <div class="server-status">
+                <Table stripe :columns="pm2_columns" :data="pm2_list" v-show="pm2_list.length > 0"></Table>
+            </div>
+            <div class="server-logs" v-show="pm2_list.length > 0">
+                <header class="log-header">日志</header>
+                <div class="log-box" id="scroll-box">
+                    <ul>
+                        <li v-for="(log, index) in pm2_out_logs" :key="index">
+                            <span class="out">{{pm2_list[0].pm_id}}|{{pm2_list[0].name}}</span>
+                            <span class="out">  | </span>
+                            <span>{{log.tip}}</span>
+                        </li>
+                        <li v-for="(log, index) in pm2_err_logs" :key="index">
+                            <span class="err">{{pm2_list[0].pm_id}}|{{pm2_list[0].name}}</span>
+                            <span class="err">  | </span>
+                            <span class="err">{{log.tip}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="service-btn-box" v-if="pm2_list.length === 0">
+                <Button type="primary"  @click="boxStart()" :loading="loading">
+                    <span v-show="!loading">启动服务</span>
+                    <span v-show="loading">启动中...</span>
+                </Button>
+                <Button type="primary" @click="lastStep()">上一步</Button>
+            </div>
+            <div class="step-btn-box" v-else>
+                <Button type="primary" @click="lastStep()">上一步</Button>
+                <Button type="primary" @click="goToMarket()">完成</Button>
+            </div>
         </div>
     </div>
 </template>
@@ -134,11 +163,12 @@
     export default {
         data () {
             return {
+                loaded: false,
                 loading: false,
                 pm2_columns: [
                     {
-                        title: 'PM2-ID',
-                        key: 'pm_id'
+                        title: 'PID',
+                        key: 'pid'
                     },
                     {
                         title: '名称',
@@ -161,6 +191,7 @@
                 pm2_list: [],
                 pm2_out_log_interval: '',
                 pm2_err_log_interval: '',
+                scroll_interval: '',
                 pm2_out_logs: [],
                 pm2_err_logs: []
             };
@@ -170,6 +201,7 @@
                 method: 'get',
                 url: '/api/fetch_box_list',
             }).then((res) => {
+                this.loaded = true;
                 if (res.data.length > 0){
                     res.data[0].state = res.data[0].pm2_env.status;
                     res.data[0].mode = res.data[0].pm2_env.exec_mode;
@@ -185,10 +217,10 @@
                             res.data[0].cellClassName = {state: 'state-info'};
                     }
                     this.pm2_out_log_interval = setInterval(() => {
-                        this.getOutLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_out_log_path);
+                        this.getOutLogs(res.data[0].pm2_env.pm_out_log_path);
                     }, 5000);
                     this.pm2_err_log_interval = setInterval(() => {
-                        this.getErrLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_err_log_path);
+                        this.getErrLogs(res.data[0].pm2_env.pm_err_log_path);
                     }, 5000);
                     this.pm2_list.push(res.data[0]);
                 }
@@ -210,7 +242,7 @@
                 this.$http.get('/api/box_start').then((res) => {
                     self.loading = false;
                     if (res.data.length > 0){
-                        res.data[0].pm_id = res.data[0].pm2_env.pm_id;
+                        res.data[0].pid = res.data[0].process.pid;
                         res.data[0].name = res.data[0].pm2_env.npm_package_name;
                         res.data[0].state = res.data[0].pm2_env.status;
                         res.data[0].mode = res.data[0].pm2_env.exec_mode;
@@ -226,10 +258,10 @@
                                 res.data[0].cellClassName = {state: 'state-info'};
                         }
                         this.pm2_out_log_interval = setInterval(() => {
-                            this.getOutLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_out_log_path);
+                            this.getOutLogs(res.data[0].pm2_env.pm_out_log_path);
                         }, 1000);
                         this.pm2_err_log_interval = setInterval(() => {
-                            this.getErrLogs(res.data[0].pm_id, res.data[0].pm2_env.pm_err_log_path);
+                            this.getErrLogs(res.data[0].pm2_env.pm_err_log_path);
                         }, 1000);
                         this.pm2_list.push(res.data[0]);
                         this.$Message.success('服务启动成功');
@@ -241,12 +273,11 @@
                     this.$Message.error('服务启动失败:' + JSON.stringify(err.response.data));
                 });
             },
-            getErrLogs (pm_id, path) {
+            getErrLogs (path) {
                 this.$http({
                     method: 'post',
                     url: '/api/fetch_log',
                     data: {
-                        'pm_id': pm_id,
                         'path': path
                     }
                 }).then((res) => {
@@ -261,12 +292,11 @@
                     this.$Message.error('获取错误日志失败:' + JSON.stringify(err.response.data));
                 });
             },
-            getOutLogs (pm_id, path) {
+            getOutLogs (path) {
                 this.$http({
                     method: 'post',
                     url: '/api/fetch_log',
                     data: {
-                        'pm_id': pm_id,
                         'path': path
                     }
                 }).then((res) => {
