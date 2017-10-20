@@ -62,7 +62,7 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
  */
 
 router.post('/create_account', function (req, res) {
-    AccountService.create_account(req.body.type, req.body.name).then((account) => {
+    AccountService.create_account(req.body.type, req.body.name, req.protocol).then((account) => {
         res.send(account);
     }).catch((err) => {
         res.status(400).send(err);
@@ -86,7 +86,7 @@ router.post('/import_account', function (req, res) {
  */
 
 router.post('/apply_merchant', function (req, res) {
-    AccountService.apply_merchant(req.body.apply_info, req.body.account_name).then((result) => {
+    AccountService.apply_merchant(req.body.apply_info, req.body.account_name, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);
@@ -98,7 +98,7 @@ router.post('/apply_merchant', function (req, res) {
  */
 
 router.post('/apply_datasource', function (req, res) {
-    AccountService.apply_datasource(req.body.apply_info, req.body.account_name).then((result) => {
+    AccountService.apply_datasource(req.body.apply_info, req.body.account_name, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);
@@ -110,7 +110,7 @@ router.post('/apply_datasource', function (req, res) {
  */
 
 router.get('/is_applying/:account_name', function (req, res) {
-    AccountService.is_applying(req.params.account_name).then((result) => {
+    AccountService.is_applying(req.params.account_name, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);
@@ -121,10 +121,11 @@ router.get('/is_applying/:account_name', function (req, res) {
  * 获取认证商户信息
  */
 
-router.post('/fetch_merchant', function (req, res) {
-    AccountService.fetch_merchant(req.body.account_name, req.body.account_type).then((result) => {
+router.get('/fetch_merchant/:account_name/:account_type', function (req, res) {
+    AccountService.fetch_merchant(req.params.account_name, req.params.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });

@@ -353,12 +353,8 @@
                     }
                     if (merchant_certified || datasource_certified){
                         this.$http({
-                            method: 'post',
-                            url: '/api/fetch_merchant',
-                            data: {
-                                account_name: this.account.account_name,
-                                account_type: this.account_type
-                            }
+                            method: 'get',
+                            url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
                         }).then((res) => {
                             this.formDatasource.merchant_name = res.data.name;
                             this.merchant_name = res.data.name;

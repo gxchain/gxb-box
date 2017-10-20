@@ -22,12 +22,17 @@
         display: inline-block;
     }
 </style>
+<style>
+    .account_input .ivu-input{
+        text-transform: lowercase;
+    }
+</style>
 <template>
     <div class="account-setting">
         <div class="merchant" v-if="account_type === 'merchant'">
             <Form ref="formValidate1" :model="formValidate1" :rules="ruleValidate1" :label-width="100">
                 <FormItem label="账号" prop="account_name">
-                    <Input v-model="formValidate1.account_name" placeholder="sample_user"></Input>
+                    <Input v-model="formValidate1.account_name" placeholder="sample_user" class="account_input"></Input>
                 </FormItem>
                 <FormItem label="私钥" prop="private_key">
                     <div @click="changeShowType()" style="cursor: pointer"><Icon class="ivu-input-icon" type="eye"></Icon></div>
@@ -51,7 +56,7 @@
         <div class="datasource" v-if="account_type === 'datasource'">
             <Form ref="formValidate2" :model="formValidate2" :rules="ruleValidate2" :label-width="100">
                 <FormItem label="账号" prop="account_name">
-                    <Input v-model="formValidate2.account_name" placeholder="sample_user"></Input>
+                    <Input v-model="formValidate2.account_name" placeholder="sample_user" class="account_input"></Input>
                 </FormItem>
                 <FormItem label="私钥" prop="private_key">
                     <div @click="changeShowType()" style="cursor: pointer"><Icon class="ivu-input-icon" type="eye"></Icon></div>
@@ -200,6 +205,7 @@
             handleSubmit1 (name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
+                        this.formValidate1.account_name = this.formValidate1.account_name.toLowerCase();
                         this.$http({
                             method: 'post',
                             url: '/api/write_config',
@@ -227,14 +233,14 @@
                             this.$Message.error('至少需要添加一个产品ID');
                         }else{
                             let merchant_config = {
-                                account_name: this.formValidate2.account_name,
+                                account_name: this.formValidate2.account_name.toLowerCase(),
                                 private_key: this.formValidate2.private_key,
                                 callback_url: this.formValidate2.callback_url,
                                 privacy_request_timeout: this.formValidate2.privacy_request_timeout,
                                 default_timeout: this.formValidate2.default_timeout
                             };
                             let datasource_config = {
-                                account_name: this.formValidate2.account_name,
+                                account_name: this.formValidate2.account_name.toLowerCase(),
                                 private_key: this.formValidate2.private_key,
                                 service: this.formValidate2.service,
                                 subscribed_data_product: this.formValidate2.subscribed_data_product

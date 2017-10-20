@@ -9,8 +9,6 @@ import config from '../../config/config.json';
 
 /**
  * 获取账户信息
- * @param account_name
- * @returns {*}
  */
 const fetch_account = function (account_name) {
     return new Promise(function (resolve, reject) {
@@ -25,13 +23,15 @@ const fetch_account = function (account_name) {
 /**
  * 创建账号
  */
-const create_account = function (account_type, new_account_name) {
+const create_account = function (account_type, new_account_name, protocol) {
     let brainkey = key.suggest_brain_key( dictionary.en );
     let private_key = key.get_brainPrivateKey( brainkey );
     let owner_pubkey = private_key.toPublicKey().toPublicKeyString();
     let active_pubkey = private_key.toPublicKey().toPublicKeyString();
-    // using faucet
     let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
     let referrer =  config.common.referrer;
 
     return new Promise(function (resolve, reject) {
@@ -75,7 +75,6 @@ const create_account = function (account_type, new_account_name) {
         })
     });
 };
-
 
 /**
  * 创建账号
@@ -146,8 +145,11 @@ const getSign = function (body = '',type) {
     })
 };
 
-const fetch_merchant = function (account_name, account_type) {
+const fetch_merchant = function (account_name, account_type, protocol) {
     let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=> {
             let body = {};
@@ -178,8 +180,11 @@ const fetch_merchant = function (account_name, account_type) {
     });
 };
 
-const apply_merchant = function (body, account_name) {
+const apply_merchant = function (body, account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=>{
             body.account_id = account.get('id');
@@ -206,8 +211,11 @@ const apply_merchant = function (body, account_name) {
     });
 };
 
-const apply_datasource = function (body, account_name) {
+const apply_datasource = function (body, account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=>{
             body.account_id = account.get('id');
@@ -234,8 +242,11 @@ const apply_datasource = function (body, account_name) {
     });
 };
 
-const is_applying = function (account_name) {
+const is_applying = function (account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account) => {
             let account_id = account.get('id');

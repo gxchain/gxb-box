@@ -18,6 +18,7 @@ export default{
         })
     },
     merchant_set(config) {
+        let self = this;
         return new Promise((resolve, reject)=> {
             try{
                 let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
@@ -26,7 +27,8 @@ export default{
                 }
                 _config.merchant = JSON.parse(config);
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
-                resolve('商户账号配置保存成功');
+                self.config = _config;
+                resolve({message:'商户账号配置保存成功'});
             }
             catch (ex){
                 reject(ex);
@@ -34,6 +36,7 @@ export default{
         })
     },
     datasource_set(config, is_merchant_open) {
+        let self = this;
         return new Promise((resolve, reject)=> {
             try{
                 let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
@@ -42,7 +45,8 @@ export default{
                     delete(_config.merchant);
                 }
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
-                resolve('数据源账号配置保存成功');
+                self.config = _config;
+                resolve({message:'数据源账号配置保存成功'});
             }
             catch (ex){
                 reject(ex);

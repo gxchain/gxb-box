@@ -9,6 +9,11 @@
         color: #ed3f14
     }
 </style>
+<style>
+    .account_input .ivu-input{
+        text-transform: lowercase;
+    }
+</style>
 <template>
     <div class="account-create">
         <Tabs :animated="false" v-if="!created">
@@ -20,7 +25,7 @@
                         <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                             <FormItem label="账号" prop="account_name">
                                 <Row>
-                                    <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user"></Input></Col>
+                                    <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user" class="account_input"></Input></Col>
                                     <Col span="4" offset="2">
                                     <Button type="ghost" @click="createAccount('formValidate')" class="no-margin" :loading="loading">
                                         <span v-show="!loading">创建账号</span>
@@ -84,24 +89,44 @@
         props: ['account_type'],
         data () {
             const validateAccount = (rule, value, callback) => {
+                value = value.toLowerCase();
                 if (value.length < 3){
                     callback(new Error('账户名长度不少于3位'));
-                } else {
-                    if ((/[0-9-]/.test(value) || !/[aeiouy]/.test(value)
-                        )){
-                        this.$http.get('/api/fetch_account/' + value).then((res) => {
-                            if (res.data.name) {
-                                callback(new Error('账户已存在'));
-                            } else {
-                                callback();
-                            }
-                        }).catch((err) => {
-                            callback(new Error(err));
-                        });
-                    }else{
-                        callback(new Error('包含至少一个横杠、数字或者不含元音字母'));
+                }
+                if (value.length > 63){
+                    callback(new Error('账户名长度不超过63位'));
+                }
+                let ref = value.split('.');
+                for (let i = 0; i < ref.length; i++) {
+                    let label = ref[i];
+                    if (!/^[~a-z]/.test(label)) {
+                        callback(new Error('每个帐户段只能以字母为首位'));
+                    }
+                    if (!/^[~a-z0-9-]*$/.test(label)) {
+                        callback(new Error('每个帐户段只能包含字母、数字或破折号'));
+                    }
+                    if (/--/.test(label)) {
+                        callback(new Error('每个帐户段只能包含一个破折号'));
+                    }
+                    if (!/[a-z0-9]$/.test(label)) {
+                        callback(new Error('每个帐户段只能以字母、数字结尾'));
+                    }
+                    if (!(label.length >= 3)) {
+                        callback(new Error('每个帐户段长度不少于3位'));
                     }
                 }
+                if (!(/[0-9-]/.test(value) || !/[aeiouy]/.test(value))){
+                    callback(new Error('包含至少一个横杠、数字或者不含元音字母'));
+                }
+                this.$http.get('/api/fetch_account/' + value).then((res) => {
+                    if (res.data.name) {
+                        callback(new Error('账户已存在'));
+                    } else {
+                        callback();
+                    }
+                }).catch((err) => {
+                    callback(new Error(err));
+                });
             };
             return {
                 loading: false,
