@@ -31,7 +31,7 @@
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" :active-name="this.init_step != 'finished' ? '1' : '2'" @on-select="route">
+        <Menu mode="horizontal" :active-name="active" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
@@ -43,17 +43,21 @@
                         使用引导
                     </MenuItem>
                     <MenuItem name="2" v-show="this.init_step == 'finished'">
+                        <Icon type="cube"></Icon>
+                        控制台
+                    </MenuItem>
+                    <MenuItem name="3" v-show="this.init_step == 'finished'">
                         <Icon type="ios-keypad"></Icon>
                         数据市场
                     </MenuItem>
-                    <Submenu name="3" v-show="this.init_step == 'finished'">
+                    <Submenu name="4" v-show="this.init_step == 'finished'">
                         <template slot="title">
                             <Icon type="gear"></Icon>
                             设置
                         </template>
-                        <MenuItem name="3-1">账号管理</MenuItem>
-                        <MenuItem name="3-2">配置管理</MenuItem>
-                        <MenuItem name="3-3">接入点管理</MenuItem>
+                        <MenuItem name="4-1">账号管理</MenuItem>
+                        <MenuItem name="4-2">配置管理</MenuItem>
+                        <MenuItem name="4-3">接入点管理</MenuItem>
                     </Submenu>
                 </div>
             </div>
@@ -65,6 +69,7 @@
     export default {
         data () {
             return {
+                active:'2'
             };
         },
         methods: {
@@ -72,9 +77,27 @@
                 switch (name){
                     case '1':
                         this.$router.push('/init');
+                        this.active = '1';
                         break;
                     case '2':
-                        this.$router.push('/');
+                        this.$router.push('/console');
+                        this.active = '2';
+                        break;
+                    case '3':
+                        this.$router.push('/market');
+                        this.active = '3';
+                        break;
+                    case '4-1':
+                        this.$router.push('/setting');
+                        this.active = '4-1';
+                        break;
+                    case '4-2':
+                        this.$router.push('/setting');
+                        this.active = '4-2';
+                        break;
+                    case '4-3':
+                        this.$router.push('/setting');
+                        this.active = '4-3';
                         break;
                 }
             }

@@ -1,7 +1,6 @@
 <style scoped>
     .init {
         width: 100%;
-        min-height: 800px;
     }
 
     .init h1 {
@@ -77,6 +76,7 @@
                              v-on:last="lastStep"
                              v-on:next="nextStep"
                              :account_type="account_type"
+                             scene="init"
                         ></div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
     import AccountCreate from './components/AccountCreate.vue';
     import AccountSetting from './components/AccountSetting.vue';
     import AccountCertification from './components/AccountCertification.vue';
-    import BoxInitStart from './components/BoxInitStart.vue';
+    import ConsoleManage from './components/ConsoleManage.vue';
 
     export default {
         data () {
@@ -102,7 +102,7 @@
                     1: 'AccountCreate',
                     2: 'AccountCertification',
                     3: 'AccountSetting',
-                    4: 'BoxInitStart'
+                    4: 'ConsoleManage'
                 }
             };
         },
@@ -130,7 +130,7 @@
             AccountCreate: AccountCreate,
             AccountSetting: AccountSetting,
             AccountCertification: AccountCertification,
-            BoxInitStart: BoxInitStart,
+            ConsoleManage: ConsoleManage,
         },
         computed: {
             ...mapGetters({

@@ -6,7 +6,7 @@
     .layout-content {
         background: #fff;
         width: 90%;
-        min-height: 800px;
+        min-height: 600px;
         margin: 30px auto 20px;
         border-radius: 6px;
         box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);

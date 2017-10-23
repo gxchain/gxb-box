@@ -5,6 +5,7 @@ import Routers from './router';
 import Vuex from 'vuex';
 import Util from './libs/util';
 import App from './app.vue';
+import VueTimeago from 'vue-timeago';
 import 'iview/dist/styles/iview.css';
 
 import axios from 'axios';
@@ -13,13 +14,20 @@ Vue.prototype.$http = axios;
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(iView);
+Vue.use(VueTimeago, {
+    name: 'timeago',
+    locale: 'zh-CN',
+    locales: {
+        'zh-CN': require('vue-timeago/locales/zh-CN.json')
+    }
+});
 
 const store = new Vuex.Store({
     state: {
         account: null,
         account_type: localStorage.getItem('account_type') ? localStorage.getItem('account_type') : '',
         init_step: 0,
-        certified: false
+        certified: false,
     },
     getters: {
         account_type: state => state.account_type,
@@ -104,8 +112,8 @@ if (store.state.account_type) {
                 if (store.state.certified) {
                     //是否已完善配置
                     if ((store.state.account.callback_url) || (store.state.account.service && store.state.account.subscribed_data_product)) {
-                        axios.get('/api/fetch_box_list').then((res) => {
-                            if (res.data.length>0){
+                        axios.get('/api/fetch_box').then((res) => {
+                            if (res.data && res.data.length &&  res.data.length>0){
                                 //状态:pm2已启动过 - init-finished
                                 store.state.init_step = 'finished';
                             }else{

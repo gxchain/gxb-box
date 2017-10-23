@@ -143,11 +143,35 @@ router.get('/box_start', function (req, res) {
 });
 
 /**
- * 数据盒子服务 - 获取PM2列表
+ * 数据盒子服务 - 停止
  */
 
-router.get('/fetch_box_list', function (req, res) {
-    BoxService.fetch_box_list().then((pm2) => {
+router.get('/box_stop', function (req, res) {
+    BoxService.box_stop().then((pm2) => {
+        res.send(pm2);
+    }).catch((err) => {
+        res.status(400).send(err);
+    })
+});
+
+/**
+ * 数据盒子服务 - 重启
+ */
+
+router.get('/box_restart', function (req, res) {
+    BoxService.box_restart().then((pm2) => {
+        res.send(pm2);
+    }).catch((err) => {
+        res.status(400).send(err);
+    })
+});
+
+/**
+ * 数据盒子服务 - 查询
+ */
+
+router.get('/fetch_box', function (req, res) {
+    BoxService.fetch_box().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
         res.status(400).send(err);

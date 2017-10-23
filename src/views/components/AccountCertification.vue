@@ -328,8 +328,8 @@
         created(){
             //初始化账号认证：获取认证状态
             this.$http.get('/api/fetch_account/' + this.account.account_name).then((res) => {
-                let merchant_certified = res.data.merchant_expiration_date !== '1970-01-01T00:00:00' ? true : false;
-                let datasource_certified = res.data.datasource_expiration_date !== '1970-01-01T00:00:00' ? true : false;
+                let merchant_certified = res.data.merchant_expiration_date !== '1970-01-01T00:00:00';
+                let datasource_certified = res.data.datasource_expiration_date !== '1970-01-01T00:00:00';
                 this.$http.get('/api/is_applying/' + this.account.account_name).then((res) => {
                     if ((res.data.merchant_status === 'PASSED')&&!merchant_certified){
                         res.data.merchant_status = 'INITIAL';
@@ -337,11 +337,7 @@
                     if ((res.data.datasource_status === 'PASSED')&&!datasource_certified){
                         res.data.datasource_status = 'INITIAL';
                     }
-                    if ((res.data.merchant_status === 'INITIAL')||(res.data.datasource_status === 'INITIAL')){
-                        this.is_applying = true;
-                    }else{
-                        this.is_applying = false;
-                    }
+                    this.is_applying = ((res.data.merchant_status === 'INITIAL')||(res.data.datasource_status === 'INITIAL'));
                     if (merchant_certified) {
                         this.merchant_certified = true;
                         if (this.account_type === 'merchant'){

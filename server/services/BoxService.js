@@ -15,6 +15,7 @@ const box_start = function () {
               process.exit(2);
           }
           pm2.start({
+              name: 'gxb-box-pm2',
               script    : path.join(process.cwd(),'server-box-dist/gxb-box.js'),         // Script to be run
               exec_mode : 'fork',        // Allows your app to be clustered
               max_memory_restart : '100M'   // Optional: Restarts your app if it reaches 100Mo
@@ -31,21 +32,78 @@ const box_start = function () {
 };
 
 /**
- * 数据盒子服务 - 列表
+ * 数据盒子服务 - 停止
  */
-const fetch_box_list = function () {
+const box_stop = function () {
     return new Promise(function (resolve, reject) {
         pm2.connect(function(err) {
             if (err) {
                 reject(err);
                 process.exit(2);
             }
-            pm2.list(function(err, processDescriptionList) {
+            pm2.stop('gxb-box-pm2', function(err, apps) {
+                if (err) {
+                    reject(err);
+                }else{
+                    pm2.describe('gxb-box-pm2', function(err, processDescription) {
+                        pm2.disconnect();   // Disconnects from PM2
+                        if (err) {
+                            reject(err);
+                        }else{
+                            resolve(processDescription);
+                        }
+                    });
+                }
+            });
+        });
+    })
+};
+
+/**
+ * 数据盒子服务 - 重启
+ */
+const box_restart = function () {
+    return new Promise(function (resolve, reject) {
+        pm2.connect(function(err) {
+            if (err) {
+                reject(err);
+                process.exit(2);
+            }
+            pm2.restart('gxb-box-pm2', function(err, apps) {
+                if (err) {
+                    reject(err);
+                }else{
+                    pm2.describe('gxb-box-pm2', function(err, processDescription) {
+                        pm2.disconnect();   // Disconnects from PM2
+                        if (err) {
+                            reject(err);
+                        }else{
+                            resolve(processDescription);
+                        }
+                    });
+                }
+            });
+        });
+    })
+};
+
+
+/**
+ * 数据盒子服务 - 查询
+ */
+const fetch_box = function () {
+    return new Promise(function (resolve, reject) {
+        pm2.connect(function(err) {
+            if (err) {
+                reject(err);
+                process.exit(2);
+            }
+            pm2.describe('gxb-box-pm2', function(err, processDescription) {
                 pm2.disconnect();   // Disconnects from PM2
                 if (err) {
                     reject(err);
                 }else{
-                    resolve(processDescriptionList);
+                    resolve(processDescription);
                 }
             });
         });
@@ -87,6 +145,8 @@ const fetch_log = function (path) {
 
 export default {
     box_start,
-    fetch_box_list,
+    box_stop,
+    box_restart,
+    fetch_box,
     fetch_log
 };
