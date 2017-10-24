@@ -9,20 +9,12 @@ let router = express.Router();
  * 读取配置文件
  */
 
-router.get('/fetch_config/:account_type', function (req, res) {
-    if (req.params.account_type === 'merchant'){
-        ConfigStore.init().then((config)=>{
-            res.send(config.merchant);
-        }).catch((err)=>{
-            res.status(400).send(err);
-        });
-    }else{
-        ConfigStore.init().then((config)=>{
-            res.send(config.datasource);
-        }).catch((err)=>{
-            res.status(400).send(err);
-        });
-    }
+router.get('/fetch_config', function (req, res) {
+    ConfigStore.init().then((config)=>{
+        res.send(config);
+    }).catch((err)=>{
+        res.send({});
+    });
 });
 
 /**
@@ -36,7 +28,8 @@ router.post('/write_config',function (req, res) {
         }).catch((err) => {
             res.status(400).send(err);
         })
-    }else{
+    }
+    if (req.body.type === 'datasource'){
         ConfigStore.datasource_set(JSON.stringify(req.body.config), req.body.is_merchant_open).then((resp) => {
             res.send(resp)
         }).catch((err) => {

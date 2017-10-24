@@ -31,7 +31,7 @@
 </style>
 <template>
     <header id="header">
-        <Menu mode="horizontal" :active-name="active" @on-select="route">
+        <Menu mode="horizontal" :active-name="active_nav" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
                 <div class="layout-nav">
@@ -50,15 +50,10 @@
                         <Icon type="ios-keypad"></Icon>
                         数据市场
                     </MenuItem>
-                    <Submenu name="4" v-show="this.init_step == 'finished'">
-                        <template slot="title">
-                            <Icon type="gear"></Icon>
-                            设置
-                        </template>
-                        <MenuItem name="4-1">账号管理</MenuItem>
-                        <MenuItem name="4-2">配置管理</MenuItem>
-                        <MenuItem name="4-3">接入点管理</MenuItem>
-                    </Submenu>
+                    <MenuItem name="4" v-show="this.init_step == 'finished'">
+                        <Icon type="gear-a"></Icon>
+                        设置
+                    </MenuItem>
                 </div>
             </div>
         </Menu>
@@ -68,36 +63,22 @@
     import {mapGetters} from 'vuex';
     export default {
         data () {
-            return {
-                active:'2'
-            };
+            return {};
         },
         methods: {
             route(name) {
                 switch (name){
                     case '1':
                         this.$router.push('/init');
-                        this.active = '1';
                         break;
                     case '2':
                         this.$router.push('/console');
-                        this.active = '2';
                         break;
                     case '3':
                         this.$router.push('/market');
-                        this.active = '3';
                         break;
-                    case '4-1':
+                    case '4':
                         this.$router.push('/setting');
-                        this.active = '4-1';
-                        break;
-                    case '4-2':
-                        this.$router.push('/setting');
-                        this.active = '4-2';
-                        break;
-                    case '4-3':
-                        this.$router.push('/setting');
-                        this.active = '4-3';
                         break;
                 }
             }
@@ -106,6 +87,7 @@
             ...mapGetters({
                 account: 'account',
                 init_step: 'init_step',
+                active_nav: 'active_nav',
             })
         }
     };

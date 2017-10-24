@@ -59,42 +59,44 @@
         <div class="spin-container" v-show="!loaded">
             <Spin fix></Spin>
         </div>
-        <div class="account-certification" v-if="!certified&!is_applying&loaded">
-            <div class="merchant-certification" v-if="account_type == 'merchant'">
-                <Alert type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
-                <Button type="primary" @click="applyMerchant">认证为商户</Button>
+        <div v-if="loaded">
+            <div class="account-certification" v-if="!certified&!is_applying">
+                <div class="merchant-certification" v-if="account_type == 'merchant'">
+                    <Alert type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
+                    <Button type="primary" @click="applyMerchant">认证为商户</Button>
+                </div>
+                <div class="datasource-certification" v-else>
+                    <Alert v-show="!merchant_certified" type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
+                    <Button v-show="!merchant_certified" type="primary" @click="applyMerchant">认证为商户</Button>
+                    <Alert type="success" v-show="merchant_certified">
+                        <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为<span class="info">认证商户</span>
+                    </Alert>
+                    <Alert type="info">如果你希望在公信宝里成为数据源并出售数据，请完成数据源认证</Alert>
+                    <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource">
+                        <span v-show="!merchant_certified">请先完成商户认证</span>
+                        <span v-show="merchant_certified">认证为数据源</span>
+                    </Button>
+                </div>
             </div>
-            <div class="datasource-certification" v-else>
-                <Alert v-show="!merchant_certified" type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
-                <Button v-show="!merchant_certified" type="primary" @click="applyMerchant">认证为商户</Button>
-                <Alert type="success" v-show="merchant_certified">
-                    <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为<span class="info">认证商户</span>
+
+            <div class="account-applying" v-if="!certified&is_applying">
+                <Alert type="warning">
+                    已提交认证申请，请耐心等待审核，<span class="info">审核结果</span>将以邮件形式发送到联系人邮箱
                 </Alert>
-                <Alert type="info">如果你希望在公信宝里成为数据源并出售数据，请完成数据源认证</Alert>
-                <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource">
-                    <span v-show="!merchant_certified">请先完成商户认证</span>
-                    <span v-show="merchant_certified">认证为数据源</span>
-                </Button>
             </div>
-        </div>
 
-        <div class="account-applying" v-if="!certified&is_applying&loaded">
-            <Alert type="warning">
-                已提交认证申请，请耐心等待审核，<span class="info">审核结果</span>将以邮件形式发送到联系人邮箱
-            </Alert>
-        </div>
+            <div class="account-certified" v-if="certified">
+                <Alert type="success">
+                    <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为
+                    <span class="info" v-if="account_type === 'merchant'">认证商户</span>
+                    <span class="info" v-else>认证数据源</span>
+                </Alert>
+            </div>
 
-        <div class="account-certified" v-if="certified&loaded">
-            <Alert type="success">
-                <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为
-                <span class="info" v-if="account_type === 'merchant'">认证商户</span>
-                <span class="info" v-else>认证数据源</span>
-            </Alert>
-        </div>
-
-        <div class="step-btn-box" v-if="loaded">
-            <Button type="primary" @click="lastStep()">上一步</Button>
-            <Button type="primary" @click="nextStep()" :disabled="!certified">下一步</Button>
+            <div class="step-btn-box">
+                <Button type="primary" @click="lastStep()">上一步</Button>
+                <Button type="primary" @click="nextStep()" :disabled="!certified">下一步</Button>
+            </div>
         </div>
 
         <Modal v-model="merchant_modal" width="50%">

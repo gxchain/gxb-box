@@ -48,9 +48,12 @@
                     <InputNumber v-model="formValidate1.default_timeout" placeholder="8000"></InputNumber>
                 </FormItem>
             </Form>
-            <div class="step-btn-box">
+            <div class="step-btn-box" v-if="scene === 'init'">
                 <Button type="primary" @click="lastStep()">上一步</Button>
                 <Button type="primary" @click="handleSubmit1('formValidate1')">下一步</Button>
+            </div>
+            <div class="save-btn-box" v-else>
+                <Button type="primary" @click="handleSubmit1('formValidate1')">保存</Button>
             </div>
         </div>
         <div class="datasource" v-if="account_type === 'datasource'">
@@ -108,9 +111,12 @@
                     </FormItem>
                 </div>
             </Form>
-            <div class="step-btn-box">
+            <div class="step-btn-box" v-if="scene === 'init'">
                 <Button type="primary" @click="lastStep()">上一步</Button>
                 <Button type="primary" @click="handleSubmit2('formValidate2')">下一步</Button>
+            </div>
+            <div class="save-btn-box" v-else>
+                <Button type="primary" @click="handleSubmit2('formValidate2')">保存</Button>
             </div>
         </div>
     </div>
@@ -118,7 +124,7 @@
 <script>
     import {mapGetters, mapActions} from 'vuex';
     export default {
-        props: ['account_type'],
+        props: ['account_type','scene'],
         data () {
             return {
                 show_type: 'password',

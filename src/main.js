@@ -25,15 +25,17 @@ Vue.use(VueTimeago, {
 const store = new Vuex.Store({
     state: {
         account: null,
-        account_type: localStorage.getItem('account_type') ? localStorage.getItem('account_type') : '',
+        account_type: localStorage.getItem('__gxbBox__accountType') ? localStorage.getItem('__gxbBox__accountType') : '',
         init_step: 0,
         certified: false,
+        active_nav: null
     },
     getters: {
         account_type: state => state.account_type,
         account: state => state.account,
         init_step: state => state.init_step,
-        certified: state => state.certified
+        certified: state => state.certified,
+        active_nav: state => state.active_nav
     },
     mutations: {
         setAccountType(state, payload) {
@@ -47,6 +49,9 @@ const store = new Vuex.Store({
         },
         setCertified(state, payload) {
             state.certified = payload.certified;
+        },
+        setActiveNav(state, payload) {
+            state.active_nav = payload.active_nav;
         }
     },
     actions: {
@@ -61,6 +66,9 @@ const store = new Vuex.Store({
         },
         setCertified({commit}, payload) {
             commit('setCertified', payload);
+        },
+        setActiveNav({commit}, payload) {
+            commit('setActiveNav', payload);
         }
     }
 });
@@ -75,6 +83,25 @@ const router = new VueRouter(RouterConfig);
 router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
     Util.title(to.meta.title);
+
+    switch (to.path){
+        case '/init':
+            store.state.active_nav = '1';
+            break;
+        case '/console':
+            store.state.active_nav = '2';
+            break;
+        case '/market':
+            store.state.active_nav = '3';
+            break;
+        case '/setting':
+            store.state.active_nav = '4';
+            break;
+        default:
+            store.state.active_nav = '2';
+            break;
+    }
+
     //初始化未完成，强制进入初始化
     if ((store.state.init_step !== 'finished') && (to.path !== '/init')){
         next('/init');
@@ -94,9 +121,12 @@ router.afterEach(() => {
 //验证初始化是否完成
 if (store.state.account_type) {
     //加载配置文件
-    axios.get('/api/fetch_config/' + store.state.account_type).then((res) => {
-        if (res.data.account_name) {
-            store.state.account = res.data;
+    axios.get('/api/fetch_config').then((res) => {
+        if (res.data['common'] && res.data['common'].port){
+            localStorage.setItem('__gxbBox__commonSettings',JSON.stringify(res.data['common']));
+        }
+        if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
+            store.state.account = res.data[store.state.account_type];
             //是否已完成认证
             axios.get('/api/fetch_account/' + res.data.account_name).then((res) => {
                 let account = res.data;

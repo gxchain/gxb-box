@@ -88,7 +88,7 @@
     import {mapGetters, mapActions} from 'vuex';
     import AccountType from './components/AccountType.vue';
     import AccountCreate from './components/AccountCreate.vue';
-    import AccountSetting from './components/AccountSetting.vue';
+    import AccountConfig from './components/AccountConfig.vue';
     import AccountCertification from './components/AccountCertification.vue';
     import ConsoleManage from './components/ConsoleManage.vue';
 
@@ -101,7 +101,7 @@
                     0: 'AccountType',
                     1: 'AccountCreate',
                     2: 'AccountCertification',
-                    3: 'AccountSetting',
+                    3: 'AccountConfig',
                     4: 'ConsoleManage'
                 }
             };
@@ -128,7 +128,7 @@
         components: {
             AccountType: AccountType,
             AccountCreate: AccountCreate,
-            AccountSetting: AccountSetting,
+            AccountConfig: AccountConfig,
             AccountCertification: AccountCertification,
             ConsoleManage: ConsoleManage,
         },

@@ -294,12 +294,13 @@
             boxRender (data){
                 let pm2 = {};
                 pm2.pid = data.pid;
+                pm2.pm_id = data.pm_id;
                 pm2.name = data.name;
                 pm2.mode = data.pm2_env.exec_mode;
                 pm2.restarts = data.pm2_env.restart_time;
                 pm2.pm_uptime = data.pm2_env.pm_uptime;
                 pm2.cpu = data.monit.cpu;
-                pm2.memory = data.monit.memory;
+                pm2.memory = (data.monit.memory / 1024 / 1024).toFixed(2) + 'MB';
                 pm2.state = data.pm2_env.status;
                 switch (pm2.state){
                     case 'online':

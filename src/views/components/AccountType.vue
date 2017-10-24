@@ -27,12 +27,12 @@
                 setCertified: 'setCertified'
             }),
             changeType (type){
-                localStorage.setItem('account_type',type);
+                localStorage.setItem('__gxbBox__accountType',type);
                 this.setAccountType({account_type: type});
                 this.setCertified({certified: false});
-                this.$http.get('/api/fetch_config/' + type).then((res) => {
-                    if (res.data.account_name){
-                        this.setAccount({account: res.data});
+                this.$http.get('/api/fetch_config').then((res) => {
+                    if (res.data[type].account_name){
+                        this.setAccount({account: res.data[type]});
                     }else{
                         this.setAccount({account: null});
                     }
