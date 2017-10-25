@@ -28,7 +28,7 @@
             </Col>
             <Col span="19">
                 <div class="layout-content-main">
-                    <div v-bind:is="list[current]"></div>
+                    <div v-bind:is="list[current]" v-on:restart="restartBox"></div>
                 </div>
             </Col>
         </Row>
@@ -65,6 +65,10 @@
                         break;
                 }
                 localStorage.setItem('__gxbBox__activeSetting',this.current);
+            },
+            restartBox(){
+                console.log('Go to restart gxb-box!');
+                this.$router.push('/console');
             }
         },
         components: {

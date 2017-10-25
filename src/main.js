@@ -125,10 +125,11 @@ if (store.state.account_type) {
         if (res.data['common'] && res.data['common'].port){
             localStorage.setItem('__gxbBox__commonSettings',JSON.stringify(res.data['common']));
         }
+        console.log(store.state.account_type);
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
             store.state.account = res.data[store.state.account_type];
             //是否已完成认证
-            axios.get('/api/fetch_account/' + res.data.account_name).then((res) => {
+            axios.get('/api/fetch_account/' + res.data[store.state.account_type].account_name).then((res) => {
                 let account = res.data;
                 if (store.state.account_type === 'merchant') {
                     if (account.merchant_expiration_date !== '1970-01-01T00:00:00') {

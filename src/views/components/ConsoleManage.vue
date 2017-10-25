@@ -11,6 +11,7 @@
         border: 1px solid #dddee1;
         position: relative;
         transition: all .2s ease-in-out;
+        margin-bottom: 25px;
     }
 
 

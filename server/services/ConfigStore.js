@@ -17,6 +17,21 @@ export default{
             }
         })
     },
+    common_set(config) {
+        let self = this;
+        return new Promise((resolve, reject)=> {
+            try{
+                let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
+                _config.common = JSON.parse(config);
+                fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
+                self.config = _config;
+                resolve({message:'系统配置保存成功'});
+            }
+            catch (ex){
+                reject(ex);
+            }
+        })
+    },
     merchant_set(config) {
         let self = this;
         return new Promise((resolve, reject)=> {

@@ -6,7 +6,7 @@
 
     .split-line {
         height: 1px;
-        background: #dddee1;
+        background: #eee;
         margin: 20px 0;
     }
 
@@ -22,7 +22,7 @@
         </div>
         <div class="split-line"></div>
         <div class="setting-cont">
-            <AccountConfig :account_type="account_type"></AccountConfig>
+            <AccountConfig :account_type="account_type" v-on:restart="restartBox"></AccountConfig>
         </div>
     </div>
 </template>
@@ -35,6 +35,9 @@
             return {};
         },
         methods: {
+            restartBox(){
+                this.$emit('restart');
+            }
         },
         computed: {
             ...mapGetters({

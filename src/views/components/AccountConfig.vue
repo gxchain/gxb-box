@@ -12,7 +12,7 @@
         height: 1px;
         width: 100%;
         margin-bottom: 20px;
-        border-top: 1px solid #e2e2e2;
+        border-top: 1px solid #eee;
         text-align: center;
     }
     .txt{
@@ -21,10 +21,18 @@
         background: #fff;
         display: inline-block;
     }
+
+    .ivu-input-icon:hover{
+        cursor: pointer;
+        color: #2d8cf0
+    }
 </style>
 <style>
     .account_input .ivu-input{
         text-transform: lowercase;
+    }
+    input[readonly="readonly"] {
+        background-color: #f3f3f3;
     }
 </style>
 <template>
@@ -32,11 +40,11 @@
         <div class="merchant" v-if="account_type === 'merchant'">
             <Form ref="formValidate1" :model="formValidate1" :rules="ruleValidate1" :label-width="100">
                 <FormItem label="账号" prop="account_name">
-                    <Input v-model="formValidate1.account_name" placeholder="sample_user" class="account_input"></Input>
+                    <Input readonly v-model="formValidate1.account_name" placeholder="sample_user" class="account_input"></Input>
                 </FormItem>
                 <FormItem label="私钥" prop="private_key">
-                    <div @click="changeShowType()" style="cursor: pointer"><Icon class="ivu-input-icon" type="eye"></Icon></div>
-                    <Input :type="show_type" v-model="formValidate1.private_key" placeholder="请输入账户私钥"></Input>
+                    <div @click="changeShowType()"><Icon class="ivu-input-icon" type="eye"></Icon></div>
+                    <Input :type="show_type" readonly v-model="formValidate1.private_key" placeholder="请输入账户私钥"></Input>
                 </FormItem>
                 <FormItem label="回调地址" prop="callback_url">
                     <Input v-model="formValidate1.callback_url" placeholder="http://localhost:3000/demo/callback"></Input>
@@ -53,17 +61,17 @@
                 <Button type="primary" @click="handleSubmit1('formValidate1')">下一步</Button>
             </div>
             <div class="save-btn-box" v-else>
-                <Button type="primary" @click="handleSubmit1('formValidate1')">保存</Button>
+                <Button type="primary" @click="handleSubmit1('formValidate1')">保存配置</Button>
             </div>
         </div>
         <div class="datasource" v-if="account_type === 'datasource'">
             <Form ref="formValidate2" :model="formValidate2" :rules="ruleValidate2" :label-width="100">
                 <FormItem label="账号" prop="account_name">
-                    <Input v-model="formValidate2.account_name" placeholder="sample_user" class="account_input"></Input>
+                    <Input readonly v-model="formValidate2.account_name" placeholder="sample_user" class="account_input"></Input>
                 </FormItem>
                 <FormItem label="私钥" prop="private_key">
-                    <div @click="changeShowType()" style="cursor: pointer"><Icon class="ivu-input-icon" type="eye"></Icon></div>
-                    <Input :type="show_type" v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
+                    <div @click="changeShowType()"><Icon class="ivu-input-icon" type="eye"></Icon></div>
+                    <Input :type="show_type" readonly v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
                 </FormItem>
                 <div class="split-line"><span class="txt">数据源（出售数据）</span></div>
                 <FormItem label="接口地址" prop="service">
@@ -116,7 +124,7 @@
                 <Button type="primary" @click="handleSubmit2('formValidate2')">下一步</Button>
             </div>
             <div class="save-btn-box" v-else>
-                <Button type="primary" @click="handleSubmit2('formValidate2')">保存</Button>
+                <Button type="primary" @click="handleSubmit2('formValidate2')">保存配置</Button>
             </div>
         </div>
     </div>
@@ -223,6 +231,7 @@
                             this.setAccount({account: this.formValidate1});
                             this.$Message.success('提交成功');
                             this.$emit('next');
+                            this.$emit('restart');
                         }).catch((err) => {
                             console.error(err);
                             this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
@@ -272,6 +281,7 @@
                                         this.setAccount({account: this.formValidate2});
                                         this.$Message.success('提交成功');
                                         this.$emit('next');
+                                        this.$emit('restart');
                                     }).catch((err) => {
                                         console.error(err);
                                         this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
@@ -293,6 +303,7 @@
                                     this.setAccount({account: datasource_config});
                                     this.$Message.success('提交成功');
                                     this.$emit('next');
+                                    this.$emit('restart');
                                 }).catch((err) => {
                                     console.error(err);
                                     this.$Message.error('提交失败:' + JSON.stringify(err.response.data));

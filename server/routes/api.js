@@ -36,6 +36,13 @@ router.post('/write_config',function (req, res) {
             res.status(400).send(err);
         })
     }
+    if (req.body.type === 'common'){
+        ConfigStore.common_set(JSON.stringify(req.body.config)).then((resp) => {
+            res.send(resp)
+        }).catch((err) => {
+            res.status(400).send(err);
+        })
+    }
 });
 
 /**

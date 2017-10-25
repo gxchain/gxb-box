@@ -5,6 +5,10 @@
     .ivu-btn.no-margin {
         margin: 0;
     }
+    .ivu-input-icon:hover{
+        cursor: pointer;
+        color: #2d8cf0
+    }
     .important {
         color: #ed3f14
     }
@@ -17,50 +21,50 @@
 <template>
     <div class="account-create">
         <Tabs :animated="false" v-if="!created">
-                <TabPane label="创建账户" icon="person-add">
-                    <div class="action-create">
-                        <Alert type="info">
-                            请输入你期望的账户名，长度不少于3位，包含至少一个横杠、数字或者不含元音字母
-                        </Alert>
-                        <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
-                            <FormItem label="账号" prop="account_name">
-                                <Row>
-                                    <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user" class="account_input"></Input></Col>
-                                    <Col span="4" offset="2">
-                                    <Button type="ghost" @click="createAccount('formValidate')" class="no-margin" :loading="loading">
-                                        <span v-show="!loading">创建账号</span>
-                                        <span v-show="loading">创建中...</span>
-                                    </Button>
-                                    </Col>
-                                </Row>
-                            </FormItem>
-                        </Form>
-                    </div>
-                </TabPane>
-                <TabPane label="导入私钥" icon="key">
-                    <div class="action-import">
-                        <Alert type="info">
-                            请复制备份的私钥，并点击导入
-                        </Alert>
-                        <Form ref="formValidate2" :model="formValidate2" :rules="ruleValidate2" :label-width="80">
-                            <FormItem label="私钥" prop="private_key">
-                                <Row>
-                                    <Col span="18">
-                                    <div @click="changeShowType()" style="cursor: pointer"><Icon class="ivu-input-icon" type="eye"></Icon></div>
-                                    <Input :type="show_type" v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
-                                    </Col>
-                                    <Col span="4" offset="2">
-                                    <Button type="ghost" @click="importAccount('formValidate2')" class="no-margin" :loading="loading">
-                                        <span v-show="!loading">导入</span>
-                                        <span v-show="loading">导入...</span>
-                                    </Button>
-                                    </Col>
-                                </Row>
-                            </FormItem>
-                        </Form>
-                    </div>
-                </TabPane>
-            </Tabs>
+            <TabPane label="创建账户" icon="person-add">
+                <div class="action-create">
+                    <Alert type="info">
+                        请输入你期望的账户名，长度不少于3位，包含至少一个横杠、数字或者不含元音字母
+                    </Alert>
+                    <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
+                        <FormItem label="账号" prop="account_name">
+                            <Row>
+                                <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user" class="account_input"></Input></Col>
+                                <Col span="4" offset="2">
+                                <Button type="ghost" @click="createAccount('formValidate')" class="no-margin" :loading="loading">
+                                    <span v-show="!loading">创建账号</span>
+                                    <span v-show="loading">创建中...</span>
+                                </Button>
+                                </Col>
+                            </Row>
+                        </FormItem>
+                    </Form>
+                </div>
+            </TabPane>
+            <TabPane label="导入私钥" icon="key">
+                <div class="action-import">
+                    <Alert type="info">
+                        请复制备份的私钥，并点击导入
+                    </Alert>
+                    <Form ref="formValidate2" :model="formValidate2" :rules="ruleValidate2" :label-width="80">
+                        <FormItem label="私钥" prop="private_key">
+                            <Row>
+                                <Col span="18">
+                                <div @click="changeShowType()"><Icon class="ivu-input-icon" type="eye"></Icon></div>
+                                <Input :type="show_type" v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
+                                </Col>
+                                <Col span="4" offset="2">
+                                <Button type="ghost" @click="importAccount('formValidate2')" class="no-margin" :loading="loading">
+                                    <span v-show="!loading">导入</span>
+                                    <span v-show="loading">导入...</span>
+                                </Button>
+                                </Col>
+                            </Row>
+                        </FormItem>
+                    </Form>
+                </div>
+            </TabPane>
+        </Tabs>
 
         <div class="action-bak" v-if="created&&(!imported)">
             <Alert type="warning">

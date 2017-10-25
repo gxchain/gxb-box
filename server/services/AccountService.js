@@ -77,7 +77,7 @@ const create_account = function (account_type, new_account_name, protocol) {
 };
 
 /**
- * 创建账号
+ * 导入账号
  */
 const import_account = function (account_type, private_key) {
     let public_key = PrivateKey.fromWif(private_key).toPublicKey().toPublicKeyString();
@@ -117,6 +117,9 @@ const import_account = function (account_type, private_key) {
     });
 };
 
+/**
+ * 获取序列
+ */
 const sortJSON = function (json) {
     let keys = Object.keys(json);
     keys.sort();
@@ -127,6 +130,9 @@ const sortJSON = function (json) {
     return result;
 };
 
+/**
+ * 获取签名
+ */
 const getSign = function (body = '',type) {
     return new Promise(function (resolve, reject) {
         try {
@@ -145,6 +151,9 @@ const getSign = function (body = '',type) {
     })
 };
 
+/**
+ * 获取商户信息
+ */
 const fetch_merchant = function (account_name, account_type, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
@@ -180,6 +189,9 @@ const fetch_merchant = function (account_name, account_type, protocol) {
     });
 };
 
+/**
+ * 申请认证商户
+ */
 const apply_merchant = function (body, account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
@@ -211,6 +223,9 @@ const apply_merchant = function (body, account_name, protocol) {
     });
 };
 
+/**
+ * 申请认证数据源
+ */
 const apply_datasource = function (body, account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
@@ -242,6 +257,9 @@ const apply_datasource = function (body, account_name, protocol) {
     });
 };
 
+/**
+ * 获取申请状态
+ */
 const is_applying = function (account_name, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
