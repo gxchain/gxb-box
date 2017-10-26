@@ -64,7 +64,7 @@ const create_account = function (account_type, new_account_name, protocol) {
                     reject(err);
                 });
             }else{
-                ConfigStroe.datasource_set(JSON.stringify(config), false).then(()=>{
+                ConfigStroe.datasource_set('', JSON.stringify(config), false).then(()=>{
                     resolve(JSON.stringify(config));
                 }).catch((err) => {
                     reject(err);
@@ -102,7 +102,7 @@ const import_account = function (account_type, private_key) {
                         reject(err);
                     });
                 }else{
-                    ConfigStroe.datasource_set(JSON.stringify(config), false).then(()=>{
+                    ConfigStroe.datasource_set('', JSON.stringify(config), false).then(()=>{
                         resolve(JSON.stringify(config));
                     }).catch((err) => {
                         reject(err);
@@ -226,7 +226,7 @@ const apply_merchant = function (body, account_name, protocol) {
 /**
  * 申请认证数据源
  */
-const apply_datasource = function (body, account_name, protocol) {
+const apply_datasource = function (body, account_name, account_type, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
@@ -235,7 +235,7 @@ const apply_datasource = function (body, account_name, protocol) {
         fetch_account(account_name).then((account)=>{
             body.account_id = account.get('id');
             body = sortJSON(body);
-            getSign(JSON.stringify(body), 'datasource').then(function (signature) {
+            getSign(JSON.stringify(body), account_type).then(function (signature) {
                 body.signature = signature;
                 fetch(faucetAddress + "/dataSource/create", {
                     method: "post",

@@ -22,6 +22,13 @@ router.get('/fetch_config', function (req, res) {
  */
 
 router.post('/write_config',function (req, res) {
+    if (req.body.type === 'common'){
+        ConfigStore.common_set(JSON.stringify(req.body.config)).then((resp) => {
+            res.send(resp)
+        }).catch((err) => {
+            res.status(400).send(err);
+        })
+    }
     if (req.body.type === 'merchant'){
         ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((resp) => {
             res.send(resp)
@@ -30,14 +37,7 @@ router.post('/write_config',function (req, res) {
         })
     }
     if (req.body.type === 'datasource'){
-        ConfigStore.datasource_set(JSON.stringify(req.body.config), req.body.is_merchant_open).then((resp) => {
-            res.send(resp)
-        }).catch((err) => {
-            res.status(400).send(err);
-        })
-    }
-    if (req.body.type === 'common'){
-        ConfigStore.common_set(JSON.stringify(req.body.config)).then((resp) => {
+        ConfigStore.datasource_set(JSON.stringify(req.body.merchant_config),JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((resp) => {
             res.send(resp)
         }).catch((err) => {
             res.status(400).send(err);
@@ -98,7 +98,7 @@ router.post('/apply_merchant', function (req, res) {
  */
 
 router.post('/apply_datasource', function (req, res) {
-    AccountService.apply_datasource(req.body.apply_info, req.body.account_name, req.protocol).then((result) => {
+    AccountService.apply_datasource(req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);

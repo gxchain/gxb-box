@@ -53,6 +53,23 @@
         margin-left: 5px;
     }
 
+    .view-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        text-align: center;
+        color: #80848f;
+        position: absolute;
+        right: 0;
+        top: 8px;
+        z-index: 3;
+        cursor: pointer;
+    }
+
+    .view-btn:hover {
+        color:#2d8cf0
+    }
+
 </style>
 <template>
     <div class="account-authentication">
@@ -87,13 +104,18 @@
 
             <div class="account-certified" v-if="certified">
                 <Alert type="success">
-                    <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为
+                    <span class="info">{{merchant_name}}({{merchant_alias}})</span> 已通过认证成为
                     <span class="info" v-if="account_type === 'merchant'">认证商户</span>
                     <span class="info" v-else>认证数据源</span>
+                    <div @click="applyDatasource" v-if="((account_type === 'merchant') && (scene !== 'init'))">
+                        <Tooltip content="升级为数据源" placement="top" class="view-btn">
+                            <Icon  type="person-add"></Icon>
+                        </Tooltip>
+                    </div>
                 </Alert>
             </div>
 
-            <div class="step-btn-box">
+            <div class="step-btn-box" v-if="scene === 'init'">
                 <Button type="primary" @click="lastStep()">上一步</Button>
                 <Button type="primary" @click="nextStep()" :disabled="!certified">下一步</Button>
             </div>
@@ -201,7 +223,7 @@
     import util from '../../libs/util';
 
     export default {
-        props: ['account_type'],
+        props: ['scene'],
         data() {
             const isValidCertNo = (rule, value, callback) => {
                 if (util.isValidBusCode(value)) {
@@ -349,18 +371,54 @@
                     if (datasource_certified) {
                         this.setCertified({certified: true});
                     }
+
                     if (merchant_certified || datasource_certified){
-                        this.$http({
-                            method: 'get',
-                            url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
-                        }).then((res) => {
-                            this.formDatasource.merchant_name = res.data.name;
-                            this.merchant_name = res.data.name;
-                            this.merchant_alias = res.data.alias;
-                            this.loaded = true;
-                        }).catch((err)=>{
-                            console.error(err);
-                        });
+                        //认证商户升级为数据源通过
+                        if ((this.account_type === 'merchant') && datasource_certified){
+                            //变更本地账户类型别写入配置文件
+                            let datasource_config = {
+                                account_name: this.account.account_name,
+                                private_key: this.account.private_key
+                            };
+                            this.$http({
+                                method: 'post',
+                                url: '/api/write_config',
+                                data: {
+                                    type: 'datasource',
+                                    merchant_config: '',
+                                    datasource_config: datasource_config,
+                                    is_merchant_open: true,
+                                }
+                            }).then(() => {
+                                localStorage.setItem('__gxbBox__accountType', 'datasource');
+                                this.setAccountType({account_type: 'datasource'});
+                                this.$http({
+                                    method: 'get',
+                                    url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
+                                }).then((res) => {
+                                    this.formDatasource.merchant_name = res.data.name;
+                                    this.merchant_name = res.data.name;
+                                    this.merchant_alias = res.data.alias;
+                                    this.loaded = true;
+                                }).catch((err)=>{
+                                    console.error(err);
+                                });
+                            }).catch((err) => {
+                                console.error(err);
+                            });
+                        }else{
+                            this.$http({
+                                method: 'get',
+                                url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
+                            }).then((res) => {
+                                this.formDatasource.merchant_name = res.data.name;
+                                this.merchant_name = res.data.name;
+                                this.merchant_alias = res.data.alias;
+                                this.loaded = true;
+                            }).catch((err)=>{
+                                console.error(err);
+                            });
+                        }
                     }else{
                         this.loaded = true;
                     }
@@ -373,6 +431,8 @@
         },
         methods: {
             ...mapActions({
+                setAccount: 'setAccount',
+                setAccountType: 'setAccountType',
                 setCertified: 'setCertified'
             }),
             applyMerchant() {
@@ -449,6 +509,7 @@
                             data: {
                                 'apply_info': this.formDatasource,
                                 'account_name': this.account.account_name,
+                                'account_type': this.account_type,
                             }
                         }).then(() => {
                             this.loading = false;
@@ -477,6 +538,7 @@
         computed: {
             ...mapGetters({
                 account: 'account',
+                account_type: 'account_type',
                 certified: 'certified',
             }),
         }

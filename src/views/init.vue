@@ -75,7 +75,6 @@
                         <div v-bind:is="list[current]"
                              v-on:last="lastStep"
                              v-on:next="nextStep"
-                             :account_type="account_type"
                              scene="init"
                         ></div>
                     </div>

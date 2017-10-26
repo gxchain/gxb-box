@@ -122,12 +122,11 @@ router.afterEach(() => {
 if (store.state.account_type) {
     //加载配置文件
     axios.get('/api/fetch_config').then((res) => {
-        if (res.data['common'] && res.data['common'].port){
-            localStorage.setItem('__gxbBox__commonSettings',JSON.stringify(res.data['common']));
-        }
-        console.log(store.state.account_type);
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
-            store.state.account = res.data[store.state.account_type];
+            store.state.account = {
+                account_name: res.data[store.state.account_type].account_name,
+                private_key: res.data[store.state.account_type].private_key
+            };
             //是否已完成认证
             axios.get('/api/fetch_account/' + res.data[store.state.account_type].account_name).then((res) => {
                 let account = res.data;
@@ -141,35 +140,29 @@ if (store.state.account_type) {
                     }
                 }
                 if (store.state.certified) {
-                    //是否已完善配置
-                    if ((store.state.account.callback_url) || (store.state.account.service && store.state.account.subscribed_data_product)) {
-                        axios.get('/api/fetch_box').then((res) => {
-                            if (res.data && res.data.length &&  res.data.length>0){
-                                //状态:pm2已启动过 - init-finished
-                                store.state.init_step = 'finished';
-                            }else{
+                    axios.get('/api/fetch_box').then((res) => {
+                        if (res.data && res.data.length &&  res.data.length>0){
+                            //状态:pm2已启动过 - init-finished
+                            store.state.init_step = 'finished';
+                        }else{
+                            //是否已完善配置
+                            if ((store.state.account.callback_url) || (store.state.account.service && store.state.account.subscribed_data_product)) {
                                 //状态:pm2未启动过 - init-step5
                                 store.state.init_step = 4;
+                            } else {
+                                //状态:账号已认证，配置未完善 - init-step4
+                                store.state.init_step = 3;
                             }
-                            new Vue({
-                                el: '#app',
-                                router: router,
-                                store: store,
-                                render: h => h(App)
-                            });
-                        }).catch((err)=>{
-                            console.error(err);
-                        });
-                    } else {
-                        store.state.init_step = 3;
-                        //状态:账号已认证，配置未完善 - init-step4
+                        }
                         new Vue({
                             el: '#app',
                             router: router,
                             store: store,
                             render: h => h(App)
                         });
-                    }
+                    }).catch((err)=>{
+                        console.error(err);
+                    });
                 } else {
                     store.state.init_step = 2;
                     //状态:账号未完成认证 - init-step3

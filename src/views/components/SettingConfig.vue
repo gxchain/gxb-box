@@ -22,7 +22,7 @@
         </div>
         <div class="split-line"></div>
         <div class="setting-cont">
-            <AccountConfig :account_type="account_type" v-on:restart="restartBox"></AccountConfig>
+            <AccountConfig v-on:restart="restartBox"></AccountConfig>
         </div>
     </div>
 </template>

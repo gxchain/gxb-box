@@ -50,15 +50,19 @@ export default{
             }
         })
     },
-    datasource_set(config, is_merchant_open) {
+    datasource_set(merchant_config, datasource_config, is_merchant_open) {
         let self = this;
         return new Promise((resolve, reject)=> {
             try{
                 let _config = JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'./config/config.json'),'utf-8'));
-                _config.datasource = JSON.parse(config);
                 if (!is_merchant_open){
                     delete(_config.merchant);
+                }else{
+                    if (merchant_config !== ''){
+                        _config.merchant = JSON.parse(merchant_config);
+                    }
                 }
+                _config.datasource = JSON.parse(datasource_config);
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 self.config = _config;
                 resolve({message:'数据源账号配置保存成功'});

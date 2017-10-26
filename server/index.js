@@ -127,7 +127,7 @@ const filterAndSortURLs = (latencies, witnesses) => {
 let witnesses = app.get('env') == 'development' ? config.dev.witnesses : config.build.witnesses;
 
 if (witnesses.length == 0) {
-  console.error('未配置启动节点,请先在config.json文件中配置common.witnesses');
+  console.error('未配置启动节点');
   process.exit(1);
 }
 /**

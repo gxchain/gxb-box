@@ -14,7 +14,6 @@
         margin-bottom: 25px;
     }
 
-
     .log-header {
         text-align: left;
         padding-left: 10px;

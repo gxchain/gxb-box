@@ -16,9 +16,7 @@
 
     export default {
         data () {
-            return {
-
-            };
+            return {};
         },
         methods: {
             ...mapActions({
@@ -32,7 +30,11 @@
                 this.setCertified({certified: false});
                 this.$http.get('/api/fetch_config').then((res) => {
                     if (res.data[type].account_name){
-                        this.setAccount({account: res.data[type]});
+                        let account_info = {
+                            account_name: res.data[type].account_name,
+                            private_key: res.data[type].private_key
+                        };
+                        this.setAccount({account: account_info});
                     }else{
                         this.setAccount({account: null});
                     }

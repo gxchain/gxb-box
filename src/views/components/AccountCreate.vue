@@ -90,7 +90,6 @@
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
-        props: ['account_type'],
         data () {
             const validateAccount = (rule, value, callback) => {
                 value = value.toLowerCase();
@@ -242,7 +241,8 @@
         },
         computed: {
             ...mapGetters({
-                account: 'account'
+                account: 'account',
+                account_type: 'account_type',
             }),
         }
     };
