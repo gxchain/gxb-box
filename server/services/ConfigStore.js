@@ -58,7 +58,7 @@ export default{
                 if (!is_merchant_open){
                     delete(_config.merchant);
                 }else{
-                    if (merchant_config !== ''){
+                    if (merchant_config !== null){
                         _config.merchant = JSON.parse(merchant_config);
                     }
                 }

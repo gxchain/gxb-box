@@ -29,7 +29,7 @@
                 this.setAccountType({account_type: type});
                 this.setCertified({certified: false});
                 this.$http.get('/api/fetch_config').then((res) => {
-                    if (res.data[type].account_name){
+                    if (res.data[type] && res.data[type].account_name && res.data[type].private_key){
                         let account_info = {
                             account_name: res.data[type].account_name,
                             private_key: res.data[type].private_key

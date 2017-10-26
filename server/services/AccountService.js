@@ -64,7 +64,7 @@ const create_account = function (account_type, new_account_name, protocol) {
                     reject(err);
                 });
             }else{
-                ConfigStroe.datasource_set('', JSON.stringify(config), false).then(()=>{
+                ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
                     resolve(JSON.stringify(config));
                 }).catch((err) => {
                     reject(err);
@@ -102,7 +102,7 @@ const import_account = function (account_type, private_key) {
                         reject(err);
                     });
                 }else{
-                    ConfigStroe.datasource_set('', JSON.stringify(config), false).then(()=>{
+                    ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
                         resolve(JSON.stringify(config));
                     }).catch((err) => {
                         reject(err);

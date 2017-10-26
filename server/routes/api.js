@@ -37,7 +37,8 @@ router.post('/write_config',function (req, res) {
         })
     }
     if (req.body.type === 'datasource'){
-        ConfigStore.datasource_set(JSON.stringify(req.body.merchant_config),JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((resp) => {
+        let merchant_config = req.body.merchant_config !== null ? JSON.stringify(req.body.merchant_config) : null;
+        ConfigStore.datasource_set(merchant_config,JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((resp) => {
             res.send(resp)
         }).catch((err) => {
             res.status(400).send(err);

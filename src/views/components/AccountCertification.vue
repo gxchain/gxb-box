@@ -385,7 +385,7 @@
                                 url: '/api/write_config',
                                 data: {
                                     type: 'datasource',
-                                    merchant_config: '',
+                                    merchant_config: null,
                                     datasource_config: datasource_config,
                                     is_merchant_open: true,
                                 }
