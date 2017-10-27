@@ -1,10 +1,11 @@
 <style scoped>
-    .layout-content-main{
-        padding: 0 30px;
-    }
     .setting {
         width: 100%;
         padding: 30px;
+    }
+
+    .layout-content-main{
+        padding: 0 30px;
     }
 </style>
 <template>

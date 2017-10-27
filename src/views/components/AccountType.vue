@@ -1,14 +1,18 @@
 <style scoped>
-    .ivu-btn {
-        margin: 0 5px 20px 0;
+    .merchant-type,.datasource-type {
+        margin-bottom: 15px;
     }
 </style>
 <template>
     <div class="account-type">
-        <Alert type="info">商户指数据买方，在公信链上是购买数据的角色。</Alert>
-        <Button type="primary" @click="changeType('merchant')">申请成为商户</Button>
-        <Alert type="info">数据源指数据卖方，在公信链上是出售数据的角色。</Alert>
-        <Button type="primary" @click="changeType('datasource')">申请成为数据源</Button>
+        <div class="merchant-type">
+            <Alert type="info">商户指数据买方，在公信链上是购买数据的角色。</Alert>
+            <Button type="primary" @click="changeType('merchant')">申请成为商户</Button>
+        </div>
+        <div class="datasource-type">
+            <Alert type="info">数据源指数据卖方，在公信链上是出售数据的角色。</Alert>
+            <Button type="primary" @click="changeType('datasource')">申请成为数据源</Button>
+        </div>
     </div>
 </template>
 <script>

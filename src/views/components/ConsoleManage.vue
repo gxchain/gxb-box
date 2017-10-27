@@ -1,20 +1,38 @@
 <style scoped>
-    .ivu-btn {
-        margin: 15px 0;
+    .console-manage {
+        width: 100%;
+        height: 100%;
+    }
+
+    .spin-container{
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .loaded-container{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .server-status{
-        margin-bottom: 10px;
+        height: 90px;
+        margin-bottom: 15px;
     }
 
     .server-logs{
+        flex: 1;
         border: 1px solid #dddee1;
         position: relative;
         transition: all .2s ease-in-out;
-        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
     }
 
-    .log-header {
+    .server-logs .log-header {
         text-align: left;
         padding-left: 10px;
         font-weight: 500;
@@ -25,30 +43,31 @@
         border-bottom: 1px solid #e9eaec;
     }
 
-    .log-box {
+    .server-logs .log-box {
+        flex: 1;
+        height:0;
         padding-top: 5px;
         text-align: left;
-        height: 400px;
         overflow-y: auto;
         background: #333;
         color: #fff;
     }
 
-    .log-box .out{
+    .server-logs .log-box .out{
         color: #19be6b
     }
 
-    .log-box .err{
+    .server-logs .log-box .err{
         color: #ed3f14
     }
 
-    .log-box ul:after {
+    .server-logs .log-box ul:after {
         content: "\2590";
         -webkit-animation: blinker 1s linear infinite;
         -moz-animation: blinker 1s linear infinite;
         animation: blinker 1s linear infinite;
     }
-    .log-box ul li {
+    .server-logs .log-box ul li {
         font-size: 12px;
         background-color: transparent;
         color: #FFF;
@@ -58,11 +77,8 @@
         font-family: monospace;
     }
 
-    .spin-container{
-        display: inline-block;
-        width: 200px;
-        height: 100px;
-        position: relative;
+    .step-btn-box {
+        margin: 25px 0;
     }
 
     @-moz-keyframes blinker {
@@ -115,16 +131,13 @@
         <div class="spin-container" v-show="!loaded">
             <Spin fix></Spin>
         </div>
-        <div v-show="loaded">
+        <div class="loaded-container" v-show="loaded">
             <Alert type="info" v-if="(pm2_list.length === 0) && (scene === 'init')">
                 启动数据盒子服务前，请检查服务器环境是否已全局安装
                 <a href="http://pm2.keymetrics.io/docs/usage/quick-start/" target="_blank">PM2</a>
             </Alert>
-            <Alert type="success" v-if="(pm2_list.length !== 0) && (scene === 'init')">
-                恭喜您已完成所有初始化配置，请检查日志确认数据盒子服务是否正常启动
-            </Alert>
-            <div class="server-status">
-                <Table stripe :columns="pm2_columns" :data="pm2_list" v-show="pm2_list.length > 0"></Table>
+            <div class="server-status" v-show="pm2_list.length > 0">
+                <Table stripe :columns="pm2_columns" :data="pm2_list"></Table>
             </div>
             <div class="server-logs" v-show="pm2_list.length > 0">
                 <header class="log-header">日志</header>
@@ -143,7 +156,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="service-btn-box" v-if="(pm2_list.length === 0) && (scene === 'init')">
+            <div class="step-btn-box" v-if="(pm2_list.length === 0) && (scene === 'init')">
                 <Button type="primary"  @click="boxStart()" :loading="loading[0]">
                     <span v-show="!loading[0]">启动服务</span>
                     <span v-show="loading[0]">启动中...</span>

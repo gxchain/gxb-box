@@ -41,3 +41,4 @@ server-dist
 server-box-dist
 .DS_Store
 */.DS_Store
+config/config.json

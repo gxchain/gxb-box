@@ -1,10 +1,13 @@
 <style scoped>
     .init {
         width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .init h1 {
-        margin-top: 50px;
         height: 150px;
     }
 
@@ -29,10 +32,8 @@
 
     .init h2 {
         color: #666;
-        margin-top: 25px;
-        margin-bottom: 50px;
+        margin: 25px 0 50px 0;
         text-align: center;
-
     }
 
     .init .step-box{
@@ -42,8 +43,7 @@
 
     .init .operation-box{
         width: 65%;
-        margin: 0 auto;
-        margin-top: 50px;
+        margin: 50px auto 0;
     }
 
     .init .operation-box{
@@ -57,30 +57,26 @@
 </style>
 <template>
     <div class="init">
-        <Row type="flex" justify="center" align="middle">
-            <Col span="24">
-                <div class="layout-content-main">
-                    <h1><img src="/static/img/init.svg"></h1>
-                    <h2>欢迎使用GXB-BOX!</h2>
-                    <div class="step-box">
-                        <Steps :current="current">
-                            <Step title="步骤1" content="选择商户/数据源"></Step>
-                            <Step title="步骤2" content="创建/导入账号"></Step>
-                            <Step title="步骤3" content="账号认证"></Step>
-                            <Step title="步骤4" content="账号配置"></Step>
-                            <Step title="步骤5" content="启动数据盒子"></Step>
-                        </Steps>
-                    </div>
-                    <div class="operation-box">
-                        <div v-bind:is="list[current]"
-                             v-on:last="lastStep"
-                             v-on:next="nextStep"
-                             scene="init"
-                        ></div>
-                    </div>
-                </div>
-            </Col>
-        </Row>
+        <div class="layout-content-main">
+            <h1><img src="/static/img/init.svg"></h1>
+            <h2>欢迎使用GXB-BOX!</h2>
+            <div class="step-box">
+                <Steps :current="current">
+                    <Step title="步骤1" content="选择商户/数据源"></Step>
+                    <Step title="步骤2" content="创建/导入账号"></Step>
+                    <Step title="步骤3" content="账号认证"></Step>
+                    <Step title="步骤4" content="账号配置"></Step>
+                    <Step title="步骤5" content="启动数据盒子"></Step>
+                </Steps>
+            </div>
+            <div class="operation-box">
+                <div v-bind:is="list[current]"
+                     v-on:last="lastStep"
+                     v-on:next="nextStep"
+                     scene="init"
+                ></div>
+            </div>
+        </div>
     </div>
 </template>
 <script>

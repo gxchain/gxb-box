@@ -1,6 +1,7 @@
 import express from 'express';
 import BoxService from '../services/BoxService';
 import AccountService from '../services/AccountService';
+import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
 let router = express.Router();
 
@@ -126,10 +127,46 @@ router.get('/fetch_merchant/:account_name/:account_type', function (req, res) {
     AccountService.fetch_merchant(req.params.account_name, req.params.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
-        console.error(err);
         res.status(400).send(err);
     });
 });
+
+/**
+ * 获取数据市场二级栏目
+ */
+
+router.get('/fetch_data_market_categories/:data_market_type', function (req, res) {
+    DataService.fetch_data_market_categories(req.params.data_market_type).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取自由市场产品列表
+ */
+
+router.get('/fetch_free_data_products/:category_id/:page/:pageSize', function (req, res) {
+    DataService.fetch_free_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取自由市场产品详情
+ */
+
+router.get('/fetch_free_data_product_details/:product_id', function (req, res) {
+    DataService.fetch_free_data_product_details(req.params.product_id).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
 
 /**
  * 数据盒子服务 - 启动

@@ -3,6 +3,7 @@
         padding: 10px;
     }
     .console {
+        height: 100%;
         width: 100%;
         text-align: center;
         padding: 30px;

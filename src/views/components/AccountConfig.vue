@@ -1,14 +1,10 @@
 <style scoped>
-    .ivu-btn {
-        margin: 0 5px 20px 0;
-    }
-
-    .ivu-btn.no-margin {
-        margin: 0;
-    }
-
     .ivu-input-number {
         width: 100%;
+    }
+
+    .step-btn-box{
+        margin: 25px 0;
     }
 
     .spin-container{
@@ -16,6 +12,11 @@
         width: 200px;
         height: 100px;
         position: relative;
+    }
+
+    .loaded-container{
+        width: 100%;
+        height: 100%;
     }
 
     .split-line {
@@ -51,7 +52,7 @@
         <div class="spin-container" v-show="!loaded">
             <Spin fix></Spin>
         </div>
-        <div v-if="loaded">
+        <div class="loaded-container" v-if="loaded">
             <div class="merchant" v-if="account_type === 'merchant'">
             <Form ref="formValidate1" :model="formValidate1" :rules="ruleValidate1" :label-width="100">
                 <FormItem label="账号" prop="account_name">
@@ -101,7 +102,7 @@
                             <span>{{item}}</span>
                             </Col>
                             <Col span="4" offset="1">
-                            <Button type="ghost" @click="handleRemove(index)" class="no-margin">删除</Button>
+                            <Button type="ghost" @click="handleRemove(index)">删除</Button>
                             </Col>
                         </Row>
                     </FormItem>
@@ -111,7 +112,7 @@
                             <Input v-model="product_id" placeholder="请输入产品ID"></Input>
                             </Col>
                             <Col span="10" offset="2">
-                            <Button type="dashed" long @click="handleAdd" icon="plus-round" class="no-margin">新增</Button>
+                            <Button type="dashed" long @click="handleAdd" icon="plus-round">新增</Button>
                             </Col>
                         </Row>
                     </FormItem>

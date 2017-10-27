@@ -1,16 +1,13 @@
 <style scoped>
-    .ivu-btn {
-        margin: 0 5px 20px 0;
-    }
-    .ivu-btn.no-margin {
-        margin: 0;
-    }
-    .ivu-input-icon:hover{
+    .ivu-input-icon:hover {
         cursor: pointer;
         color: #2d8cf0
     }
     .important {
         color: #ed3f14
+    }
+    .step-btn-box {
+        margin: 25px 0;
     }
 </style>
 <style>
@@ -31,7 +28,7 @@
                             <Row>
                                 <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user" class="account_input"></Input></Col>
                                 <Col span="4" offset="2">
-                                <Button type="ghost" @click="createAccount('formValidate')" class="no-margin" :loading="loading">
+                                <Button type="ghost" @click="createAccount('formValidate')" :loading="loading">
                                     <span v-show="!loading">创建账号</span>
                                     <span v-show="loading">创建中...</span>
                                 </Button>
@@ -54,7 +51,7 @@
                                 <Input :type="show_type" v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
                                 </Col>
                                 <Col span="4" offset="2">
-                                <Button type="ghost" @click="importAccount('formValidate2')" class="no-margin" :loading="loading">
+                                <Button type="ghost" @click="importAccount('formValidate2')" :loading="loading">
                                     <span v-show="!loading">导入</span>
                                     <span v-show="loading">导入...</span>
                                 </Button>

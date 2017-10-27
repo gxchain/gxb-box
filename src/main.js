@@ -25,7 +25,7 @@ Vue.use(VueTimeago, {
 const store = new Vuex.Store({
     state: {
         account: null,
-        account_type: localStorage.getItem('__gxbBox__accountType') ? localStorage.getItem('__gxbBox__accountType') : '',
+        account_type: localStorage.getItem('__gxbBox__accountType') ? localStorage.getItem('__gxbBox__accountType') : null,
         init_step: 0,
         certified: false,
         active_nav: null
@@ -189,8 +189,7 @@ if (store.state.account_type) {
     }).catch((err) => {
         console.error(err);
     });
-}
-else {
+} else {
     store.state.init_step = 0;
     //状态:首次访问 - init-step1
     new Vue({

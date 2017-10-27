@@ -1,10 +1,6 @@
 <style scoped>
-    .ivu-btn {
-        margin: 0 5px 20px 0;
-    }
-
-    .ivu-btn.no-margin {
-        margin: 0;
+    .step-btn-box{
+        margin: 25px 0;
     }
 
     .info {
@@ -13,6 +9,13 @@
 
     .center {
         text-align: center;
+    }
+
+    .txt {
+        position: relative;
+        top: -8px;
+        background: #fff;
+        display: inline-block;
     }
 
     .spin-container{
@@ -30,11 +33,8 @@
         text-align: center;
     }
 
-    .txt {
-        position: relative;
-        top: -8px;
-        background: #fff;
-        display: inline-block;
+    .apply-merchant{
+        margin-bottom: 15px;
     }
 
     .ivu-upload input[type=file] {
@@ -83,16 +83,20 @@
                     <Button type="primary" @click="applyMerchant">认证为商户</Button>
                 </div>
                 <div class="datasource-certification" v-else>
-                    <Alert v-show="!merchant_certified" type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
-                    <Button v-show="!merchant_certified" type="primary" @click="applyMerchant">认证为商户</Button>
-                    <Alert type="success" v-show="merchant_certified">
-                        <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为<span class="info">认证商户</span>
-                    </Alert>
-                    <Alert type="info">如果你希望在公信宝里成为数据源并出售数据，请完成数据源认证</Alert>
-                    <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource">
-                        <span v-show="!merchant_certified">请先完成商户认证</span>
-                        <span v-show="merchant_certified">认证为数据源</span>
-                    </Button>
+                    <div class="apply-merchant">
+                        <Alert v-show="!merchant_certified" type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
+                        <Button v-show="!merchant_certified" type="primary" @click="applyMerchant">认证为商户</Button>
+                        <Alert type="success" v-show="merchant_certified">
+                            <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为<span class="info">认证商户</span>
+                        </Alert>
+                    </div>
+                    <div class="apply-datasource">
+                        <Alert type="info">如果你希望在公信宝里成为数据源并出售数据，请完成数据源认证</Alert>
+                        <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource">
+                            <span v-show="!merchant_certified">请先完成商户认证</span>
+                            <span v-show="merchant_certified">认证为数据源</span>
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -165,7 +169,7 @@
                         <div class="ivu-upload">
                             <div class="ivu-upload ivu-upload-select">
                                 <input type="file" @change="handleCertImageChange" :disabled="upload_loading">
-                                <Button class="ivu-btn ivu-btn-ghost no-margin" :loading="upload_loading">
+                                <Button class="ivu-btn ivu-btn-ghost" :loading="upload_loading">
                                     <Icon v-show="!upload_loading" type="ios-cloud-upload-outline"></Icon>
                                     <span v-show="!upload_loading">选择要上传文件的文件</span>
                                     <span v-show="upload_loading">文件上传中</span>

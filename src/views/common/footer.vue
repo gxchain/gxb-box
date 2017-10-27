@@ -1,6 +1,8 @@
 <style scoped>
     #footer{
+        height: 60px;
         background: #fff;
+        border-top:1px solid #dddee1;
     }
     .layout-copy{
         text-align: center;
