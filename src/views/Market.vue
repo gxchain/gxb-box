@@ -30,51 +30,45 @@
     }
 
     .product-card{
-        cursor: pointer;
-        margin: 6px;
         position: relative;
+        height:220px;
+        margin: 8px;
+        cursor: pointer;
+        text-align: center;
     }
 
-    .product-card img{
+    .product-info .icon{
+        width: 60px;
+        height: 60px;
+        margin: 10px auto 20px;
+    }
+
+    .product-info .icon img{
         width: 100%;
         height: 100%;
-    }
-
-    .product-box{
-        height:110px;
-    }
-
-    .product-info{
-        overflow: hidden;
     }
 
     .product-info .title{
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-    }
-
-    .product-info .desc{
-        overflow:hidden;
-        text-overflow:ellipsis;
-        display:-webkit-box;
-        -webkit-box-orient:vertical;
-        -webkit-line-clamp:2;
-    }
-
-    .product-info .title{
         margin-bottom: 10px;
     }
 
     .product-info .desc{
+        overflow:hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         margin-bottom: 20px;
+        color: #9ea7b4;
+        font-size: 12px;
     }
 
-    .product-info .price{
+    .product-info .price,.product-info .statics{
         color: #38adff;
     }
 
-    .product-info .price span{
+    .product-info .price span,.product-info .statics span{
         font-size: 16px;
     }
 
@@ -82,6 +76,13 @@
         height: 25px;
         text-align: center;
         margin-top: 30px;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+    }
+    .fade-enter, .fade-leave-active {
+        opacity: 0
     }
 </style>
 <template>
@@ -91,44 +92,50 @@
         </div>
         <Row class="loaded-container" v-show="loaded">
             <Col span="5">
-                <Menu ref="dataMarketMenu" :active-name="active_category" width="auto" :open-names="['1']">
+                <Menu ref="dataMarketMenu" :active-name="data_market_type + '-' + active_category" width="auto" :open-names="['1','2']" @on-select="changeCategory">
                     <Submenu name="1">
                         <template slot="title">
                             <Icon type="ios-keypad"></Icon>
                             自由市场
                         </template>
-                        <MenuItem :name="category.id" v-for="(category,index) in free_data_categorys" :key="index">{{category.category_name}}</MenuItem>
+                        <MenuItem :name="'1-' + category.id" v-for="(category,index) in free_data_categorys" :key="index">
+                                {{category.category_name}}
+                        </MenuItem>
                     </Submenu>
                     <Submenu name="2">
                         <template slot="title">
                             <Icon type="ios-people"></Icon>
                             联盟市场
                         </template>
-                        <MenuItem :name="category.id" v-for="(category,index) in league_data_categorys" :key="index">{{category.category_name}}</MenuItem>
+                        <MenuItem :name="'2-' + category.id" v-for="(category,index) in league_data_categorys" :key="index">
+                                {{category.category_name}}
+                        </MenuItem>
                     </Submenu>
                 </Menu>
             </Col>
             <Col span="19" class="data-market-box">
                 <Row class="data-market-list">
-                    <Col span="8" v-for="(product,index) in product_list" :key="index">
-                        <Card class="product-card">
-                            <Row type="flex" align="middle" justify="center" class="product-box">
-                                <Col span="6">
-                                <img :src="product.icon">
-                                </Col>
-                                <Col span="16" offset="2">
-                                <div class="product-info">
+                    <transition-group name="fade">
+                        <Col span="6" v-for="(product,index) in product_list" :key="index">
+                            <Card class="product-card">
+                                <div class="product-info" v-if="product.product_name">
+                                    <div class="icon"><img :src="product.icon"></div>
                                     <h3 class="title">{{product.product_name}}</h3>
                                     <p class="desc">{{product.brief_desc}}</p>
                                     <p class="price">价格: <span>{{formatterPrice(product.price)}}</span> GXC</p>
                                 </div>
-                                </Col>
-                            </Row>
-                        </Card>
-                    </Col>
+                                <div class="product-info" v-if="product.league_name">
+                                    <div class="icon"><img :src="product.icon"></div>
+                                    <h3 class="title">{{product.league_name}}</h3>
+                                    <p class="desc">{{product.brief_desc}}</p>
+                                    <p class="statics">数据产品: <span>{{product.data_products.length}}</span></p>
+                                </div>
+                            </Card>
+                        </Col>
+                    </transition-group>
                 </Row>
                 <div class="page-box">
-                    <Page :curren="current" :total="total" :page-size="page_size" show-total show-elevator size="small" @on-change="changePage"></Page>
+                    <Page :current="current" :total="total" :page-size="page_size" show-total show-elevator size="small" @on-change="changePage"></Page>
                 </div>
             </Col>
         </Row>
@@ -138,12 +145,13 @@
     export default {
         data() {
             return {
-                active_category: null,
+                data_market_type: Number(this.$route.query.tid),
+                current: Number(this.$route.query.page),
+                active_category: this.$route.query.cid,
                 free_data_categorys: [],
                 league_data_categorys: [],
                 loaded: false,
-                current: 1,
-                page_size: 9,
+                page_size: 4,
                 product_list:[],
                 total: 0,
             };
@@ -152,16 +160,20 @@
             this.$http.get('/api/fetch_data_market_categories/1').then((res)=>{
                 if (res.data && res.data.length>0){
                     this.free_data_categorys = res.data;
-                    this.active_category = this.free_data_categorys[0].id;
-                    this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
-                        if (res.data){
-                            this.product_list = res.data.list;
-                            this.total = res.data.total;
-                            this.loaded = true;
+                    if (this.data_market_type === 1) {
+                        if (!this.$route.query.cid){
+                            this.active_category = this.free_data_categorys[0].id;
                         }
-                    }).catch((err)=>{
-                        console.error(err);
-                    });
+                        this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (this.current - 1) + '/' + this.page_size).then((res) => {
+                            if (res.data) {
+                                this.product_list = res.data.list;
+                                this.total = res.data.total;
+                                this.loaded = true;
+                            }
+                        }).catch((err) => {
+                            console.error(err);
+                        });
+                    }
                 }
                 this.$nextTick(function() {
                     this.$refs.dataMarketMenu.updateActiveName();
@@ -172,27 +184,82 @@
             this.$http.get('/api/fetch_data_market_categories/2').then((res)=>{
                 if (res.data && res.data.length>0){
                     this.league_data_categorys = res.data;
+                    if (this.data_market_type === 2){
+                        if (!this.$route.query.cid){
+                            this.active_category = this.league_data_categorys[0].id;
+                        }
+                        this.$http.get('/api/fetch_league_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
+                            if (res.data){
+                                this.product_list = res.data.list;
+                                this.total = res.data.total;
+                                this.loaded = true;
+                            }
+                        }).catch((err)=>{
+                            console.error(err);
+                        });
+                    }
                 }
+                this.$nextTick(function() {
+                    this.$refs.dataMarketMenu.updateActiveName();
+                });
             }).catch((err)=>{
                 console.error(err);
             });
         },
         methods: {
+            changeCategory(name){
+                let params = name.split('-');
+                this.data_market_type = Number(params[0]);
+                this.active_category = params[1];
+                this.current = 1;
+                if (this.data_market_type === 1){
+                    this.$router.push('/market/?tid=1&page=1&cid=' + this.active_category);
+                }
+                if (this.data_market_type === 2){
+                    this.$router.push('/market/?tid=2&page=1&cid=' + this.active_category);
+                }
+            },
             changePage(page){
-                this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (page-1) + '/' + this.page_size).then((res)=>{
-                    if (res.data){
-                        this.product_list = [];
-                        this.product_list = res.data.list;
-                        this.total = res.data.total;
-                        this.loaded = true;
-                    }
-                }).catch((err)=>{
-                    console.error(err);
-                    this.$Message.error(JSON.stringify(err.response.data));
-                });
+                this.current = page;
+                if (this.data_market_type === 1){
+                    this.$router.push('/market/?tid=1&page=' + page + '&cid=' + this.active_category);
+                }
+                if (this.data_market_type === 2){
+                    this.$router.push('/market/?tid=2&page=' + page + '&cid=' + this.active_category);
+                }
             },
             formatterPrice(price){
                 return price / 100000;
+            }
+        },
+        watch: {
+            $route (to) {
+                this.data_market_type = Number(to.query.tid);
+                this.current = Number(to.query.page);
+                this.active_category = to.query.cid ? to.query.cid : this.free_data_categorys[0].id || this.league_data_categorys[0].id;
+                if (this.data_market_type === 1){
+                    this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
+                        if (res.data){
+                            this.product_list = [];
+                            this.product_list = res.data.list;
+                            this.total = res.data.total;
+                        }
+                    }).catch((err)=>{
+                        console.error(err);
+                        this.$Message.error(JSON.stringify(err.response.data));
+                    });
+                }else{
+                    this.$http.get('/api/fetch_league_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
+                        if (res.data){
+                            this.product_list = [];
+                            this.product_list = res.data.list;
+                            this.total = res.data.total;
+                        }
+                    }).catch((err)=>{
+                        console.error(err);
+                        this.$Message.error(JSON.stringify(err.response.data));
+                    });
+                }
             }
         }
     };

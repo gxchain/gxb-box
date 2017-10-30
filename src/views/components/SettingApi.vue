@@ -104,7 +104,7 @@
                 this.commonSettings =  res.data['common'];
                 if (this.commonSettings && this.commonSettings.port && this.commonSettings.witnesses && this.commonSettings.faucet_url) {
                     this.api_list = this.commonSettings.witnesses;
-                    this.formValidate.port = this.commonSettings.port;
+                    this.formValidate.port = Number(this.commonSettings.port);
                     this.formValidate.faucet_url = this.commonSettings.faucet_url;
                 }
                 this.loaded = true;
@@ -129,7 +129,7 @@
                 this.$refs['formValidate'].validate((valid) => {
                     if (valid) {
                         if (this.api_list.length > 0){
-                            this.commonSettings.port = this.formValidate.port;
+                            this.commonSettings.port = Number(this.commonSettings.port);
                             this.commonSettings.faucet_url = this.formValidate.faucet_url;
                             this.commonSettings.witnesses = this.api_list;
                             this.$http({

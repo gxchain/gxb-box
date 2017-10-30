@@ -84,17 +84,17 @@ router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
     Util.title(to.meta.title);
 
-    switch (to.path){
-        case '/init':
+    switch (to.path.split('/')[1]){
+        case 'init':
             store.state.active_nav = '1';
             break;
-        case '/console':
+        case 'console':
             store.state.active_nav = '2';
             break;
-        case '/market':
+        case 'market':
             store.state.active_nav = '3';
             break;
-        case '/setting':
+        case 'setting':
             store.state.active_nav = '4';
             break;
         default:

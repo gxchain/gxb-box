@@ -167,6 +167,18 @@ router.get('/fetch_free_data_product_details/:product_id', function (req, res) {
     });
 });
 
+/**
+ * 获取联盟市场产品列表
+ */
+
+router.get('/fetch_league_data_products/:category_id/:page/:pageSize', function (req, res) {
+    DataService.fetch_league_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
 
 /**
  * 数据盒子服务 - 启动
