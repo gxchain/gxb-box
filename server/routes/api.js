@@ -14,7 +14,7 @@ router.get('/fetch_config', function (req, res) {
     ConfigStore.init().then((config)=>{
         res.send(config);
     }).catch((err)=>{
-        res.send({});
+        res.status(400).send(err);
     });
 });
 
@@ -48,14 +48,14 @@ router.post('/write_config',function (req, res) {
 });
 
 /**
- * 账户查询
+ * 账户信息
  */
 
 router.get('/fetch_account/:account_id_or_name', function (req, res) {
     AccountService.fetch_account(req.params.account_id_or_name).then((account) => {
-        res.send(account.toJS());
+        res.send(account);
     }).catch(err => {
-        res.send({});
+        res.status(400).send(err);
     })
 });
 
@@ -88,7 +88,7 @@ router.post('/import_account', function (req, res) {
  */
 
 router.post('/apply_merchant', function (req, res) {
-    AccountService.apply_merchant(req.body.apply_info, req.body.account_name, req.protocol).then((result) => {
+    AccountService.apply_merchant(req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);

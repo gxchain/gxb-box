@@ -1,25 +1,11 @@
 import Promise from 'bluebird';
-import {key, FetchChain, PrivateKey, Signature} from 'gxbjs';
+import {key, PrivateKey, Signature} from 'gxbjs';
 import {Apis} from "gxbjs-ws";
 import Immutable from 'immutable';
 import ConfigStroe from './ConfigStore';
 import dictionary from '../utils/dictionary_en.json';
-import fetch from 'node-fetch';
+import request from 'superagent';
 import config from '../../config/config.json';
-
-/**
- * 获取账户信息
- */
-const fetch_account = function (account_name) {
-    return new Promise(function (resolve, reject) {
-        return FetchChain('getAccount', account_name).then((account) => {
-            resolve(account);
-        }).catch((err) => {
-            reject(err);
-        });
-    })
-};
-
 /**
  * 创建账号
  */
@@ -35,45 +21,58 @@ const create_account = function (account_type, new_account_name, protocol) {
     let referrer =  config.common.referrer;
 
     return new Promise(function (resolve, reject) {
-        fetch( faucetAddress + "/account/register", {
-            method: "post",
-            mode: "cors",
-            headers: {
-                "Accept": "application/json",
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({
-                "account": {
-                    "name": new_account_name,
-                    "owner_key": owner_pubkey,
-                    "active_key": active_pubkey,
-                    "memo_key": active_pubkey,
-                    "refcode": "",
-                    "referrer": referrer
-                }
-            })
-        }).then(() => {
-            let config = {
-                "account_name": new_account_name,
-                "private_key": private_key.toWif()
-            };
-            if (account_type === 'merchant'){
-                ConfigStroe.merchant_set(JSON.stringify(config)).then(()=>{
-                    resolve(JSON.stringify(config));
-                }).catch((err) => {
-                    reject(err);
-                });
-            }else{
-                ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
-                    resolve(JSON.stringify(config));
-                }).catch((err) => {
-                    reject(err);
-                });
+        let body = {
+            account: {
+                name: new_account_name,
+                owner_key: owner_pubkey,
+                active_key: active_pubkey,
+                memo_key: active_pubkey,
+                refcode: "",
+                referrer: referrer
             }
-        }).catch((err) => {
+        };
+        request
+            .post(faucetAddress + "/account/register")
+            .send(body)
+            .set('Accpet','application/json')
+            .set('Content-Type', 'application/json')
+            .end(function (err,res) {
+                if (err) {
+                    reject(err)
+                } else {
+                    let config = {
+                        "account_name": new_account_name,
+                        "private_key": private_key.toWif()
+                    };
+                    if (account_type === 'merchant'){
+                        ConfigStroe.merchant_set(JSON.stringify(config)).then(()=>{
+                            resolve(config);
+                        }).catch((err) => {
+                            reject(err);
+                        });
+                    }else{
+                        ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
+                            resolve(config);
+                        }).catch((err) => {
+                            reject(err);
+                        });
+                    }
+                }
+            });
+    });
+};
+
+/**
+ * 获取账户信息
+ */
+const fetch_account = function (account_name) {
+    return new Promise(function (resolve, reject) {
+        Apis.instance().db_api().exec("get_account_by_name", [account_name]).then((account)=>{
+            resolve(account);
+        }).catch((err)=>{
             reject(err);
         })
-    });
+    })
 };
 
 /**
@@ -97,13 +96,13 @@ const import_account = function (account_type, private_key) {
                 };
                 if (account_type === 'merchant'){
                     ConfigStroe.merchant_set(JSON.stringify(config)).then(()=>{
-                        resolve(JSON.stringify(config));
+                        resolve(config);
                     }).catch((err) => {
                         reject(err);
                     });
                 }else{
                     ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
-                        resolve(JSON.stringify(config));
+                        resolve(config);
                     }).catch((err) => {
                         reject(err);
                     });
@@ -162,28 +161,22 @@ const fetch_merchant = function (account_name, account_type, protocol) {
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=> {
             let body = {};
-            body.account_id = account.get('id');
+            body.account_id = account.id;
             body = sortJSON(body);
             getSign(JSON.stringify(body), account_type).then(function (signature) {
                 body.signature = signature;
-                let params = Object.keys(body)
-                    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(body[key]))
-                    .join("&")
-                    .replace(/%20/g, "+");
-                fetch(faucetAddress + "/merchant/info?" + params, {
-                    method: "get",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-type": "application/json"
-                    }
-                }).then(res => {
-                    if (res.status < 200 || res.status >= 400) {
-                        res.json().then(reject)
-                    }
-                    else {
-                        res.json().then(resolve);
-                    }
-                }).catch(err => {reject(err)});
+                request
+                    .get(faucetAddress + "/merchant/info")
+                    .query(1)
+                    .set('Accpet','application/json')
+                    .set('Content-Type', 'application/json')
+                    .end(function (err,res) {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(res.body);
+                        }
+                    });
             }).catch(err=>reject(err));
         }).catch(err=>reject(err));
     });
@@ -192,32 +185,29 @@ const fetch_merchant = function (account_name, account_type, protocol) {
 /**
  * 申请认证商户
  */
-const apply_merchant = function (body, account_name, protocol) {
+const apply_merchant = function (body, account_name, account_type, protocol) {
     let faucetAddress = config.common.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=>{
-            body.account_id = account.get('id');
+            body.account_id = account.id;
             body = sortJSON(body);
-            getSign(JSON.stringify(body), 'merchant').then(function (signature) {
+            getSign(JSON.stringify(body), account_type).then(function (signature) {
                 body.signature = signature;
-                fetch(faucetAddress + "/merchant/create", {
-                    method: "post",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify(body)
-                }).then((res) => {
-                    if (res.status < 200 || res.status >= 400) {
-                        res.json().then(reject)
-                    }
-                    else {
-                        res.json().then(resolve);
-                    }
-                }).catch(err=>reject(err));
+                request
+                    .post(faucetAddress + "/merchant/create")
+                    .send(body)
+                    .set('Accpet','application/json')
+                    .set('Content-Type', 'application/json')
+                    .end(function (err,res) {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(res.body);
+                        }
+                    });
             }).catch(err=>reject(err));
         }).catch(err=>reject(err));
     });
@@ -233,25 +223,22 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
     }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account)=>{
-            body.account_id = account.get('id');
+            body.account_id = account.id;
             body = sortJSON(body);
             getSign(JSON.stringify(body), account_type).then(function (signature) {
                 body.signature = signature;
-                fetch(faucetAddress + "/dataSource/create", {
-                    method: "post",
-                    headers: {
-                        "Accept": "application/json",
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify(body)
-                }).then((res) => {
-                    if (res.status < 200 || res.status >= 400) {
-                        res.json().then(reject)
-                    }
-                    else {
-                        res.json().then(resolve);
-                    }
-                }).catch(err=>reject(err));
+                request
+                    .post(faucetAddress + "/dataSource/create")
+                    .send(body)
+                    .set('Accpet','application/json')
+                    .set('Content-Type', 'application/json')
+                    .end(function (err,res) {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(res.body);
+                        }
+                    });
             }).catch(err=>reject(err));
         }).catch(err=>reject(err));
     });
@@ -267,29 +254,26 @@ const is_applying = function (account_name, protocol) {
     }
     return new Promise(function (resolve, reject) {
         fetch_account(account_name).then((account) => {
-            let account_id = account.get('id');
-            fetch(faucetAddress + "/account/apply_status?account_id=" + account_id, {
-                method: "get",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-type": "application/json"
-                }
-            }).then(res => {
-                if (res.status < 200 || res.status >= 400) {
-                    res.json().then(reject)
-                }
-                else {
-                    res.json().then(resolve);
-                }
-            }).catch(err => reject(err));
+            request
+                .get(faucetAddress + "/account/apply_status")
+                .query({account_id: account.id})
+                .set('Accpet','application/json')
+                .set('Content-Type', 'application/json')
+                .end(function (err,res) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(res.body);
+                    }
+                });
         }).catch(err => reject(err));
     });
 };
 
 export default {
-    fetch_account,
     create_account,
     import_account,
+    fetch_account,
     fetch_merchant,
     apply_merchant,
     apply_datasource,

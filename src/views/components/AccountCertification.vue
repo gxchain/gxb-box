@@ -465,6 +465,7 @@
                             data: {
                                 'apply_info': this.formMerchant,
                                 'account_name': this.account.account_name,
+                                'account_type': this.account_type,
                             }
                         }).then(() => {
                             this.loading = false;
@@ -473,8 +474,8 @@
                             this.$Message.success('申请成功');
                         }).catch((err)=>{
                             this.loading = false;
-                            console.error( err);
-                            let error_msg = err.response.data.base && err.response.data.base.length && err.response.data.base.length > 0 ? err.response.data.base[0] : '未知错误';
+                            console.error(err);
+                            let error_msg = JSON.parse(err.response.data.response.text).base ? JSON.parse(err.response.data.response.text).base[0] : '未知错误';
                             this.$Message.error('申请失败:' + error_msg);
                         });
                     } else {
@@ -522,8 +523,8 @@
                             this.$Message.success('申请成功');
                         }).catch((err)=>{
                             this.loading = false;
-                            console.error( err);
-                            let error_msg = err.response.data.base && err.response.data.base.length && err.response.data.base.length > 0 ? err.response.data.base[0] : '未知错误';
+                            console.error(err);
+                            let error_msg = JSON.parse(err.response.data.response.text).base ? JSON.parse(err.response.data.response.text).base[0] : '未知错误';
                             this.$Message.error('申请失败:' + error_msg);
                         });
                     } else {

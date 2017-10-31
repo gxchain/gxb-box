@@ -108,7 +108,9 @@
                     this.formValidate.faucet_url = this.commonSettings.faucet_url;
                 }
                 this.loaded = true;
-            }).catch((err)=>console.error(err));
+            }).catch((err)=>{
+                console.error(err);
+            });
         },
         methods: {
             handleAdd() {
