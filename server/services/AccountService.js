@@ -167,7 +167,7 @@ const fetch_merchant = function (account_name, account_type, protocol) {
                 body.signature = signature;
                 request
                     .get(faucetAddress + "/merchant/info")
-                    .query(1)
+                    .query(body)
                     .set('Accpet','application/json')
                     .set('Content-Type', 'application/json')
                     .end(function (err,res) {

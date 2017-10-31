@@ -28,14 +28,16 @@ const store = new Vuex.Store({
         account_type: localStorage.getItem('__gxbBox__accountType') ? localStorage.getItem('__gxbBox__accountType') : null,
         init_step: 0,
         certified: false,
-        active_nav: null
+        active_nav: null,
+        common_setting: null
     },
     getters: {
         account_type: state => state.account_type,
         account: state => state.account,
         init_step: state => state.init_step,
         certified: state => state.certified,
-        active_nav: state => state.active_nav
+        active_nav: state => state.active_nav,
+        common_setting: state => state.common_setting,
     },
     mutations: {
         setAccountType(state, payload) {
@@ -52,6 +54,9 @@ const store = new Vuex.Store({
         },
         setActiveNav(state, payload) {
             state.active_nav = payload.active_nav;
+        },
+        setCommonSetting(state, payload) {
+            state.common_setting = payload.common_setting;
         }
     },
     actions: {
@@ -69,6 +74,9 @@ const store = new Vuex.Store({
         },
         setActiveNav({commit}, payload) {
             commit('setActiveNav', payload);
+        },
+        setCommonSetting({commit}, payload) {
+            commit('setCommonSetting', payload);
         }
     }
 });
@@ -123,6 +131,7 @@ if (store.state.account_type) {
     //加载配置文件
     axios.get('/api/fetch_config').then((res) => {
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
+            store.state.common_setting = res.data['common'];
             store.state.account = {
                 account_name: res.data[store.state.account_type].account_name,
                 private_key: res.data[store.state.account_type].private_key
