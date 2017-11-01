@@ -75,7 +75,7 @@
                         this.$router.push('/console');
                         break;
                     case '3':
-                        this.$router.push('/market/?tid=1&page=1');
+                        this.$router.push('/market');
                         break;
                     case '4':
                         this.$router.push('/setting');

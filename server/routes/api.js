@@ -144,6 +144,18 @@ router.get('/fetch_data_market_categories/:data_market_type', function (req, res
 });
 
 /**
+ * 获取栏目信息
+ */
+
+router.get('/fetch_data_market_categories_info/:category_id', function (req, res) {
+    DataService.fetch_data_market_categories_info(req.params.category_id).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
  * 获取自由市场产品列表
  */
 
@@ -168,11 +180,47 @@ router.get('/fetch_free_data_product_details/:product_id', function (req, res) {
 });
 
 /**
- * 获取联盟市场产品列表
+ * 获取联盟市场联盟列表
  */
 
-router.get('/fetch_league_data_products/:category_id/:page/:pageSize', function (req, res) {
-    DataService.fetch_league_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+router.get('/fetch_league_list/:category_id/:page/:pageSize', function (req, res) {
+    DataService.fetch_league_list(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取联盟信息
+ */
+
+router.get('/fetch_league_info/:league_id', function (req, res) {
+    DataService.fetch_league_info(req.params.league_id).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取联盟成员列表
+ */
+
+router.get('/fetch_league_members/:league_id', function (req, res) {
+    AccountService.fetch_league_members(req.params.league_id, req.protocol).then((members) => {
+        res.send(members);
+    }).catch(err => {
+        res.status(400).send(err);
+    })
+});
+
+/**
+ * 获取联盟产品列表
+ */
+
+router.get('/fetch_league_data_products/:data_product_ids', function (req, res) {
+    DataService.fetch_league_data_products(req.params.data_product_ids).then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);

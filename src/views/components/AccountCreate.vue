@@ -210,7 +210,8 @@
                             this.imported = true;
                         }).catch((err)=>{
                             this.loading = false;
-                            this.$Message.error('账号导入失败:' + JSON.stringify(err.response.data));
+                            let error_message = JSON.stringify(err.response.data) === '{}' ? '该私钥绑定的账号不存在' : JSON.stringify(err.response.data);
+                            this.$Message.error('账号导入失败:' + error_message);
                             console.error(err);
                         });
                     } else {

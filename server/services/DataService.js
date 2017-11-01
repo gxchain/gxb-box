@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import {Apis} from "gxbjs-ws";
+import {Apis} from 'gxbjs-ws';
 
 /**
  * 获取数据市场二级栏目
@@ -18,11 +18,24 @@ const fetch_data_market_categories = function (data_market_type) {
 };
 
 /**
+ * 获取栏目信息
+ */
+const fetch_data_market_categories_info = function (category_id) {
+    return new Promise(function (resolve, reject) {
+        Apis.instance().db_api().exec('get_data_market_categories', [[category_id]]).then(function (res) {
+            let result = res && res.length > 0 ? res[0] : {};
+            resolve(result);
+        }).catch(function (err) {
+            reject(err);
+        })
+    })
+};
+
+/**
  * 获取自由市场产品列表
  */
 const fetch_free_data_products = function (category_id, page, pageSize, keywords) {
     return new Promise(function (resolve, reject) {
-        console.log(1);
         Apis.instance().db_api().exec('list_free_data_products', [category_id, page * pageSize, pageSize, "", keywords,false]).then(function (res) {
             let data = {
                 list: res.data,
@@ -67,7 +80,7 @@ const fetch_free_data_product_details = function (product_id) {
                 category_id: result.category_id,
                 schema_contexts: schema_contexts,
                 price: result.price,
-                icon: result.icon
+                icon: result.icon,
             };
             resolve(data);
         }).catch(function (err) {
@@ -77,9 +90,9 @@ const fetch_free_data_product_details = function (product_id) {
 };
 
 /**
- * 获取联盟市场产品列表
+ * 获取联盟市场联盟列表
  */
-const fetch_league_data_products = function (category_id, page, pageSize, keywords) {
+const fetch_league_list = function (category_id, page, pageSize, keywords) {
     return new Promise(function (resolve, reject) {
         Apis.instance().db_api().exec('list_leagues', [category_id, page * pageSize, pageSize, "", keywords,false]).then(function (res) {
             let data = {
@@ -93,9 +106,39 @@ const fetch_league_data_products = function (category_id, page, pageSize, keywor
     })
 };
 
+/**
+ * 获取联盟信息
+ */
+const fetch_league_info = function (league_id) {
+    return new Promise(function (resolve, reject) {
+        Apis.instance().db_api().exec('get_leagues', [[league_id]]).then(function (res) {
+            let result = res && res.length > 0 ? res[0] : {};
+            resolve(result);
+        }).catch(function (err) {
+            reject(err);
+        })
+    })
+};
+
+/**
+ * 获取联盟市场产品列表
+ */
+const fetch_league_data_products = function (data_product_ids) {
+    return new Promise(function (resolve, reject) {
+        Apis.instance().db_api().exec('get_league_data_products', [JSON.parse(data_product_ids)]).then(function (res) {
+            resolve(res);
+        }).catch(function (err) {
+            reject(err);
+        })
+    })
+};
+
 export default {
     fetch_data_market_categories,
+    fetch_data_market_categories_info,
     fetch_free_data_products,
     fetch_free_data_product_details,
+    fetch_league_list,
+    fetch_league_info,
     fetch_league_data_products
 };

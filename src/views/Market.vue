@@ -17,7 +17,6 @@
         height: 100%;
     }
 
-
     .data-market-box{
         height: 100%;
         display: flex;
@@ -53,6 +52,7 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         margin-bottom: 10px;
+        color: #464c5b;
     }
 
     .product-info .desc{
@@ -117,20 +117,26 @@
                 <Row class="data-market-list">
                     <transition-group name="fade">
                         <Col span="6" v-for="(product,index) in product_list" :key="index">
-                            <Card class="product-card">
-                                <div class="product-info" v-if="product.product_name">
-                                    <div class="icon"><img :src="product.icon"></div>
-                                    <h3 class="title">{{product.product_name}}</h3>
-                                    <p class="desc">{{product.brief_desc}}</p>
-                                    <p class="price">价格: <span>{{formatterPrice(product.price)}}</span> GXC</p>
-                                </div>
-                                <div class="product-info" v-if="product.league_name">
-                                    <div class="icon"><img :src="product.icon"></div>
-                                    <h3 class="title">{{product.league_name}}</h3>
-                                    <p class="desc">{{product.brief_desc}}</p>
-                                    <p class="statics">数据产品: <span>{{product.data_products.length}}</span></p>
-                                </div>
-                            </Card>
+                            <router-link :to="'/market/product/?id=' + product.id" v-if="product.product_name">
+                                <Card class="product-card">
+                                    <div class="product-info">
+                                        <div class="icon"><img :src="product.icon"></div>
+                                        <h3 class="title">{{product.product_name}}</h3>
+                                        <p class="desc">{{product.brief_desc}}</p>
+                                        <p class="price">价格: <span>{{formatterPrice(product.price)}}</span> GXC</p>
+                                    </div>
+                                </Card>
+                            </router-link>
+                            <router-link :to="'/market/league/?id=' + product.id" v-if="product.league_name">
+                                <Card class="product-card">
+                                    <div class="product-info">
+                                        <div class="icon"><img :src="product.icon"></div>
+                                        <h3 class="title">{{product.league_name}}</h3>
+                                        <p class="desc">{{product.brief_desc}}</p>
+                                        <p class="statics">数据产品: <span>{{product.data_products.length}}</span></p>
+                                    </div>
+                                </Card>
+                            </router-link>
                         </Col>
                     </transition-group>
                 </Row>
@@ -145,8 +151,8 @@
     export default {
         data() {
             return {
-                data_market_type: Number(this.$route.query.tid),
-                current: Number(this.$route.query.page),
+                data_market_type: Number(this.$route.query.tid) ? Number(this.$route.query.tid) : 1,
+                current: Number(this.$route.query.page) ? Number(this.$route.query.page) : 1,
                 active_category: this.$route.query.cid,
                 free_data_categorys: [],
                 league_data_categorys: [],
@@ -188,7 +194,7 @@
                         if (!this.$route.query.cid){
                             this.active_category = this.league_data_categorys[0].id;
                         }
-                        this.$http.get('/api/fetch_league_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
+                        this.$http.get('/api/fetch_league_list/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
                             if (res.data){
                                 this.product_list = res.data.list;
                                 this.total = res.data.total;
@@ -234,8 +240,8 @@
         },
         watch: {
             $route (to) {
-                this.data_market_type = Number(to.query.tid);
-                this.current = Number(to.query.page);
+                this.data_market_type = Number(to.query.tid) ? Number(to.query.tid) : 1;
+                this.current = Number(to.query.page) ? Number(to.query.page) : 1;
                 this.active_category = to.query.cid ? to.query.cid : this.free_data_categorys[0].id || this.league_data_categorys[0].id;
                 if (this.data_market_type === 1){
                     this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
@@ -246,10 +252,10 @@
                         }
                     }).catch((err)=>{
                         console.error(err);
-                        this.$Message.error(JSON.stringify(err.response.data));
+                        this.$Message.error('获取自由市场产品列表失败:' + JSON.stringify(err.response.data));
                     });
                 }else{
-                    this.$http.get('/api/fetch_league_data_products/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
+                    this.$http.get('/api/fetch_league_list/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
                         if (res.data){
                             this.product_list = [];
                             this.product_list = res.data.list;
@@ -257,7 +263,7 @@
                         }
                     }).catch((err)=>{
                         console.error(err);
-                        this.$Message.error(JSON.stringify(err.response.data));
+                        this.$Message.error('获取联盟市场产品列表失败:' + JSON.stringify(err.response.data));
                     });
                 }
             }

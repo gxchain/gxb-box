@@ -270,11 +270,33 @@ const is_applying = function (account_name, protocol) {
     });
 };
 
+const fetch_league_members = function (league_id, protocol) {
+    let faucetAddress = config.common.faucet_url;
+    if (protocol === "https:") {
+        faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
+    }
+    return new Promise(function (resolve, reject) {
+        request
+            .get(faucetAddress + "/leagueDataSource/memberInfo")
+            .query({league_id: league_id})
+            .set('Accpet','application/json')
+            .set('Content-Type', 'application/json')
+            .end(function (err,res) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(res.body);
+                }
+            });
+    })
+};
+
 export default {
     create_account,
     import_account,
     fetch_account,
     fetch_merchant,
+    fetch_league_members,
     apply_merchant,
     apply_datasource,
     is_applying

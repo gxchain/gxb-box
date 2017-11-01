@@ -20,13 +20,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-
     }
 
     .layout-content {
         flex: 1;
         margin: 30px 0;
         width: 90%;
+        min-width: 900px;
         background: #fff;
         border-radius: 6px;
         box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
