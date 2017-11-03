@@ -15,6 +15,21 @@ module.exports = {
       "wss://node8.gxb.io",
       "wss://node11.gxb.io"
     ],
+    faucet_url: "http://opengateway.gxb.io",
+    referrer: "opengateway",
+    visualizationConfig: {
+        "common": {
+            "port": 3000,
+            "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
+            "witnesses": [
+                "wss://node1.gxb.io",
+                "wss://node5.gxb.io",
+                "wss://node8.gxb.io",
+                "wss://node11.gxb.io"
+            ],
+            "faucet_url": "http://opengateway.gxb.io",
+        }
+    },
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:
@@ -36,6 +51,19 @@ module.exports = {
     witnesses: [
       "ws://192.168.1.118:28090"
     ],
+    faucet_url: "http://192.168.1.118:1337/gateway",
+    referrer: "nathan",
+    visualizationConfig: {
+        "common": {
+            "port": 3000,
+            "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
+            "witnesses": [
+                "ws://192.168.1.118:28090"
+            ],
+            "faucet_url": "http://192.168.1.118:1337/gateway",
+            "referrer": "nathan"
+        }
+    },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)

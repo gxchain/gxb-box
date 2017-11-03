@@ -5,7 +5,8 @@ import Immutable from 'immutable';
 import ConfigStroe from './ConfigStore';
 import dictionary from '../utils/dictionary_en.json';
 import request from 'superagent';
-import config from '../../config/config.json';
+import config from '../../config';
+
 /**
  * 创建账号
  */
@@ -14,12 +15,18 @@ const create_account = function (account_type, new_account_name, protocol) {
     let private_key = key.get_brainPrivateKey( brainkey );
     let owner_pubkey = private_key.toPublicKey().toPublicKeyString();
     let active_pubkey = private_key.toPublicKey().toPublicKeyString();
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress;
+    let referrer;
+    if (process.env.NODE_ENV === 'production'){
+        faucetAddress = config.build.faucet_url;
+        referrer =  config.build.referrer;
+    }else{
+        faucetAddress = config.dev.faucet_url;
+        referrer =  config.dev.referrer;
+    }
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
-    let referrer =  config.common.referrer;
-
     return new Promise(function (resolve, reject) {
         let body = {
             account: {
@@ -40,19 +47,19 @@ const create_account = function (account_type, new_account_name, protocol) {
                 if (err) {
                     reject(err)
                 } else {
-                    let config = {
+                    let account_config = {
                         "account_name": new_account_name,
                         "private_key": private_key.toWif()
                     };
                     if (account_type === 'merchant'){
-                        ConfigStroe.merchant_set(JSON.stringify(config)).then(()=>{
-                            resolve(config);
+                        ConfigStroe.merchant_set(JSON.stringify(account_config)).then(()=>{
+                            resolve(account_config);
                         }).catch((err) => {
                             reject(err);
                         });
                     }else{
-                        ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
-                            resolve(config);
+                        ConfigStroe.datasource_set(null, JSON.stringify(account_config), false).then(()=>{
+                            resolve(account_config);
                         }).catch((err) => {
                             reject(err);
                         });
@@ -81,38 +88,34 @@ const fetch_account = function (account_name) {
 const import_account = function (account_type, private_key) {
     let public_key = PrivateKey.fromWif(private_key).toPublicKey().toPublicKeyString();
     return new Promise(function (resolve, reject) {
-        Apis.instance().db_api().exec("get_key_references", [[public_key]]).then(function (vec_account_id) {
-            let refs = Immutable.Set();
-            vec_account_id = vec_account_id[0];
-            refs = refs.withMutations(function (r) {
-                for (let i = 0; i < vec_account_id.length; ++i) {
-                    r.add(vec_account_id[i]);
-                }
-            });
-            Apis.instance().db_api().exec("get_objects", [refs]).then((account) => {
-                let config = {
+        Apis.instance().db_api().exec("get_key_references", [[public_key]])
+            .then(function (vec_account_id) {
+                let refs = Immutable.Set();
+                vec_account_id = vec_account_id[0];
+                refs = refs.withMutations(function (r) {
+                    for (let i = 0; i < vec_account_id.length; ++i) {
+                        r.add(vec_account_id[i]);
+                    }
+                });
+                return Apis.instance().db_api().exec("get_objects", [refs]);
+            })
+            .then((account) => {
+                let account_config = {
                     "account_name": account[0].name,
                     "private_key": private_key
                 };
                 if (account_type === 'merchant'){
-                    ConfigStroe.merchant_set(JSON.stringify(config)).then(()=>{
-                        resolve(config);
-                    }).catch((err) => {
-                        reject(err);
-                    });
+                    return ConfigStroe.merchant_set(JSON.stringify(account_config));
                 }else{
-                    ConfigStroe.datasource_set(null, JSON.stringify(config), false).then(()=>{
-                        resolve(config);
-                    }).catch((err) => {
-                        reject(err);
-                    });
+                    return ConfigStroe.datasource_set(null, JSON.stringify(account_config), false);
                 }
-            }).catch((err) => {
+            })
+            .then((res)=>{
+                resolve(res.data);
+            })
+            .catch((err) => {
                 reject(err);
             });
-        }).catch((err) => {
-            reject(err);
-        });
     });
 };
 
@@ -154,16 +157,20 @@ const getSign = function (body = '',type) {
  * 获取商户信息
  */
 const fetch_merchant = function (account_name, account_type, protocol) {
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress =process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
+
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
     return new Promise(function (resolve, reject) {
-        fetch_account(account_name).then((account)=> {
-            let body = {};
-            body.account_id = account.id;
-            body = sortJSON(body);
-            getSign(JSON.stringify(body), account_type).then(function (signature) {
+        let body = {};
+        fetch_account(account_name)
+            .then((account)=> {
+                body.account_id = account.id;
+                body = sortJSON(body);
+                return getSign(JSON.stringify(body), account_type);
+            })
+            .then(function (signature) {
                 body.signature = signature;
                 request
                     .get(faucetAddress + "/merchant/info")
@@ -177,8 +184,8 @@ const fetch_merchant = function (account_name, account_type, protocol) {
                             resolve(res.body);
                         }
                     });
-            }).catch(err=>reject(err));
-        }).catch(err=>reject(err));
+            })
+            .catch(err=>reject(err));
     });
 };
 
@@ -186,15 +193,18 @@ const fetch_merchant = function (account_name, account_type, protocol) {
  * 申请认证商户
  */
 const apply_merchant = function (body, account_name, account_type, protocol) {
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress =process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
     return new Promise(function (resolve, reject) {
-        fetch_account(account_name).then((account)=>{
-            body.account_id = account.id;
-            body = sortJSON(body);
-            getSign(JSON.stringify(body), account_type).then(function (signature) {
+        fetch_account(account_name)
+            .then((account)=>{
+                body.account_id = account.id;
+                body = sortJSON(body);
+                return getSign(JSON.stringify(body), account_type);
+            })
+            .then(function (signature) {
                 body.signature = signature;
                 request
                     .post(faucetAddress + "/merchant/create")
@@ -208,8 +218,8 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
                             resolve(res.body);
                         }
                     });
-            }).catch(err=>reject(err));
-        }).catch(err=>reject(err));
+            })
+            .catch(err=>reject(err));
     });
 };
 
@@ -217,15 +227,18 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
  * 申请认证数据源
  */
 const apply_datasource = function (body, account_name, account_type, protocol) {
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress =process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
     return new Promise(function (resolve, reject) {
-        fetch_account(account_name).then((account)=>{
-            body.account_id = account.id;
-            body = sortJSON(body);
-            getSign(JSON.stringify(body), account_type).then(function (signature) {
+        fetch_account(account_name)
+            .then((account)=>{
+                body.account_id = account.id;
+                body = sortJSON(body);
+                return getSign(JSON.stringify(body), account_type);
+            })
+            .then(function (signature) {
                 body.signature = signature;
                 request
                     .post(faucetAddress + "/dataSource/create")
@@ -239,8 +252,8 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
                             resolve(res.body);
                         }
                     });
-            }).catch(err=>reject(err));
-        }).catch(err=>reject(err));
+            })
+            .catch(err=>reject(err));
     });
 };
 
@@ -248,30 +261,32 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
  * 获取申请状态
  */
 const is_applying = function (account_name, protocol) {
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress =process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }
     return new Promise(function (resolve, reject) {
-        fetch_account(account_name).then((account) => {
-            request
-                .get(faucetAddress + "/account/apply_status")
-                .query({account_id: account.id})
-                .set('Accpet','application/json')
-                .set('Content-Type', 'application/json')
-                .end(function (err,res) {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(res.body);
-                    }
-                });
-        }).catch(err => reject(err));
+        fetch_account(account_name)
+            .then((account) => {
+                request
+                    .get(faucetAddress + "/account/apply_status")
+                    .query({account_id: account.id})
+                    .set('Accpet','application/json')
+                    .set('Content-Type', 'application/json')
+                    .end(function (err,res) {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(res.body);
+                        }
+                    });
+            })
+            .catch(err => reject(err));
     });
 };
 
 const fetch_league_members = function (league_id, protocol) {
-    let faucetAddress = config.common.faucet_url;
+    let faucetAddress =process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     if (protocol === "https:") {
         faucetAddress = faucetAddress.replace(/http:\/\//, "https://");
     }

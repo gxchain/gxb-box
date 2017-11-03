@@ -39,7 +39,10 @@ export default{
                 _config.common = JSON.parse(config);
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 self.config = _config;
-                resolve({message:'系统配置保存成功'});
+                resolve({
+                    message:'系统配置保存成功',
+                    data: _config.common
+                });
             }
             catch (ex){
                 reject(ex);
@@ -57,7 +60,13 @@ export default{
                 _config.merchant = JSON.parse(config);
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 self.config = _config;
-                resolve({message:'商户账号配置保存成功'});
+                resolve({
+                    message:'商户账号配置保存成功',
+                    data: {
+                        "account_name": _config.merchant.account_name,
+                        "private_key": _config.merchant.private_key
+                    }
+                });
             }
             catch (ex){
                 reject(ex);
@@ -79,7 +88,13 @@ export default{
                 _config.datasource = JSON.parse(datasource_config);
                 fs.writeFileSync(path.resolve(process.cwd(),'./config/config.json'),JSON.stringify(_config));
                 self.config = _config;
-                resolve({message:'数据源账号配置保存成功'});
+                resolve({
+                    message:'数据源账号配置保存成功',
+                    data: {
+                        "account_name": _config.datasource.account_name,
+                        "private_key": _config.datasource.private_key
+                    }
+                });
             }
             catch (ex){
                 reject(ex);

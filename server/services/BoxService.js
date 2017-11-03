@@ -1,8 +1,11 @@
 import Promise from 'bluebird'
-import readline from 'readline'
-import fs from 'fs'
 import path from 'path'
 import pm2 from 'pm2'
+import io from 'socket.io-client'
+
+let is_started = false;
+let port = parseInt(process.env.port || '3031');
+let url = 'http://localhost:' + port;
 
 /**
  * 数据盒子服务 - 启动
@@ -16,11 +19,10 @@ const box_start = function () {
           }
           pm2.start({
               name: 'gxb-box-pm2',
-              script    : path.join(process.cwd(),'server-box-dist/gxb-box.js'),         // Script to be run
-              exec_mode : 'fork',        // Allows your app to be clustered
-              max_memory_restart : '100M'   // Optional: Restarts your app if it reaches 100Mo
+              script    : path.join(process.cwd(),'server-box-dist/gxb-box.js'),
+              exec_mode : 'fork',
+              max_memory_restart : '100M',
           }, function(err, apps) {
-              pm2.disconnect();   // Disconnects from PM2
               if (err) {
                   reject(err);
               }else{
@@ -41,15 +43,14 @@ const box_stop = function () {
                 reject(err);
                 process.exit(2);
             }
-            pm2.stop('gxb-box-pm2', function(err, apps) {
+            pm2.stop('gxb-box-pm2', function (err) {
                 if (err) {
                     reject(err);
-                }else{
-                    pm2.describe('gxb-box-pm2', function(err, processDescription) {
-                        pm2.disconnect();   // Disconnects from PM2
+                } else {
+                    pm2.describe('gxb-box-pm2', function (err, processDescription) {
                         if (err) {
                             reject(err);
-                        }else{
+                        } else {
                             resolve(processDescription);
                         }
                     });
@@ -58,6 +59,7 @@ const box_stop = function () {
         });
     })
 };
+
 
 /**
  * 数据盒子服务 - 重启
@@ -69,15 +71,14 @@ const box_restart = function () {
                 reject(err);
                 process.exit(2);
             }
-            pm2.restart('gxb-box-pm2', function(err, apps) {
+            pm2.restart('gxb-box-pm2', function (err) {
                 if (err) {
                     reject(err);
-                }else{
-                    pm2.describe('gxb-box-pm2', function(err, processDescription) {
-                        pm2.disconnect();   // Disconnects from PM2
+                } else {
+                    pm2.describe('gxb-box-pm2', function (err, processDescription) {
                         if (err) {
                             reject(err);
-                        }else{
+                        } else {
                             resolve(processDescription);
                         }
                     });
@@ -99,47 +100,29 @@ const fetch_box = function () {
                 process.exit(2);
             }
             pm2.describe('gxb-box-pm2', function(err, processDescription) {
-                pm2.disconnect();   // Disconnects from PM2
                 if (err) {
                     reject(err);
                 }else{
-                    resolve(processDescription);
+                    //启动消息BUS，监听日志
+                    if ((!is_started)&&(processDescription && processDescription.length > 0)){
+                        pm2.launchBus(function(err, bus) {
+                            if (err) return reject(err);
+                            is_started = true;
+                            let websocket = io.connect(url);
+                            bus.on('log:out', function(packet) {
+                                websocket.emit('message', 'out', packet.data);
+                            });
+                            bus.on('log:err', function(packet) {
+                                websocket.emit('message', 'err', packet.data);
+                            });
+                            return resolve(processDescription);
+                        });
+                    }else{
+                        resolve(processDescription);
+                    }
                 }
             });
         });
-    })
-};
-
-/**
- * 数据盒子服务 - 获取日志
- */
-const fetch_log = function (path) {
-    return new Promise(function (resolve, reject) {
-        let log = [];
-        try {
-            fs.exists(path, function(exists) {
-                if (exists) {
-                    let rl = readline.createInterface({
-                        input: fs.createReadStream(path),
-                    });
-
-                    rl.on('line', function(line) {
-                        let obj = {};
-                        obj.tip = line;
-                        log.push(obj);
-                    });
-
-                    rl.on('close', ()=>{
-                        resolve(log);
-                    });
-                }else{
-                    reject(path+'文件不存在');
-                }
-            });
-        }
-        catch(ex) {
-            reject(ex);
-        }
     })
 };
 
@@ -147,6 +130,5 @@ export default {
     box_start,
     box_stop,
     box_restart,
-    fetch_box,
-    fetch_log
+    fetch_box
 };

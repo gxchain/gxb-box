@@ -85,7 +85,7 @@
     import AccountCreate from './components/AccountCreate.vue';
     import AccountConfig from './components/AccountConfig.vue';
     import AccountCertification from './components/AccountCertification.vue';
-    import ConsoleManage from './components/ConsoleManage.vue';
+    import GxbBoxStart from './components/GxbBoxStart.vue';
 
     export default {
         data () {
@@ -97,7 +97,7 @@
                     1: 'AccountCreate',
                     2: 'AccountCertification',
                     3: 'AccountConfig',
-                    4: 'ConsoleManage'
+                    4: 'GxbBoxStart'
                 }
             };
         },
@@ -125,7 +125,7 @@
             AccountCreate: AccountCreate,
             AccountConfig: AccountConfig,
             AccountCertification: AccountCertification,
-            ConsoleManage: ConsoleManage,
+            GxbBoxStart: GxbBoxStart
         },
         computed: {
             ...mapGetters({

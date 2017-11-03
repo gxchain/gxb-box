@@ -77,10 +77,6 @@
         font-family: monospace;
     }
 
-    .step-btn-box {
-        margin: 25px 0;
-    }
-
     @-moz-keyframes blinker {
         0% {
             opacity: 1.0;
@@ -132,10 +128,6 @@
             <Spin fix></Spin>
         </div>
         <div class="loaded-container" v-show="loaded">
-            <Alert type="info" v-if="(pm2_list.length === 0) && (scene === 'init')">
-                启动数据盒子服务前，请检查服务器环境是否已全局安装
-                <a href="http://pm2.keymetrics.io/docs/usage/quick-start/" target="_blank">PM2</a>
-            </Alert>
             <div class="server-status" v-show="pm2_list.length > 0">
                 <Table stripe :columns="pm2_columns" :data="pm2_list"></Table>
             </div>
@@ -143,33 +135,19 @@
                 <header class="log-header">日志</header>
                 <div class="log-box" id="scroll-box">
                     <ul>
-                        <li v-for="(log, index) in pm2_out_logs" :key="index">
-                            <span class="out">{{pm2_list[0].pm_id}}|{{pm2_list[0].name}}</span>
-                            <span class="out">  | </span>
-                            <span>{{log.tip}}</span>
-                        </li>
-                        <li v-for="(log, index) in pm2_err_logs" :key="index">
-                            <span class="err">{{pm2_list[0].pm_id}}|{{pm2_list[0].name}}</span>
-                            <span class="err">  | </span>
-                            <span class="err">{{log.tip}}</span>
+                        <li v-for="(log, index) in pm2_logs" :key="index">
+                            <span :class="log.type">[{{log.type}}]|{{pm2_list[0].name}}</span>
+                            <span :class="log.type">  | </span>
+                            <span :class="log.type === 'err' ? 'err' : ''">{{log.tip}}</span>
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div class="step-btn-box" v-if="(pm2_list.length === 0) && (scene === 'init')">
-                <Button type="primary"  @click="boxStart()" :loading="loading[0]">
-                    <span v-show="!loading[0]">启动服务</span>
-                    <span v-show="loading[0]">启动中...</span>
-                </Button>
-                <Button type="primary" @click="lastStep()">上一步</Button>
             </div>
         </div>
     </div>
 </template>
 <script>
-    import {mapActions} from 'vuex';
     export default {
-        props: ['scene'],
         data () {
             return {
                 loaded: false,
@@ -280,10 +258,7 @@
                     }
                 ],
                 pm2_list: [],
-                pm2_out_log_interval: '',
-                pm2_err_log_interval: '',
-                pm2_out_logs: [],
-                pm2_err_logs: []
+                pm2_logs: [],
             };
         },
         created() {
@@ -296,14 +271,7 @@
                 console.error(err);
             });
         },
-        beforeDestroy () {
-            clearInterval(this.pm2_out_log_interval);
-            clearInterval(this.pm2_err_log_interval);
-        },
         methods: {
-            ...mapActions({
-                setInitStep: 'setInitStep'
-            }),
             boxRender (data){
                 let pm2 = {};
                 pm2.pid = data.pid;
@@ -312,7 +280,7 @@
                 pm2.mode = data.pm2_env.exec_mode;
                 pm2.restarts = data.pm2_env.restart_time;
                 pm2.pm_uptime = data.pm2_env.pm_uptime;
-                pm2.cpu = data.monit.cpu;
+                pm2.cpu = data.monit.cpu + '%';
                 pm2.memory = (data.monit.memory / 1024 / 1024).toFixed(2) + 'MB';
                 pm2.state = data.pm2_env.status;
                 switch (pm2.state){
@@ -329,29 +297,6 @@
                 }
                 this.pm2_list = [];
                 this.pm2_list.push(pm2);
-                clearInterval(this.pm2_out_log_interval);
-                clearInterval(this.pm2_err_log_interval);
-                this.pm2_out_log_interval = setInterval(() => {
-                    this.getOutLogs(data.pm2_env.pm_out_log_path);
-                }, 1000);
-                this.pm2_err_log_interval = setInterval(() => {
-                    this.getErrLogs(data.pm2_env.pm_err_log_path);
-                }, 1000);
-            },
-            boxStart (){
-                this.loading[0] = true;
-                this.$http.get('/api/box_start').then((res) => {
-                    if (res.data && res.data.length && res.data.length > 0){
-                        this.setInitStep({init_step: 'finished'});
-                        this.goToMarket();
-                    }else{
-                        this.$Message.success('服务启动失败:未知错误');
-                    }
-                    this.loading[0] = false;
-                }).catch((err) => {
-                    console.error(err);
-                    this.$Message.error('服务启动失败:' + JSON.stringify(err.response.data));
-                });
             },
             boxStop (){
                 this.loading[1] = true;
@@ -382,60 +327,21 @@
                     console.error(err);
                     this.$Message.error('服务重启失败:' + JSON.stringify(err.response.data));
                 });
-            },
-            getErrLogs (path) {
-                this.$http({
-                    method: 'post',
-                    url: '/api/fetch_log',
-                    data: {
-                        'path': path
-                    }
-                }).then((res) => {
-                    if (res.data && res.data.length && res.data.length>0){
-                        if (this.loaded && (res.data.length !== this.pm2_out_logs.length)){
-                            this.pm2_err_logs = [];
-                            for(let i=0; i<res.data.length; i++) {
-                                this.pm2_err_logs.push(res.data[i]);
-                            }
-                            setTimeout(function () {
-                                document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
-                            },100);
+            }
+        },
+        socket: {
+            events: {
+                message(type, msg) {
+                    let msg_list = msg.split('\n');
+                    for (let i=0; i < msg_list.length; i++){
+                        if (msg_list[i] !== ''){
+                            this.pm2_logs.push({
+                                type: type,
+                                tip: msg_list[i]
+                            });
                         }
                     }
-                }).catch((err)=>{
-                    console.error(err);
-                    this.$Message.error('获取错误日志失败:' + JSON.stringify(err.response.data));
-                });
-            },
-            getOutLogs (path) {
-                this.$http({
-                    method: 'post',
-                    url: '/api/fetch_log',
-                    data: {
-                        'path': path
-                    }
-                }).then((res) => {
-                    if (res.data && res.data.length && res.data.length>0){
-                        if (this.loaded && (res.data.length !== this.pm2_out_logs.length)){
-                            this.pm2_out_logs = [];
-                            for(let i=0; i<res.data.length; i++) {
-                                this.pm2_out_logs.push(res.data[i]);
-                            }
-                            setTimeout(function () {
-                                document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
-                            },100);
-                        }
-                    }
-                }).catch((err)=>{
-                    console.error(err);
-                    this.$Message.error('获取输出日志失败:' + JSON.stringify(err.response.data));
-                });
-            },
-            lastStep (){
-                this.$emit('last');
-            },
-            goToMarket (){
-                this.$router.push('/console');
+                }
             }
         }
     };

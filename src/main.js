@@ -5,15 +5,16 @@ import Routers from './router';
 import Vuex from 'vuex';
 import Util from './libs/util';
 import App from './app.vue';
+import axios from 'axios';
+import VueWebsocket from 'vue-websocket';
 import VueTimeago from 'vue-timeago';
 import 'iview/dist/styles/iview.css';
 
-import axios from 'axios';
 Vue.prototype.$http = axios;
-
 Vue.use(VueRouter);
 Vue.use(Vuex);
 Vue.use(iView);
+Vue.use(VueWebsocket, '/', {reconnection: true});
 Vue.use(VueTimeago, {
     name: 'timeago',
     locale: 'zh-CN',

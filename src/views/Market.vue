@@ -157,7 +157,7 @@
                 free_data_categorys: [],
                 league_data_categorys: [],
                 loaded: false,
-                page_size: 4,
+                page_size: 8,
                 product_list:[],
                 total: 0,
             };

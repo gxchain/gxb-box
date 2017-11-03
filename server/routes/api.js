@@ -276,16 +276,4 @@ router.get('/fetch_box', function (req, res) {
     })
 });
 
-/**
- * 数据盒子服务 - 获取PM2日志
- */
-
-router.post('/fetch_log', function (req, res) {
-    BoxService.fetch_log(req.body.path).then((log) => {
-        res.send(log);
-    }).catch((err) => {
-        res.status(400).send(err);
-    })
-});
-
 module.exports = router;
