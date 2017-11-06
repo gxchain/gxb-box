@@ -44,13 +44,16 @@ const routers = [
     {
         path: '/',
         meta: {
-            title: ''
+            title: '控制台'
         },
         component: (resolve) => require(['./views/Console.vue'], resolve)
     },
     {
         path: '*',
-        redirect: '/'
+        meta: {
+            title: '404-页面不存在'
+        },
+        component: (resolve) => require(['./views/404.vue'], resolve)
     }
 ];
 export default routers;

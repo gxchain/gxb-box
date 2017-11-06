@@ -375,7 +375,6 @@
                     if (datasource_certified) {
                         this.setCertified({certified: true});
                     }
-
                     if (merchant_certified || datasource_certified){
                         //认证商户升级为数据源通过
                         if ((this.account_type === 'merchant') && datasource_certified){
@@ -396,10 +395,7 @@
                             }).then(() => {
                                 localStorage.setItem('__gxbBox__accountType', 'datasource');
                                 this.setAccountType({account_type: 'datasource'});
-                                this.$http({
-                                    method: 'get',
-                                    url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
-                                }).then((res) => {
+                                this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
                                     this.formDatasource.merchant_name = res.data.name;
                                     this.merchant_name = res.data.name;
                                     this.merchant_alias = res.data.alias;
@@ -411,10 +407,7 @@
                                 console.error(err);
                             });
                         }else{
-                            this.$http({
-                                method: 'get',
-                                url: '/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type,
-                            }).then((res) => {
+                            this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
                                 this.formDatasource.merchant_name = res.data.name;
                                 this.merchant_name = res.data.name;
                                 this.merchant_alias = res.data.alias;

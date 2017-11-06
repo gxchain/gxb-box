@@ -212,12 +212,11 @@ let startServer = function () {
   let server = http.createServer(app);
   let websocket = io(server);
   websocket.on('connection', function(socket){
-      console.log('a user connected');
-      socket.on("disconnect", function() {
-          console.log("a user go out");
-      });
       socket.on("message", function(type, data) {
           websocket.emit("message", type, data);
+      });
+      socket.on("system", function(data) {
+          websocket.emit("system", data);
       });
   });
   server.listen(port);

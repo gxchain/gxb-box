@@ -3,8 +3,8 @@ import BoxService from '../services/BoxService';
 import AccountService from '../services/AccountService';
 import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
+import ZipArchive from '../services/ZipArchive';
 let router = express.Router();
-
 
 /**
  * 读取配置文件
@@ -271,6 +271,18 @@ router.get('/box_restart', function (req, res) {
 router.get('/fetch_box', function (req, res) {
     BoxService.fetch_box().then((pm2) => {
         res.send(pm2);
+    }).catch((err) => {
+        res.status(400).send(err);
+    })
+});
+
+/**
+ * 生产环境 - 打包
+ */
+
+router.get('/get_box_prod_zip/:visual', function (req, res) {
+    ZipArchive.get_box_prod_zip(req.params.visual).then((zip) => {
+        res.send(zip);
     }).catch((err) => {
         res.status(400).send(err);
     })

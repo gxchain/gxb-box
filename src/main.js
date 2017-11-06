@@ -106,8 +106,11 @@ router.beforeEach((to, from, next) => {
         case 'setting':
             store.state.active_nav = '4';
             break;
-        default:
+        case '':
             store.state.active_nav = '2';
+            break;
+        default:
+            store.state.active_nav = null;
             break;
     }
 

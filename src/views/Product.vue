@@ -436,6 +436,9 @@
                     });
                 }).catch((err)=>{
                     console.error(err);
+                    if (err.response.data.data.code === 10) {
+                        this.$router.push('/404');
+                    }
                 });
             },
             formatterLeagueData(product_info){

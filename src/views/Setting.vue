@@ -25,6 +25,10 @@
                         <Icon type="connection-bars"></Icon>
                         接入点管理
                     </MenuItem>
+                    <MenuItem name="3">
+                        <Icon type="code-download"></Icon>
+                        打包管理
+                    </MenuItem>
                 </Menu>
             </Col>
             <Col span="19">
@@ -39,6 +43,7 @@
     import SettingAccount from './components/SettingAccount.vue';
     import SettingConfig from './components/SettingConfig.vue';
     import SettingApi from './components/SettingApi.vue';
+    import SettingArchive from './components/SettingArchive.vue';
 
     export default {
         data () {
@@ -48,7 +53,8 @@
                 list:{
                     0: 'SettingAccount',
                     1: 'SettingConfig',
-                    2: 'SettingApi'
+                    2: 'SettingApi',
+                    3: 'SettingArchive'
                 }
             };
         },
@@ -64,18 +70,26 @@
                     case '2':
                         this.current = 2;
                         break;
+                    case '3':
+                        this.current = 3;
+                        break;
                 }
                 localStorage.setItem('__gxbBox__activeSetting',this.current);
             },
             restartBox(){
-                console.log('Go to restart gxb-box!');
-                this.$router.push('/console');
+                this.$http.get('/api/box_restart').then(() => {
+                    this.$router.push('/console');
+                }).catch((err) => {
+                    console.error(err);
+                    this.$Message.error('服务重启失败:' + JSON.stringify(err.response.data));
+                });
             }
         },
         components: {
             SettingAccount: SettingAccount,
             SettingConfig: SettingConfig,
             SettingApi: SettingApi,
+            SettingArchive: SettingArchive
         }
     };
 </script>

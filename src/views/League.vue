@@ -196,45 +196,45 @@
             };
         },
         created() {
-            this.$http.get('/api/fetch_league_info/' + this.$route.query.id).then((res)=>{
-                this.league_info = res.data;
-                switch (this.league_info.status){
-                    case 0:
-                        this.league_info.status = '未发布';
-                        this.league_info.status_class = 'facolor-warning';
-                        break;
-                    case 1:
-                        this.league_info.status = '正常';
-                        this.league_info.status_class = 'facolor-success';
-                        break;
-                    case 2:
-                        this.league_info.status = '已禁用';
-                        this.league_info.status_class = 'facolor-error';
-                        break;
-                }
-                this.league_info.data_products_num = this.league_info.data_products && this.league_info.data_products.length > 0 ? this.league_info.data_products.length : 0;
-                this.league_info.members_num = this.league_info.members && this.league_info.members.length > 0 ? this.league_info.members.length : 0;
-                this.$http.get('/api/fetch_data_market_categories_info/' + this.league_info.category_id).then((res)=>{
-                    this.league_info.category_name = res.data.category_name;
-                    this.$http.get('/api/fetch_league_data_products/' + JSON.stringify(this.league_info.data_products)).then((res)=>{
-                        this.product_list = res.data;
-                        this.current_product = this.product_list[0];
-                        this.loaded = true;
+            let self = this;
+            this.$http.all([this.$http.get('/api/fetch_league_info/' + this.$route.query.id), this.$http.get('/api/fetch_league_members/' + this.$route.query.id)])
+                .then(this.$http.spread(function (res1, res2) {
+                    self.league_info = res1.data;
+                    self.member_list = res2.data;
+                    switch (self.league_info.status){
+                        case 0:
+                            self.league_info.status = '未发布';
+                            self.league_info.status_class = 'facolor-warning';
+                            break;
+                        case 1:
+                            self.league_info.status = '正常';
+                            self.league_info.status_class = 'facolor-success';
+                            break;
+                        case 2:
+                            self.league_info.status = '已禁用';
+                            self.league_info.status_class = 'facolor-error';
+                            break;
+                    }
+                    self.league_info.data_products_num = self.league_info.data_products && self.league_info.data_products.length > 0 ? self.league_info.data_products.length : 0;
+                    self.league_info.members_num = self.league_info.members && self.league_info.members.length > 0 ? self.league_info.members.length : 0;
+                    self.$http.get('/api/fetch_data_market_categories_info/' + self.league_info.category_id).then((res)=>{
+                        self.league_info.category_name = res.data.category_name;
+                        self.$http.get('/api/fetch_league_data_products/' + JSON.stringify(self.league_info.data_products)).then((res)=>{
+                            self.product_list = res.data;
+                            self.current_product = self.product_list[0];
+                            self.loaded = true;
+                        }).catch((err)=>{
+                            console.error(err);
+                        });
                     }).catch((err)=>{
                         console.error(err);
                     });
-                }).catch((err)=>{
+                })).catch((err)=>{
                     console.error(err);
+                    if (err.response.data.data.code === 10) {
+                        this.$router.push('/404');
+                    }
                 });
-            }).catch((err)=>{
-                console.error(err);
-            });
-
-            this.$http.get('/api/fetch_league_members/' + this.$route.query.id).then((res)=>{
-                this.member_list = res.data;
-            }).catch((err)=>{
-                console.error(err);
-            });
         },
         methods: {
             changeProduct(index){

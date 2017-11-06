@@ -163,54 +163,63 @@
             };
         },
         created (){
-            this.$http.get('/api/fetch_data_market_categories/1').then((res)=>{
-                if (res.data && res.data.length>0){
-                    this.free_data_categorys = res.data;
-                    if (this.data_market_type === 1) {
-                        if (!this.$route.query.cid){
-                            this.active_category = this.free_data_categorys[0].id;
-                        }
-                        this.$http.get('/api/fetch_free_data_products/' + this.active_category + '/' + (this.current - 1) + '/' + this.page_size).then((res) => {
-                            if (res.data) {
-                                this.product_list = res.data.list;
-                                this.total = res.data.total;
-                                this.loaded = true;
+            let self = this;
+            if ((this.data_market_type !== 1) && (this.data_market_type !== 2)){
+                self.$router.push('/404');
+            }
+            this.$http.all([this.$http.get('/api/fetch_data_market_categories/1'), this.$http.get('/api/fetch_data_market_categories/2')])
+                .then(this.$http.spread(function (res1, res2) {
+                    //获取自由市场分类
+                    if (res1.data && res1.data.length>0){
+                        self.free_data_categorys = res1.data;
+                        if (self.data_market_type === 1) {
+                            if (!self.$route.query.cid){
+                                self.active_category = self.free_data_categorys[0].id;
                             }
-                        }).catch((err) => {
-                            console.error(err);
-                        });
-                    }
-                }
-                this.$nextTick(function() {
-                    this.$refs.dataMarketMenu.updateActiveName();
-                });
-            }).catch((err)=>{
-                console.error(err);
-            });
-            this.$http.get('/api/fetch_data_market_categories/2').then((res)=>{
-                if (res.data && res.data.length>0){
-                    this.league_data_categorys = res.data;
-                    if (this.data_market_type === 2){
-                        if (!this.$route.query.cid){
-                            this.active_category = this.league_data_categorys[0].id;
+                            self.$http.get('/api/fetch_free_data_products/' + self.active_category + '/' + (self.current - 1) + '/' + self.page_size).then((res) => {
+                                if (res.data) {
+                                    self.product_list = res.data.list;
+                                    self.total = res.data.total;
+                                    self.loaded = true;
+                                }
+                            }).catch((err) => {
+                                console.error(err);
+                                if (err.response.data.data.code === 10) {
+                                    self.$router.push('/404');
+                                }
+                            });
                         }
-                        this.$http.get('/api/fetch_league_list/' + this.active_category + '/' + (this.current-1) + '/' + this.page_size).then((res)=>{
-                            if (res.data){
-                                this.product_list = res.data.list;
-                                this.total = res.data.total;
-                                this.loaded = true;
-                            }
-                        }).catch((err)=>{
-                            console.error(err);
-                        });
                     }
-                }
-                this.$nextTick(function() {
-                    this.$refs.dataMarketMenu.updateActiveName();
+                    //获取联盟市场分类
+                    if (res2.data && res2.data.length>0){
+                        self.league_data_categorys = res2.data;
+                        if (self.data_market_type === 2){
+                            if (!self.$route.query.cid){
+                                self.active_category = self.league_data_categorys[0].id;
+                            }
+                            return self.$http.get('/api/fetch_league_list/' + self.active_category + '/' + (self.current-1) + '/' + self.page_size).then((res)=>{
+                                if (res.data){
+                                    self.product_list = res.data.list;
+                                    self.total = res.data.total;
+                                    self.loaded = true;
+                                }
+                            }).catch((err)=>{
+                                console.error(err);
+                                if (err.response.data.data.code === 10) {
+                                    self.$router.push('/404');
+                                }
+                            });
+                        }
+                    }
+                    self.$nextTick(function() {
+                        self.$refs.dataMarketMenu.updateActiveName();
+                    });
+                })).catch((err)=>{
+                    console.error(err);
+                    if (err.response.data.data.code === 10) {
+                        this.$router.push('/404');
+                    }
                 });
-            }).catch((err)=>{
-                console.error(err);
-            });
         },
         methods: {
             changeCategory(name){

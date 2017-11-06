@@ -209,7 +209,7 @@
                                 return h('div', [
                                     h('Button', {
                                         props: {
-                                            loading: this.loading[1],
+                                            loading: this.loading[0],
                                             type: 'error',
                                             size: 'small'
                                         },
@@ -224,7 +224,7 @@
                                     }, '停止'),
                                     h('Button', {
                                         props: {
-                                            loading: this.loading[2],
+                                            loading: this.loading[1],
                                             type: 'primary',
                                             size: 'small'
                                         },
@@ -242,7 +242,7 @@
                                 return h('div', [
                                     h('Button', {
                                         props: {
-                                            loading: this.loading[2],
+                                            loading: this.loading[1],
                                             type: 'success',
                                             size: 'small'
                                         },
@@ -299,7 +299,7 @@
                 this.pm2_list.push(pm2);
             },
             boxStop (){
-                this.loading[1] = true;
+                this.loading[0] = true;
                 this.$http.get('/api/box_stop').then((res) => {
                     if (res.data && res.data.length && res.data.length > 0){
                         this.pm2_status = false;
@@ -307,14 +307,14 @@
                     }else{
                         this.$Message.success('服务停止失败:未知错误');
                     }
-                    this.loading[1] = false;
+                    this.loading[0] = false;
                 }).catch((err) => {
                     console.error(err);
                     this.$Message.error('服务停止失败:' + JSON.stringify(err.response.data));
                 });
             },
             boxRestart (){
-                this.loading[2] = true;
+                this.loading[1] = true;
                 this.$http.get('/api/box_restart').then((res) => {
                     if (res.data && res.data.length && res.data.length > 0){
                         this.pm2_status = true;
@@ -322,7 +322,7 @@
                     }else{
                         this.$Message.success('服务重启失败:未知错误');
                     }
-                    this.loading[2] = false;
+                    this.loading[1] = false;
                 }).catch((err) => {
                     console.error(err);
                     this.$Message.error('服务重启失败:' + JSON.stringify(err.response.data));
@@ -341,6 +341,10 @@
                             });
                         }
                     }
+                },
+                system(data) {
+                    console.log(data[0]);
+                    this.boxRender(data[0]);
                 }
             }
         }

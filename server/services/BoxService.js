@@ -88,7 +88,6 @@ const box_restart = function () {
     })
 };
 
-
 /**
  * 数据盒子服务 - 查询
  */
@@ -105,10 +104,17 @@ const fetch_box = function () {
                 }else{
                     //启动消息BUS，监听日志
                     if ((!is_started)&&(processDescription && processDescription.length > 0)){
+                        let websocket = io.connect(url);
+
+                        setInterval(function () {
+                            pm2.describe('gxb-box-pm2', function(err, processDescription) {
+                                websocket.emit('system', processDescription);
+                            })
+                        },1000);
+
                         pm2.launchBus(function(err, bus) {
                             if (err) return reject(err);
                             is_started = true;
-                            let websocket = io.connect(url);
                             bus.on('log:out', function(packet) {
                                 websocket.emit('message', 'out', packet.data);
                             });
