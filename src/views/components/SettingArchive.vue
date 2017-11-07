@@ -88,14 +88,12 @@
                             <div class="prediv">
                                 <h3 class="subtitle">脚本启动</h3>
                                 <p>Mac, Linux系统：</p>
-                                <pre v-show="visual_packages === '1'">bash start-server.sh</pre>
-                                <pre v-show="visual_packages === '0'">bash start-box.sh</pre>
+                                <pre>bash start.sh</pre>
                                 <p>Windows系统，在cmd下执行：</p>
-                                <pre v-show="visual_packages === '1'">./start-server.cmd</pre>
-                                <pre v-show="visual_packages === '0'">./start-box.cmd</pre>
+                                <pre>./start.cmd</pre>
                                 <h3 class="subtitle">手动启动</h3>
-                                <pre v-show="visual_packages === '1'">npm install<br>npm run server</pre>
-                                <pre v-show="visual_packages === '0'">npm install<br>npm run server-box</pre>
+                                <pre v-show="visual_packages === '1'">npm install -production<br>npm run server</pre>
+                                <pre v-show="visual_packages === '0'">npm install -production<br>npm run server-box</pre>
                             </div>
                         </div>
                     </Panel>

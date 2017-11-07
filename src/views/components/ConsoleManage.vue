@@ -341,6 +341,12 @@
                             });
                         }
                     }
+                    //滚动到底部
+                    if (document.getElementById('scroll-box')){
+                        setTimeout(function () {
+                            document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
+                        },500);
+                    }
                 },
                 system(data) {
                     this.boxRender(data[0]);
