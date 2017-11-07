@@ -16,35 +16,54 @@
     </div>
 </template>
 <script>
-    import {mapActions} from 'vuex';
+    import {mapGetters, mapActions} from 'vuex';
 
     export default {
         data () {
             return {};
         },
+        computed: {
+            ...mapGetters({
+                commonSettings: 'common_setting'
+            })
+        },
         methods: {
             ...mapActions({
                 setAccountType: 'setAccountType',
                 setAccount: 'setAccount',
-                setCertified: 'setCertified'
+                setCommonSetting: 'setCommonSetting'
             }),
             changeType (type){
-                localStorage.setItem('__gxbBox__accountType',type);
-                this.setAccountType({account_type: type});
-                this.setCertified({certified: false});
-                this.$http.get('/api/fetch_config').then((res) => {
-                    if (res.data[type] && res.data[type].account_name && res.data[type].private_key){
-                        let account_info = {
-                            account_name: res.data[type].account_name,
-                            private_key: res.data[type].private_key
-                        };
-                        this.setAccount({account: account_info});
-                    }else{
-                        this.setAccount({account: null});
+                this.commonSettings.account_type = type;
+                //写入文件
+                this.$http({
+                    method: 'post',
+                    url: '/api/write_config',
+                    data: {
+                        config: this.commonSettings,
+                        type: 'common'
                     }
-                    this.$emit('next');
-                }).catch((err)=> {
+                }).then(() => {
+                    this.setCommonSetting({common_setting: this.commonSettings});
+                    this.setAccountType({account_type: type});
+                    this.$http.get('/api/fetch_config').then((res) => {
+                        if (res.data[type] && res.data[type].account_name && res.data[type].private_key){
+                            let account_info = {
+                                account_name: res.data[type].account_name,
+                                private_key: res.data[type].private_key
+                            };
+                            this.setAccount({account: account_info});
+                        }else{
+                            this.setAccount({account: null});
+                        }
+                        this.$emit('next');
+                    }).catch((err)=> {
+                        console.error(err);
+                        this.$Message.error('读取配置失败:' + JSON.stringify(err.response.data));
+                    });
+                }).catch((err) => {
                     console.error(err);
+                    this.$Message.error('保存配置失败:' + JSON.stringify(err.response.data));
                 });
             }
         }

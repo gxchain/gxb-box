@@ -129,9 +129,8 @@
         },
         computed: {
             ...mapGetters({
-                account_type: 'account_type',
                 init_step: 'init_step'
-            }),
+            })
         }
     };
 </script>

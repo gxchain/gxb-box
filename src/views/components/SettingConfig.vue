@@ -28,7 +28,6 @@
 </template>
 <script>
     import AccountConfig from './AccountConfig.vue';
-    import {mapGetters} from 'vuex';
 
     export default {
         data() {
@@ -38,11 +37,6 @@
             restartBox(){
                 this.$emit('restart');
             }
-        },
-        computed: {
-            ...mapGetters({
-                account_type: 'account_type',
-            })
         },
         components: {
             AccountConfig: AccountConfig

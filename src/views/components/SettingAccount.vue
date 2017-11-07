@@ -102,8 +102,7 @@
         },
         computed: {
             ...mapGetters({
-                account: 'account',
-                account_type: 'account_type'
+                account: 'account'
             })
         },
         components: {

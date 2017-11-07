@@ -8,6 +8,11 @@
         font-weight: normal;
     }
 
+    .subtitle{
+        font-weight: bold;
+        padding-bottom: 10px;
+    }
+
     .split-line {
         height: 1px;
         background: #eee;
@@ -53,6 +58,12 @@
     .package .download{
         flex:1;
     }
+
+    .clearHistory{
+        float: right;
+        margin-top: 6px;
+        margin-right: 6px;
+    }
 </style>
 <template>
     <div class="setting-archive">
@@ -70,10 +81,25 @@
                         <Radio label="0">否</Radio>
                     </RadioGroup>
                 </FormItem>
-                <div class="prediv">
-                    <pre v-show="visual_packages === '1'">---Quick Start---<br><br>npm install<br>npm run server</pre>
-                    <pre v-show="visual_packages === '0'">---Quick Start---<br><br>npm install<br>npm run server-box</pre>
-                </div>
+                <Collapse value="packages_list" style="margin-bottom: 20px">
+                    <Panel name="packages_list">
+                        Quick Start
+                        <div slot="content">
+                            <div class="prediv">
+                                <h3 class="subtitle">脚本启动</h3>
+                                <p>Mac, Linux系统：</p>
+                                <pre v-show="visual_packages === '1'">bash start-server.sh</pre>
+                                <pre v-show="visual_packages === '0'">bash start-box.sh</pre>
+                                <p>Windows系统，在cmd下执行：</p>
+                                <pre v-show="visual_packages === '1'">./start-server.cmd</pre>
+                                <pre v-show="visual_packages === '0'">./start-box.cmd</pre>
+                                <h3 class="subtitle">手动启动</h3>
+                                <pre v-show="visual_packages === '1'">npm install<br>npm run server</pre>
+                                <pre v-show="visual_packages === '0'">npm install<br>npm run server-box</pre>
+                            </div>
+                        </div>
+                    </Panel>
+                </Collapse>
                 <Collapse value="packages_list" style="margin-bottom: 20px">
                     <Panel name="packages_list">
                         历史打包记录
@@ -82,7 +108,7 @@
                                 <span class="name">{{ item.name }}</span>
                                 <span class="size">{{ item.size }}</span>
                                 <span class="time">{{ item.time }}</span>
-                                <Button type="ghost" size="small" @click="downArchive(item.name)" class="download">下载</Button>
+                                <span class="download"></span><a :href="'/api/download/' + item.name">下载</a>
                             </p>
                             <p v-if="packages_list.length === 0">暂无记录</p>
                         </div>
@@ -92,6 +118,7 @@
         </div>
         <div class="setting-btn">
             <Button type="primary" @click="startZip" :loading="loading">开始打包</Button>
+            <Button type="ghost" @click="clearHistory">清除记录</Button>
         </div>
     </div>
 </template>
@@ -123,8 +150,9 @@
                     this.$Message.error('打包失败:' + JSON.stringify(err.response.data));
                 });
             },
-            downArchive(filename) {
-                console.log(filename);
+            clearHistory() {
+                this.packages_list = [];
+                localStorage.removeItem('__gxbBox__prodPackages');
             }
         }
     };

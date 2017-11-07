@@ -343,7 +343,6 @@
                     }
                 },
                 system(data) {
-                    console.log(data[0]);
                     this.boxRender(data[0]);
                 }
             }

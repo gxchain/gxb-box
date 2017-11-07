@@ -26,7 +26,7 @@ Vue.use(VueTimeago, {
 const store = new Vuex.Store({
     state: {
         account: null,
-        account_type: localStorage.getItem('__gxbBox__accountType') ? localStorage.getItem('__gxbBox__accountType') : null,
+        account_type: null,
         init_step: 0,
         certified: false,
         active_nav: null,
@@ -106,11 +106,8 @@ router.beforeEach((to, from, next) => {
         case 'setting':
             store.state.active_nav = '4';
             break;
-        case '':
-            store.state.active_nav = '2';
-            break;
         default:
-            store.state.active_nav = null;
+            store.state.active_nav = '2';
             break;
     }
 
@@ -130,12 +127,12 @@ router.afterEach(() => {
     window.scrollTo(0, 0);
 });
 
-//验证初始化是否完成
-if (store.state.account_type) {
-    //加载配置文件
-    axios.get('/api/fetch_config').then((res) => {
+//验证初始化是否完成 - 加载配置文件
+axios.get('/api/fetch_config').then((res) => {
+    store.state.common_setting = res.data['common'];
+    if (res.data['common'].account_type) {
+        store.state.account_type = res.data['common'].account_type;
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
-            store.state.common_setting = res.data['common'];
             store.state.account = {
                 account_name: res.data[store.state.account_type].account_name,
                 private_key: res.data[store.state.account_type].private_key
@@ -154,10 +151,10 @@ if (store.state.account_type) {
                 }
                 if (store.state.certified) {
                     axios.get('/api/fetch_box').then((res) => {
-                        if (res.data && res.data.length &&  res.data.length>0){
+                        if (res.data && res.data.length && res.data.length > 0) {
                             //状态:pm2已启动过 - init-finished
                             store.state.init_step = 'finished';
-                        }else{
+                        } else {
                             //是否已完善配置
                             if ((store.state.account.callback_url) || (store.state.account.service && store.state.account.subscribed_data_product)) {
                                 //状态:pm2未启动过 - init-step5
@@ -173,7 +170,7 @@ if (store.state.account_type) {
                             store: store,
                             render: h => h(App)
                         });
-                    }).catch((err)=>{
+                    }).catch((err) => {
                         console.error(err);
                     });
                 } else {
@@ -189,7 +186,7 @@ if (store.state.account_type) {
             }).catch((err) => {
                 console.error(err);
             });
-        }else{
+        } else {
             store.state.init_step = 1;
             //状态:尚未创建或导入账号 - init-step2
             new Vue({
@@ -199,16 +196,16 @@ if (store.state.account_type) {
                 render: h => h(App)
             });
         }
-    }).catch((err) => {
-        console.error(err);
-    });
-} else {
-    store.state.init_step = 0;
-    //状态:首次访问 - init-step1
-    new Vue({
-        el: '#app',
-        router: router,
-        store: store,
-        render: h => h(App)
-    });
-}
+    }else{
+        store.state.init_step = 0;
+        //状态:首次访问 - init-step1
+        new Vue({
+            el: '#app',
+            router: router,
+            store: store,
+            render: h => h(App)
+        });
+    }
+}).catch((err) => {
+    console.error(err);
+});

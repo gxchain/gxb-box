@@ -379,31 +379,43 @@
                         //认证商户升级为数据源通过
                         if ((this.account_type === 'merchant') && datasource_certified){
                             //变更本地账户类型别写入配置文件
+                            this.commonSettings.account_type =  'datasource';
                             let datasource_config = {
                                 account_name: this.account.account_name,
                                 private_key: this.account.private_key
                             };
-                            this.$http({
-                                method: 'post',
-                                url: '/api/write_config',
-                                data: {
-                                    type: 'datasource',
-                                    merchant_config: null,
-                                    datasource_config: datasource_config,
-                                    is_merchant_open: true,
-                                }
-                            }).then(() => {
-                                localStorage.setItem('__gxbBox__accountType', 'datasource');
-                                this.setAccountType({account_type: 'datasource'});
-                                this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
-                                    this.formDatasource.merchant_name = res.data.name;
-                                    this.merchant_name = res.data.name;
-                                    this.merchant_alias = res.data.alias;
-                                    this.loaded = true;
+                            let self = this;
+                            this.$http.all([
+                                this.$http({
+                                    method: 'post',
+                                    url: '/api/write_config',
+                                    data: {
+                                        type: 'common',
+                                        config: this.commonSettings
+                                    }
+                                }),
+                                this.$http({
+                                    method: 'post',
+                                    url: '/api/write_config',
+                                    data: {
+                                        type: 'datasource',
+                                        merchant_config: null,
+                                        datasource_config: datasource_config,
+                                        is_merchant_open: true,
+                                    }
+                                }),
+                            ]).then(this.$http.spread(function () {
+                                self.setAccountType({account_type: 'datasource'});
+                                self.setCommonSetting({common_setting: self.commonSettings});
+                                self.$http.get('/api/fetch_merchant/' + self.account.account_name + '/' + self.account_type).then((res)=>{
+                                    self.formDatasource.merchant_name = res.data.name;
+                                    self.merchant_name = res.data.name;
+                                    self.merchant_alias = res.data.alias;
+                                    self.loaded = true;
                                 }).catch((err)=>{
                                     console.error(err);
                                 });
-                            }).catch((err) => {
+                            })).catch((err)=>{
                                 console.error(err);
                             });
                         }else{
@@ -428,9 +440,9 @@
         },
         methods: {
             ...mapActions({
-                setAccount: 'setAccount',
                 setAccountType: 'setAccountType',
-                setCertified: 'setCertified'
+                setCertified: 'setCertified',
+                setCommonSetting: 'setCommonSetting'
             }),
             applyMerchant() {
                 this.merchant_modal = true;
@@ -538,6 +550,7 @@
                 account: 'account',
                 account_type: 'account_type',
                 certified: 'certified',
+                commonSettings: 'common_setting'
             }),
         }
     };
