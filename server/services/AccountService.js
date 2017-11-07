@@ -3,7 +3,7 @@ import {key, PrivateKey, Signature} from 'gxbjs';
 import {Apis} from "gxbjs-ws";
 import Immutable from 'immutable';
 import ConfigStroe from './ConfigStore';
-import dictionary from '../utils/dictionary_en.json';
+import dictionary from '../utils/dictionary_en';
 import request from 'superagent';
 import config from '../../config';
 

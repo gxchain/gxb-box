@@ -4,6 +4,7 @@ import AccountService from '../services/AccountService';
 import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
 import ZipArchive from '../services/ZipArchive';
+import fs from 'fs';
 let router = express.Router();
 
 /**
@@ -286,6 +287,21 @@ router.get('/get_box_prod_zip/:visual', function (req, res) {
     }).catch((err) => {
         res.status(400).send(err);
     })
+});
+
+router.get('/download/:filename', function (req, res) {
+    let filename = req.params.filename;
+    let path = 'archive/' + req.params.filename;
+    fs.exists(path, function (exists) {
+        if (exists){
+            res.download(path, filename);
+        }else{
+            res.status(404).send({
+                status: 404,
+                message: '请求错误'
+            });
+        }
+    });
 });
 
 module.exports = router;
