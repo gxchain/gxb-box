@@ -1,0 +1,26 @@
+{
+    "root": true,
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "experimentalObjectRestSpread": true
+        }
+    },
+    "env": {
+        "browser": true,
+        "es6": true,
+        "amd": true
+    },
+    "extends": "eslint:recommended",
+    "plugins": ["html"],
+    "rules": {
+        "indent": ["error", 4, {
+            "SwitchCase": 1
+        }],
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "no-console": ["off"],
+        "no-debugger": ["off"]
+    }
+}

@@ -2,7 +2,6 @@ var webpack = require('webpack');
 var fs = require('fs');
 var path = require('path');
 
-
 var nodeModules = {};
 fs.readdirSync('node_modules')
     .filter(function(x) {
@@ -13,9 +12,9 @@ fs.readdirSync('node_modules')
     });
 
 module.exports = {
-    entry: ['./lib/index.js'],
+    entry: ['../lib/index.js'],
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, '../server-box-dist'),
         filename: 'gxb-box.js'
     },
     target: 'node',
@@ -26,7 +25,7 @@ module.exports = {
             test: /\.js$/,
             loader: 'babel-loader',
             exclude: [
-                path.resolve(__dirname, "node_modules")
+                path.resolve(__dirname, "../node_modules")
             ],
             query: {
                 plugins: ['transform-runtime'],
@@ -38,7 +37,7 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['', '.js', '.json']
+        extensions: ['.js', '.json']
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin({
