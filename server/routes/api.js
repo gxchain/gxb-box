@@ -24,27 +24,34 @@ router.get('/fetch_config', function (req, res) {
  */
 
 router.post('/write_config',function (req, res) {
-    if (req.body.type === 'common'){
-        ConfigStore.common_set(JSON.stringify(req.body.config)).then((resp) => {
-            res.send(resp)
-        }).catch((err) => {
-            res.status(400).send(err);
-        })
-    }
-    if (req.body.type === 'merchant'){
-        ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((resp) => {
-            res.send(resp)
-        }).catch((err) => {
-            res.status(400).send(err);
-        })
-    }
-    if (req.body.type === 'datasource'){
-        let merchant_config = req.body.merchant_config !== null ? JSON.stringify(req.body.merchant_config) : null;
-        ConfigStore.datasource_set(merchant_config,JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((resp) => {
-            res.send(resp)
-        }).catch((err) => {
-            res.status(400).send(err);
-        })
+    if ((req.body.type === 'common') || (req.body.type === 'merchant') || (req.body.type === 'datasource')) {
+        if (req.body.type === 'common') {
+            ConfigStore.common_set(JSON.stringify(req.body.config)).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                res.status(400).send(err);
+            });
+        }
+        if (req.body.type === 'merchant') {
+            ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                res.status(400).send(err);
+            });
+        }
+        if (req.body.type === 'datasource') {
+            let merchant_config = req.body.merchant_config !== null ? JSON.stringify(req.body.merchant_config) : null;
+            ConfigStore.datasource_set(merchant_config, JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                res.status(400).send(err);
+            });
+        }
+    }else{
+        res.status(404).send({
+            status: 404,
+            message: '请求错误'
+        });
     }
 });
 
@@ -57,7 +64,7 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
         res.send(account);
     }).catch(err => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -213,7 +220,7 @@ router.get('/fetch_league_members/:league_id', function (req, res) {
         res.send(members);
     }).catch(err => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -238,7 +245,7 @@ router.get('/box_start', function (req, res) {
         res.send(pm2);
     }).catch((err) => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -250,7 +257,7 @@ router.get('/box_stop', function (req, res) {
         res.send(pm2);
     }).catch((err) => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -262,7 +269,7 @@ router.get('/box_restart', function (req, res) {
         res.send(pm2);
     }).catch((err) => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -274,7 +281,7 @@ router.get('/fetch_box', function (req, res) {
         res.send(pm2);
     }).catch((err) => {
         res.status(400).send(err);
-    })
+    });
 });
 
 /**
@@ -286,7 +293,7 @@ router.get('/get_box_prod_zip/:visual', function (req, res) {
         res.send(zip);
     }).catch((err) => {
         res.status(400).send(err);
-    })
+    });
 });
 
 router.get('/download/:filename', function (req, res) {

@@ -43,7 +43,7 @@ export default{
                         archive.file(path.join(process.cwd(),'./upgrade.sh'), {date: new Date(), name: 'upgrade.sh'});
                         archive.file(path.join(process.cwd(),'./package.json'), {date: new Date(), name: 'package.json'});
                         archive.finalize();
-                    })
+                    });
                 }else{
                     let archiveFileName = 'gxb-box-' + new Date().valueOf() + '.zip';
                     let archiveFilePath = path.join(process.cwd(), './archive/' + archiveFileName);
@@ -77,6 +77,6 @@ export default{
                     archive.finalize();
                 }
             });
-        })
+        });
     }
-}
+};

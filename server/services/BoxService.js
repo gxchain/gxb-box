@@ -1,7 +1,7 @@
-import Promise from 'bluebird'
-import path from 'path'
-import pm2 from 'pm2'
-import io from 'socket.io-client'
+import Promise from 'bluebird';
+import path from 'path';
+import pm2 from 'pm2';
+import io from 'socket.io-client';
 
 let is_started = false;
 let port = parseInt(process.env.port || '3031');
@@ -30,7 +30,7 @@ const box_start = function () {
               }
           });
       });
-  })
+  });
 };
 
 /**
@@ -57,7 +57,7 @@ const box_stop = function () {
                 }
             });
         });
-    })
+    });
 };
 
 
@@ -85,7 +85,7 @@ const box_restart = function () {
                 }
             });
         });
-    })
+    });
 };
 
 /**
@@ -109,7 +109,7 @@ const fetch_box = function () {
                         setInterval(function () {
                             pm2.describe('gxb-box-pm2', function(err, processDescription) {
                                 websocket.emit('system', processDescription);
-                            })
+                            });
                         },1000);
 
                         pm2.launchBus(function(err, bus) {
@@ -129,7 +129,7 @@ const fetch_box = function () {
                 }
             });
         });
-    })
+    });
 };
 
 export default {

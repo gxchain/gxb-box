@@ -6,12 +6,11 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import {Apis, Manager} from "gxbjs-ws";
+import {Apis, Manager} from 'gxbjs-ws';
 import config from '../config';
 
-let debug = require('debug')('gxb-box:server');
+require('debug')('gxb-box:server');
 let app = express();
-
 let devMiddleware = null;
 let hotMiddleware = null;
 let autoOpenBrowser = config.dev.autoOpenBrowser;
@@ -22,8 +21,8 @@ app.use(require('connect-history-api-fallback')({
         {from: '/^\/abc$/', to: '/'},
         {
             from: '/api/*', to: function (options) {
-            return options.parsedUrl.href;
-        }
+                return options.parsedUrl.href;
+            }
         }
     ]
 }));
@@ -43,8 +42,8 @@ if (app.get('env') === 'development') {
     compiler.plugin('compilation', function (compilation) {
         compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
             hotMiddleware.publish({action: 'reload'});
-            cb()
-        })
+            cb();
+        });
     });
     app.use(logger('dev'));
     app.use(devMiddleware);
@@ -69,7 +68,7 @@ const connectedCheck = function (req, res, next) {
     else {
         res.status(500).send({
             message: '正在初始化数据,请稍后再试'
-        })
+        });
     }
 };
 
@@ -104,12 +103,14 @@ app.use(function (err, req, res, next) {
  */
 const get_ip_address = () => {
     let interfaces = os.networkInterfaces();
-    for (let devName in interfaces) {
-        let iface = interfaces[devName];
-        for (let i = 0; i < iface.length; i++) {
-            let alias = iface[i];
-            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-                return alias.address;
+    for(let devName in interfaces){
+        if (interfaces.hasOwnProperty(devName)) {
+            let iface = interfaces[devName];
+            for (let i = 0; i < iface.length; i++) {
+                let alias = iface[i];
+                if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                    return alias.address;
+                }
             }
         }
     }
@@ -163,14 +164,14 @@ let connect = function (callback) {
                 setTimeout(function () {
                     connect(callback);
                 }, 3000);
-            })
+            });
         }
     }).catch((ex) => {
         console.error('检查连接失败,3秒后重试', ex.message);
         setTimeout(function () {
             connect(callback);
         }, 3000);
-    })
+    });
 };
 
 /**
@@ -200,21 +201,21 @@ let initConnection = function () {
  * 启动web服务
  */
 let serverStarted = false;
+let port = parseInt(process.env.port || '3031');
 let startServer = function () {
     if (serverStarted) {
         return;
     }
     serverStarted = true;
-    let port = parseInt(process.env.port || '3031');
     app.set('port', port);
     let server = http.createServer(app);
     let websocket = io(server);
     websocket.on('connection', function (socket) {
-        socket.on("message", function (type, data) {
-            websocket.emit("message", type, data);
+        socket.on('message', function (type, data) {
+            websocket.emit('message', type, data);
         });
-        socket.on("system", function (data) {
-            websocket.emit("system", data);
+        socket.on('system', function (data) {
+            websocket.emit('message', data);
         });
     });
     server.listen(port);
@@ -229,7 +230,7 @@ let startServer = function () {
         });
         let local_ip = get_ip_address();
         console.log('公信宝数据盒子配置系统已启动');
-        console.log('> 访问地址：' + 'http://' + local_ip + ':' + port)
+        console.log('> 访问地址：' + 'http://' + local_ip + ':' + port);
     });
 };
 
@@ -242,14 +243,14 @@ Apis.setRpcConnectionStatusCallback(function (status) {
         reconnect: '重新连接'
     };
     console.log('witness当前状态:', statusMap[status] || status);
-    if (status === "reconnect") {
+    if (status === 'reconnect') {
         console.log('断开重连');
     } else if (connected && (status === 'closed' || status === 'error')) { // 出错重连
         connected = false;
         console.log('重新连接其他witness');
         connect(function () {
             initConnection();
-        })
+        });
     }
 });
 

@@ -8,6 +8,7 @@
         }
     },
     "env": {
+        "node": true,
         "browser": true,
         "es6": true,
         "amd": true
@@ -15,9 +16,6 @@
     "extends": "eslint:recommended",
     "plugins": ["html"],
     "rules": {
-        "indent": ["error", 4, {
-            "SwitchCase": 1
-        }],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "no-console": ["off"],
