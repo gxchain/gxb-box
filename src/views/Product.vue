@@ -359,6 +359,8 @@
 </template>
 <script>
     import {mapGetters} from 'vuex';
+    import Handler from '../libs/handler';
+
     export default {
         props: ['product'],
         data () {
@@ -426,16 +428,13 @@
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
-
-                    this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id).then((res)=>{
-                        product.category_name = res.data.category_name;
-                        this.product_info = product;
-                        this.loaded = true;
-                    }).catch((err)=>{
-                        console.error(err);
-                    });
+                    return this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id);
+                }).then((res)=>{
+                    product.category_name = res.data.category_name;
+                    this.product_info = product;
+                    this.loaded = true;
                 }).catch((err)=>{
-                    console.error(err);
+                    Handler.error(err);
                     if (err.response.data.data.code === 10) {
                         this.$router.push('/404');
                     }
@@ -469,7 +468,7 @@
                     this.product_info = product;
                     this.loaded = true;
                 }).catch((err)=>{
-                    console.error(err);
+                    Handler.error(err);
                 });
             },
             getSampleVal(def){
@@ -583,7 +582,7 @@
                     title: 'API测试工具',
                     content: '正在拼命开发中....'
                 });
-            },
+            }
         }
     };
 </script>

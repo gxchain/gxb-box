@@ -44,18 +44,18 @@
             </Form>
         </div>
         <div class="setting-btn">
-            <Button type="primary" @click="saveConfig">保存配置</Button>
-            <Button type="success" @click="addApiServer">添加API服务器</Button>
-            <Button type="error" @click="removeApiServer">移除API服务器</Button>
+            <Button type="primary" @click="saveConfig()">保存配置</Button>
+            <Button type="success" @click="addApiServer()">添加API服务器</Button>
+            <Button type="error" @click="removeApiServer()">移除API服务器</Button>
         </div>
 
-        <Modal  v-model="add_modal" title="添加新的 websocket API" @on-ok="handleAdd">
+        <Modal  v-model="add_modal" title="添加新的 websocket API" @on-ok="handleAdd()">
             <Input v-model="add_api">
                 <span slot="prepend">wss://</span>
             </Input>
         </Modal>
 
-        <Modal v-model="remove_modal" title="删除 websocket API" @on-ok="handleRemove">
+        <Modal v-model="remove_modal" title="删除 websocket API" @on-ok="handleRemove()">
             <Select v-model="remove_api">
                 <Option v-for="(item,index) in api_list" :value="item" :key="index">{{ item }}</Option>
             </Select>
@@ -63,6 +63,7 @@
     </div>
 </template>
 <script>
+    import Handler from '../../libs/handler';
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
@@ -91,6 +92,11 @@
             this.api_list = this.commonSettings.witnesses;
             this.formValidate.port = Number(this.commonSettings.port);
             this.formValidate.faucet_url = this.commonSettings.faucet_url;
+        },
+        computed: {
+            ...mapGetters({
+                commonSettings: 'common_setting',
+            }),
         },
         methods: {
             ...mapActions({
@@ -129,8 +135,7 @@
                                 this.$Message.success('保存成功');
                                 this.$emit('restart');
                             }).catch((err) => {
-                                console.error(err);
-                                this.$Message.error('保存失败:' + JSON.stringify(err.response.data));
+                                this.$Message.error('保存失败:' + Handler.error(err));
                             });
                         }else{
                             this.$Message.error('API服务器列表不能为空');
@@ -146,11 +151,6 @@
             removeApiServer() {
                 this.remove_modal = true;
             },
-        },
-        computed: {
-            ...mapGetters({
-                commonSettings: 'common_setting',
-            }),
         }
     };
 </script>

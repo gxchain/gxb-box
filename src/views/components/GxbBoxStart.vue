@@ -24,6 +24,8 @@
 </template>
 <script>
     import {mapActions} from 'vuex';
+    import Handler from '../../libs/handler';
+
     export default {
         data () {
             return {
@@ -41,12 +43,11 @@
                         this.setInitStep({init_step: 'finished'});
                         this.goToConsole();
                     }else{
-                        this.$Message.success('服务启动失败:未知错误');
+                        this.$Message.error('服务启动失败:未知错误');
                     }
                     this.loading = false;
                 }).catch((err) => {
-                    console.error(err);
-                    this.$Message.error('服务启动失败:' + JSON.stringify(err.response.data));
+                    this.$Message.error('服务启动失败:' + Handler.error(err));
                 });
             },
             lastStep (){

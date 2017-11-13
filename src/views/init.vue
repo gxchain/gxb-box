@@ -71,8 +71,8 @@
             </div>
             <div class="operation-box">
                 <div v-bind:is="list[current]"
-                     v-on:last="lastStep"
-                     v-on:next="nextStep"
+                     v-on:last="lastStep()"
+                     v-on:next="nextStep()"
                      scene="init"
                 ></div>
             </div>
@@ -108,6 +108,11 @@
                 this.$router.push('/');
             }
         },
+        computed: {
+            ...mapGetters({
+                init_step: 'init_step'
+            })
+        },
         methods: {
             ...mapActions({
                 setInitStep: 'setInitStep',
@@ -126,11 +131,6 @@
             AccountConfig: AccountConfig,
             AccountCertification: AccountCertification,
             GxbBoxStart: GxbBoxStart
-        },
-        computed: {
-            ...mapGetters({
-                init_step: 'init_step'
-            })
         }
     };
 </script>

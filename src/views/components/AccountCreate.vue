@@ -84,6 +84,7 @@
     </div>
 </template>
 <script>
+    import Handler from '../../libs/handler';
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
@@ -159,6 +160,12 @@
                 this.created = true;
             }
         },
+        computed: {
+            ...mapGetters({
+                account: 'account',
+                account_type: 'account_type',
+            }),
+        },
         methods: {
             ...mapActions({
                 setAccount: 'setAccount'
@@ -181,8 +188,7 @@
                             this.created = true;
                         }).catch((err)=>{
                             this.loading = false;
-                            this.$Message.error('账号创建失败:' + JSON.stringify(err.response.data));
-                            console.error(err);
+                            this.$Message.error('账号创建失败:' + Handler.error(err));
                         });
                     } else {
                         this.loading = false;
@@ -210,9 +216,7 @@
                             this.imported = true;
                         }).catch((err)=>{
                             this.loading = false;
-                            let error_message = JSON.stringify(err.response.data) === '{}' ? '该私钥绑定的账号不存在' : JSON.stringify(err.response.data);
-                            this.$Message.error('账号导入失败:' + error_message);
-                            console.error(err);
+                            this.$Message.error('账号导入失败:' + Handler.error(err));
                         });
                     } else {
                         this.loading = false;
@@ -236,12 +240,6 @@
             nextStep (){
                 this.$emit('next');
             }
-        },
-        computed: {
-            ...mapGetters({
-                account: 'account',
-                account_type: 'account_type',
-            }),
         }
     };
 </script>

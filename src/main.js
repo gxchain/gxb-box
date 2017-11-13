@@ -106,6 +106,9 @@ router.beforeEach((to, from, next) => {
         case 'setting':
             store.state.active_nav = '4';
             break;
+        case '404':
+            store.state.active_nav = null;
+            break;
         default:
             store.state.active_nav = '2';
             break;
@@ -130,6 +133,7 @@ router.afterEach(() => {
 //验证初始化是否完成 - 加载配置文件
 axios.get('/api/fetch_config').then((res) => {
     store.state.common_setting = res.data['common'];
+    //是否选择账户类型
     if (res.data['common'].account_type) {
         store.state.account_type = res.data['common'].account_type;
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {

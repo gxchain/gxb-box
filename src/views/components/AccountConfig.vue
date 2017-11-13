@@ -147,7 +147,9 @@
     </div>
 </template>
 <script>
+    import Handler from '../../libs/handler';
     import {mapGetters} from 'vuex';
+    
     export default {
         props: ['scene'],
         data () {
@@ -233,8 +235,13 @@
                 }
                 this.loaded = true;
             }).catch((err)=>{
-                console.error(err);
+                Handler.error(err);
             });
+        },
+        computed: {
+            ...mapGetters({
+                account_type: 'account_type'
+            })
         },
         methods: {
             handleSubmit1 (name) {
@@ -253,8 +260,7 @@
                             this.$emit('next');
                             this.$emit('restart');
                         }).catch((err) => {
-                            console.error(err);
-                            this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
+                            this.$Message.error('提交失败:' + Handler.error(err));
                         });
                     } else {
                         this.$Message.error('验证失败');
@@ -294,8 +300,7 @@
                                 this.$emit('next');
                                 this.$emit('restart');
                             }).catch((err) => {
-                                console.error(err);
-                                this.$Message.error('提交失败:' + JSON.stringify(err.response.data));
+                                this.$Message.error('提交失败:' + Handler.error(err));
                             });
                         }
                     } else {
@@ -323,12 +328,7 @@
             },
             lastStep (){
                 this.$emit('last');
-            },
-        },
-        computed: {
-            ...mapGetters({
-                account_type: 'account_type'
-            })
+            }
         }
     };
 </script>

@@ -34,13 +34,13 @@
 </style>
 <template>
     <div id="layout">
-        <v-header/>
+        <vHeader></vHeader>
         <section id="container">
             <div class="layout-content">
                 <router-view></router-view>
             </div>
         </section>
-        <v-footer/>
+        <vFooter></vFooter>
     </div>
 </template>
 <script>

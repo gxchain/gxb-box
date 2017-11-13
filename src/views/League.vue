@@ -159,7 +159,7 @@
                             <p class="desc">{{league_info.brief_desc}}</p>
                             <div class="arguments">
                                 <div class="argument">
-                                    <p><strong>ID：</strong><span>{{this.$route.query.id}}</span></p>
+                                    <p><strong>ID：</strong><span>{{league_info.id}}</span></p>
                                     <p><strong>状态：</strong><span :class="league_info.status_class">{{league_info.status}}</span></p>
                                 </div>
                                 <div class="argument">
@@ -171,8 +171,8 @@
                     </div>
                 </TabPane>
                 <TabPane label="联盟成员" name="3">
-                    <div class="member-info" v-for="(member,index) in member_list" :key="index" v-if="member_list">
-                        <div class="member-icon"><AccountImage :account="member.merchant_name"/></div>
+                    <div class="member-info" v-for="(member, index) in member_list" :key="index" v-if="member_list">
+                        <div class="member-icon"><AccountImage :account="member.merchant_name"></AccountImage></div>
                         <div class="member-name"><span>{{member.alias}}</span></div>
                     </div>
                 </TabPane>
@@ -183,6 +183,7 @@
 <script>
     import Product from './Product.vue';
     import AccountImage from './components/AccountImage.vue';
+    import Handler from '../libs/handler';
 
     export default {
         data () {
@@ -197,46 +198,49 @@
         },
         created() {
             let self = this;
-            this.$http.all([this.$http.get('/api/fetch_league_info/' + this.$route.query.id), this.$http.get('/api/fetch_league_members/' + this.$route.query.id)])
-                .then(this.$http.spread(function (res1, res2) {
-                    self.league_info = res1.data;
-                    self.member_list = res2.data;
-                    switch (self.league_info.status){
-                        case 0:
-                            self.league_info.status = '未发布';
-                            self.league_info.status_class = 'facolor-warning';
-                            break;
-                        case 1:
-                            self.league_info.status = '正常';
-                            self.league_info.status_class = 'facolor-success';
-                            break;
-                        case 2:
-                            self.league_info.status = '已禁用';
-                            self.league_info.status_class = 'facolor-error';
-                            break;
-                    }
-                    self.league_info.data_products_num = self.league_info.data_products && self.league_info.data_products.length > 0 ? self.league_info.data_products.length : 0;
-                    self.league_info.members_num = self.league_info.members && self.league_info.members.length > 0 ? self.league_info.members.length : 0;
-                    self.$http.get('/api/fetch_data_market_categories_info/' + self.league_info.category_id).then((res)=>{
-                        self.league_info.category_name = res.data.category_name;
-                        self.$http.get('/api/fetch_league_data_products/' + JSON.stringify(self.league_info.data_products)).then((res)=>{
-                            self.product_list = res.data;
-                            self.current_product = self.product_list[0];
-                            self.loaded = true;
-                        }).catch((err)=>{
-                            console.error(err);
-                        });
-                    }).catch((err)=>{
-                        console.error(err);
-                    });
-                })).catch((err)=>{
-                    console.error(err);
-                    if (err.response.data.data.code === 10) {
-                        this.$router.push('/404');
-                    }
-                });
+            this.$http.all([
+                this.$http.get('/api/fetch_league_info/' + this.$route.query.id),
+                this.$http.get('/api/fetch_league_members/' + this.$route.query.id)
+            ]).then(this.$http.spread(function (res1, res2) {
+                self.formatterLeague(res1.data, res2.data);
+            })).catch((err)=>{
+                Handler.error(err);
+                if (err.response.data.data.code === 10) {
+                    this.$router.push('/404');
+                }
+            });
         },
         methods: {
+            formatterLeague(league_info, member_list){
+                this.league_info = league_info;
+                this.member_list = member_list;
+                switch (this.league_info.status){
+                    case 0:
+                        this.league_info.status = '未发布';
+                        this.league_info.status_class = 'facolor-warning';
+                        break;
+                    case 1:
+                        this.league_info.status = '正常';
+                        this.league_info.status_class = 'facolor-success';
+                        break;
+                    case 2:
+                        this.league_info.status = '已禁用';
+                        this.league_info.status_class = 'facolor-error';
+                        break;
+                }
+                this.league_info.data_products_num = this.league_info.data_products && this.league_info.data_products.length > 0 ? this.league_info.data_products.length : 0;
+                this.league_info.members_num = this.league_info.members && this.league_info.members.length > 0 ? this.league_info.members.length : 0;
+                this.$http.get('/api/fetch_data_market_categories_info/' + this.league_info.category_id).then((res)=>{
+                    this.league_info.category_name = res.data.category_name;
+                    return this.$http.get('/api/fetch_league_data_products/' + JSON.stringify(this.league_info.data_products));
+                }).then((res)=>{
+                    this.product_list = res.data;
+                    this.current_product = this.product_list[0];
+                    this.loaded = true;
+                }).catch((err)=>{
+                    Handler.error(err);
+                });
+            },
             changeProduct(index){
                 this.current_product = this.product_list[index];
             }

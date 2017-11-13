@@ -95,15 +95,15 @@
                 is_show: false
             };
         },
-        methods: {
-            showPrivateKey(){
-                this.is_show = !this.is_show;
-            }
-        },
         computed: {
             ...mapGetters({
                 account: 'account'
             })
+        },
+        methods: {
+            showPrivateKey(){
+                this.is_show = !this.is_show;
+            }
         },
         components: {
             AccountCertification: AccountCertification
