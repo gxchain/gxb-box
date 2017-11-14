@@ -63,8 +63,6 @@
 
     .server-logs .log-box ul:after {
         content: "\2590";
-        -webkit-animation: blinker 1s linear infinite;
-        -moz-animation: blinker 1s linear infinite;
         animation: blinker 1s linear infinite;
     }
     .server-logs .log-box ul li {
@@ -77,28 +75,6 @@
         font-family: monospace;
     }
 
-    @-moz-keyframes blinker {
-        0% {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0.0;
-        }
-        100% {
-            opacity: 1.0;
-        }
-    }
-    @-webkit-keyframes blinker {
-        0% {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0.0;
-        }
-        100% {
-            opacity: 1.0;
-        }
-    }
     @keyframes blinker {
         0% {
             opacity: 1.0;

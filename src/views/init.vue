@@ -14,19 +14,16 @@
     .init h1 img {
         width: 100%;
         height: 100%;
-        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
         animation: rotation 5s linear infinite;
-        -moz-animation: rotation 5s linear infinite;
-        -webkit-animation: rotation 5s linear infinite;
-        -o-animation: rotation 5s linear infinite;
     }
 
-    @-webkit-keyframes rotation {
+    @keyframes rotation {
         from {
-            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
         }
         to {
-            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
         }
     }
 
