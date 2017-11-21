@@ -468,6 +468,7 @@
                 apiTestResponse: null,
                 apiTestData: null,
                 apiTestCostTime: 0,
+                apiInterval: null,
                 system_code: {
                     NOT_FOUND: {desc: '数据项不存在'},
                     INVALID_PARAMS: {desc: '参数错误'},
@@ -484,6 +485,9 @@
             }else{
                 this.formatterFreeData(this.$route.query.id);
             }
+        },
+        beforeDestory() {
+            clearInterval(this.apiInterval);
         },
         watch: {
             product: function (val) {
@@ -695,7 +699,7 @@
                     this.apiTestResponse = res.data;
                     if (this.apiTestResponse.data.request_id) {
                         let self = this;
-                        let apiInterval = setInterval(function(){
+                        this.apiInterval = setInterval(function(){
                             self.$http({
                                 method: 'GET',
                                 url: 'http://'+ self.commonSettings.box_ip +':'+ self.commonSettings.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data',
@@ -704,7 +708,7 @@
                                     let endTime = new Date();
                                     self.apiTestCostTime = endTime - beginTime;
                                     self.apiTestData = res.data;
-                                    clearInterval(apiInterval);
+                                    clearInterval(self.apiInterval);
                                     self.loading = false;
                                 }
                             });
@@ -712,7 +716,7 @@
                     }
                 }).catch((err)=>{
                     this.$Message.error('请求失败:' + Handler.error(err));
-                    self.loading = false;
+                    this.loading = false;
                 });
             }
         }
