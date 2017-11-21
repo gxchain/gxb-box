@@ -33,7 +33,7 @@
             </Col>
             <Col span="19">
                 <div class="layout-content-main">
-                    <div v-bind:is="list[current]" v-on:restart="restartBox"></div>
+                    <div v-bind:is="list[current]" v-on:restart="restartBox()"></div>
                 </div>
             </Col>
         </Row>
@@ -44,6 +44,7 @@
     import SettingConfig from './components/SettingConfig.vue';
     import SettingApi from './components/SettingApi.vue';
     import SettingArchive from './components/SettingArchive.vue';
+    import Handler from '../libs/handler';
 
     export default {
         data () {
@@ -80,8 +81,7 @@
                 this.$http.get('/api/box_restart').then(() => {
                     this.$router.push('/console');
                 }).catch((err) => {
-                    console.error(err);
-                    this.$Message.error('服务重启失败:' + JSON.stringify(err.response.data));
+                    this.$Message.error('服务重启失败:' + Handler.error(err));
                 });
             }
         },

@@ -115,13 +115,14 @@
             </Form>
         </div>
         <div class="setting-btn">
-            <Button type="primary" @click="startZip" :loading="loading">开始打包</Button>
-            <Button type="ghost" @click="clearHistory">清除记录</Button>
+            <Button type="primary" @click="startZip()" :loading="loading">开始打包</Button>
+            <Button type="ghost" @click="clearHistory()">清除记录</Button>
         </div>
     </div>
 </template>
 <script>
     import util from '../../libs/util';
+    import Handler from '../../libs/handler';
 
     export default {
         data() {
@@ -144,8 +145,7 @@
                     localStorage.setItem('__gxbBox__prodPackages', JSON.stringify(this.packages_list));
                 }).catch((err)=>{
                     this.loading = false;
-                    console.error(err);
-                    this.$Message.error('打包失败:' + JSON.stringify(err.response.data));
+                    this.$Message.error('打包失败:' + Handler.error(err));
                 });
             },
             clearHistory() {

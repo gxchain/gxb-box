@@ -193,6 +193,33 @@
     .product-tab .question{
         margin-top: 10px;
     }
+
+    .api-test-modal.product-tab{
+        margin-top: 0;
+    }
+
+    .api-test-modal h3 {
+        margin: 10px 0;
+    }
+
+    .api-test-modal .api-test-btn {
+        margin-top: 5px;
+        font-size:12px;
+        color:#ff8503;
+    }
+
+    .api-test-modal .simpleTable>.ivu-input-wrapper,
+    .api-test-modal .simpleTable>.ivu-select{
+        margin-top: 10px;
+    }
+
+    .api-test-modal .left{
+        text-align: left;
+    }
+
+    .pre-loading {
+        position: relative;
+    }
 </style>
 <template>
     <div class="product">
@@ -355,17 +382,93 @@
                 </Tabs>
             </div>
         </div>
+
+        <Modal v-model="apiTestModal" width="80%" class="api-test-modal product-tab">
+            <p slot="header">
+                <span>API测试工具</span>
+            </p>
+            <Form :label-width="60" label-position="top">
+                <div class="simpleline simpleTable">
+                    <strong>接口名称：</strong>
+                    <Input v-model="product_info.product_name" readonly></Input>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>接口地址：</strong>
+                    <Input v-model="product_info.current_url" readonly></Input>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>请求方式：</strong>
+                    <Select v-model="apiTestType">
+                        <Option value="GET">GET</Option>
+                        <Option value="POST">POST</Option>
+                    </Select>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>请求参数：</strong>
+                    <table class="api_table" border="0" cellspacing="0" cellpadding="0" v-if="currentSchema">
+                        <tbody>
+                        <tr class="title">
+                            <th width="20"></th>
+                            <th width="100">名称</th>
+                            <th width="80">类型</th>
+                            <th width="60">必填</th>
+                            <th>描述</th>
+                            <th>值</th>
+                        </tr>
+                        <tr v-for="(item, key, index) in currentSchema.input" :key="index">
+                            <td>&nbsp;</td>
+                            <td class="url">{{key}}</td>
+                            <td class="url">{{item.type}}</td>
+                            <td class="url">{{item.required ? '是' : '否'}}</td>
+                            <td>{{item.desc}}</td>
+                            <td><Input v-model="apiTestParams[key]"></Input></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="api-test-btn">
+                    <Button type="primary" @click="sendApiTest()" :loading="loading">发送请求</Button>
+                    <span>（*为了准确性，所有请求均基于真实环境请求，请悉知）</span>
+                </div>
+            </Form>
+            <div slot="footer" class="left">
+                <div class="simpleline simpleTable" v-if="apiTestResponse">
+                    <strong>返回内容：</strong>
+                    <div class="prediv">
+                        <pre>{{JSON.stringify(apiTestResponse, null, '  ')}}</pre>
+                    </div>
+                </div>
+                <div class="simpleline simpleTable" v-if="apiTestResponse">
+                    <strong>返回数据：</strong>
+                    <div class="prediv">
+                        <pre v-if="apiTestData">{{'共耗时:' + apiTestCostTime +'ms'}}<br/>{{JSON.stringify(apiTestData, null, '  ')}}</pre>
+                        <pre class="pre-loading" v-else><Spin fix></Spin></pre>
+                    </div>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 <script>
     import {mapGetters} from 'vuex';
+    import Handler from '../libs/handler';
+    import qs from 'qs';
+
     export default {
         props: ['product'],
         data () {
             return {
+                loading: false,
                 loaded: false,
                 product_info: {},
                 currentSchema: null,
+                apiTestModal: false,
+                apiTestType: 'GET',
+                apiTestParams: {},
+                apiTestResponse: null,
+                apiTestData: null,
+                apiTestCostTime: 0,
+                apiInterval: null,
                 system_code: {
                     NOT_FOUND: {desc: '数据项不存在'},
                     INVALID_PARAMS: {desc: '参数错误'},
@@ -382,6 +485,9 @@
             }else{
                 this.formatterFreeData(this.$route.query.id);
             }
+        },
+        beforeDestory() {
+            clearInterval(this.apiInterval);
         },
         watch: {
             product: function (val) {
@@ -426,16 +532,13 @@
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
-
-                    this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id).then((res)=>{
-                        product.category_name = res.data.category_name;
-                        this.product_info = product;
-                        this.loaded = true;
-                    }).catch((err)=>{
-                        console.error(err);
-                    });
+                    return this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id);
+                }).then((res)=>{
+                    product.category_name = res.data.category_name;
+                    this.product_info = product;
+                    this.loaded = true;
                 }).catch((err)=>{
-                    console.error(err);
+                    Handler.error(err);
                     if (err.response.data.data.code === 10) {
                         this.$router.push('/404');
                     }
@@ -469,7 +572,7 @@
                     this.product_info = product;
                     this.loaded = true;
                 }).catch((err)=>{
-                    console.error(err);
+                    Handler.error(err);
                 });
             },
             getSampleVal(def){
@@ -579,11 +682,43 @@
                 }
             },
             openApiTest(){
-                this.$Modal.info({
-                    title: 'API测试工具',
-                    content: '正在拼命开发中....'
-                });
+                this.apiTestModal = true;
             },
+            sendApiTest(){
+                let beginTime = new Date();
+                this.apiTestResponse = null;
+                this.apiTestData = null;
+                this.loading = true;
+                this.$http({
+                    method: this.apiTestType,
+                    url: this.product_info.current_url,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    params: this.apiTestType === 'GET' ? this.apiTestParams : '',
+                    data: this.apiTestType === 'POST' ? qs.stringify(this.apiTestParams) : ''
+                }).then((res) => {
+                    this.apiTestResponse = res.data;
+                    if (this.apiTestResponse.data.request_id) {
+                        let self = this;
+                        this.apiInterval = setInterval(function(){
+                            self.$http({
+                                method: 'GET',
+                                url: 'http://'+ self.commonSettings.box_ip +':'+ self.commonSettings.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data',
+                            }).then((res) => {
+                                if (res.data.length !== 0){
+                                    let endTime = new Date();
+                                    self.apiTestCostTime = endTime - beginTime;
+                                    self.apiTestData = res.data;
+                                    clearInterval(self.apiInterval);
+                                    self.loading = false;
+                                }
+                            });
+                        }, 500);
+                    }
+                }).catch((err)=>{
+                    this.$Message.error('请求失败:' + Handler.error(err));
+                    this.loading = false;
+                });
+            }
         }
     };
 </script>

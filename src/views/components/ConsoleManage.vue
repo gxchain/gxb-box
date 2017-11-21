@@ -63,8 +63,6 @@
 
     .server-logs .log-box ul:after {
         content: "\2590";
-        -webkit-animation: blinker 1s linear infinite;
-        -moz-animation: blinker 1s linear infinite;
         animation: blinker 1s linear infinite;
     }
     .server-logs .log-box ul li {
@@ -77,28 +75,6 @@
         font-family: monospace;
     }
 
-    @-moz-keyframes blinker {
-        0% {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0.0;
-        }
-        100% {
-            opacity: 1.0;
-        }
-    }
-    @-webkit-keyframes blinker {
-        0% {
-            opacity: 1.0;
-        }
-        50% {
-            opacity: 0.0;
-        }
-        100% {
-            opacity: 1.0;
-        }
-    }
     @keyframes blinker {
         0% {
             opacity: 1.0;
@@ -147,6 +123,8 @@
     </div>
 </template>
 <script>
+    import Handler from '../../libs/handler';
+
     export default {
         data () {
             return {
@@ -268,7 +246,7 @@
                 }
                 this.loaded = true;
             }).catch((err) => {
-                console.error(err);
+                Handler.error(err);
             });
         },
         methods: {
@@ -305,12 +283,11 @@
                         this.pm2_status = false;
                         this.boxRender(res.data[0]);
                     }else{
-                        this.$Message.success('服务停止失败:未知错误');
+                        this.$Message.error('服务停止失败:未知错误');
                     }
                     this.loading[0] = false;
                 }).catch((err) => {
-                    console.error(err);
-                    this.$Message.error('服务停止失败:' + JSON.stringify(err.response.data));
+                    this.$Message.error('服务停止失败:' + Handler.error(err));
                 });
             },
             boxRestart (){
@@ -320,32 +297,33 @@
                         this.pm2_status = true;
                         this.boxRender(res.data[0]);
                     }else{
-                        this.$Message.success('服务重启失败:未知错误');
+                        this.$Message.error('服务重启失败:未知错误');
                     }
                     this.loading[1] = false;
                 }).catch((err) => {
-                    console.error(err);
-                    this.$Message.error('服务重启失败:' + JSON.stringify(err.response.data));
+                    this.$Message.error('服务重启失败:' + Handler.error(err));
                 });
             }
         },
         socket: {
             events: {
                 message(type, msg) {
-                    let msg_list = msg.split('\n');
-                    for (let i=0; i < msg_list.length; i++){
-                        if (msg_list[i] !== ''){
-                            this.pm2_logs.push({
-                                type: type,
-                                tip: msg_list[i]
-                            });
+                    if (msg){
+                        let msg_list = msg.split('\n');
+                        for (let i=0; i < msg_list.length; i++){
+                            if (msg_list[i] !== ''){
+                                this.pm2_logs.push({
+                                    type: type,
+                                    tip: msg_list[i]
+                                });
+                            }
                         }
-                    }
-                    //滚动到底部
-                    if (document.getElementById('scroll-box')){
-                        setTimeout(function () {
-                            document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
-                        },500);
+                        //滚动到底部
+                        if (document.getElementById('scroll-box')){
+                            setTimeout(function () {
+                                document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
+                            },500);
+                        }
                     }
                 },
                 system(data) {

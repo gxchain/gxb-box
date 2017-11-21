@@ -151,16 +151,16 @@ let util = {
     },
 
     formatDateTime: function(inputTime) {
-        var date = new Date(inputTime);
-        var y = date.getFullYear();
-        var m = date.getMonth() + 1;
+        let date = new Date(inputTime);
+        let y = date.getFullYear();
+        let m = date.getMonth() + 1;
         m = m < 10 ? ('0' + m) : m;
-        var d = date.getDate();
+        let d = date.getDate();
         d = d < 10 ? ('0' + d) : d;
-        var h = date.getHours();
+        let h = date.getHours();
         h = h < 10 ? ('0' + h) : h;
-        var minute = date.getMinutes();
-        var second = date.getSeconds();
+        let minute = date.getMinutes();
+        let second = date.getSeconds();
         minute = minute < 10 ? ('0' + minute) : minute;
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;

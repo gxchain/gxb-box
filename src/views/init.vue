@@ -14,19 +14,16 @@
     .init h1 img {
         width: 100%;
         height: 100%;
-        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
         animation: rotation 5s linear infinite;
-        -moz-animation: rotation 5s linear infinite;
-        -webkit-animation: rotation 5s linear infinite;
-        -o-animation: rotation 5s linear infinite;
     }
 
-    @-webkit-keyframes rotation {
+    @keyframes rotation {
         from {
-            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
         }
         to {
-            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
         }
     }
 
@@ -71,8 +68,8 @@
             </div>
             <div class="operation-box">
                 <div v-bind:is="list[current]"
-                     v-on:last="lastStep"
-                     v-on:next="nextStep"
+                     v-on:last="lastStep()"
+                     v-on:next="nextStep()"
                      scene="init"
                 ></div>
             </div>
@@ -108,6 +105,11 @@
                 this.$router.push('/');
             }
         },
+        computed: {
+            ...mapGetters({
+                init_step: 'init_step'
+            })
+        },
         methods: {
             ...mapActions({
                 setInitStep: 'setInitStep',
@@ -126,11 +128,6 @@
             AccountConfig: AccountConfig,
             AccountCertification: AccountCertification,
             GxbBoxStart: GxbBoxStart
-        },
-        computed: {
-            ...mapGetters({
-                init_step: 'init_step'
-            })
         }
     };
 </script>

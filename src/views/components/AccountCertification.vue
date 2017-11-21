@@ -80,19 +80,19 @@
             <div class="account-certification" v-if="!certified&!is_applying">
                 <div class="merchant-certification" v-if="account_type == 'merchant'">
                     <Alert type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
-                    <Button type="primary" @click="applyMerchant">认证为商户</Button>
+                    <Button type="primary" @click="applyMerchant()">认证为商户</Button>
                 </div>
                 <div class="datasource-certification" v-else>
                     <div class="apply-merchant">
                         <Alert v-show="!merchant_certified" type="info">如果你希望在公信宝进行数据交易，请完成商户实名认证</Alert>
-                        <Button v-show="!merchant_certified" type="primary" @click="applyMerchant">认证为商户</Button>
+                        <Button v-show="!merchant_certified" type="primary" @click="applyMerchant()">认证为商户</Button>
                         <Alert type="success" v-show="merchant_certified">
                             <span class="info">{{merchant_name}}({{merchant_alias}})</span>已通过认证成为<span class="info">认证商户</span>
                         </Alert>
                     </div>
                     <div class="apply-datasource">
                         <Alert type="info">如果你希望在公信宝里成为数据源并出售数据，请完成数据源认证</Alert>
-                        <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource">
+                        <Button type="primary" :disabled="!merchant_certified" @click="applyDatasource()">
                             <span v-show="!merchant_certified">请先完成商户认证</span>
                             <span v-show="merchant_certified">认证为数据源</span>
                         </Button>
@@ -111,7 +111,7 @@
                     <span class="info">{{merchant_name}}({{merchant_alias}})</span> 已通过认证成为
                     <span class="info" v-if="account_type === 'merchant'">认证商户</span>
                     <span class="info" v-else>认证数据源</span>
-                    <div @click="applyDatasource" v-if="((account_type === 'merchant') && (scene !== 'init'))">
+                    <div @click="applyDatasource()" v-if="((account_type === 'merchant') && (scene !== 'init'))">
                         <Tooltip content="升级为数据源" placement="top" class="view-btn">
                             <Icon  type="person-add"></Icon>
                         </Tooltip>
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        <Modal v-model="merchant_modal" width="50%">
+        <Modal v-model="merchant_modal" width="80%">
             <p slot="header" class="center">
                 <span>商户认证</span>
             </p>
@@ -196,7 +196,7 @@
             </div>
         </Modal>
 
-        <Modal v-model="datasource_modal" width="50%">
+        <Modal v-model="datasource_modal" width="80%">
             <p slot="header" class="center">
                 <span>数据源认证</span>
             </p>
@@ -225,6 +225,7 @@
     import {mapActions, mapGetters} from 'vuex';
     import {areaList} from '../../libs/china_regions';
     import util from '../../libs/util';
+    import Handler from '../../libs/handler';
 
     export default {
         props: ['scene'],
@@ -267,9 +268,10 @@
                 loading: false,
                 upload_loading: false,
                 merchant_modal: false,
-                is_applying: false,
                 datasource_modal: false,
+                is_applying: false,
                 merchant_certified: false,
+                datasource_certified: false,
                 merchant_name: '',
                 merchant_alias: '',
                 cityList: areaList,
@@ -356,87 +358,26 @@
         created(){
             //初始化账号认证：获取认证状态
             this.$http.get('/api/fetch_account/' + this.account.account_name).then((res) => {
-                let merchant_certified = res.data.merchant_expiration_date !== '1970-01-01T00:00:00';
-                let datasource_certified = res.data.datasource_expiration_date !== '1970-01-01T00:00:00';
-                this.$http.get('/api/is_applying/' + this.account.account_name).then((res) => {
-                    if ((res.data.merchant_status === 'PASSED')&&!merchant_certified){
-                        res.data.merchant_status = 'INITIAL';
-                    }
-                    if ((res.data.datasource_status === 'PASSED')&&!datasource_certified){
-                        res.data.datasource_status = 'INITIAL';
-                    }
-                    this.is_applying = ((res.data.merchant_status === 'INITIAL')||(res.data.datasource_status === 'INITIAL'));
-                    if (merchant_certified) {
-                        this.merchant_certified = true;
-                        if (this.account_type === 'merchant'){
-                            this.setCertified({certified: true});
-                        }
-                    }
-                    if (datasource_certified) {
-                        this.setCertified({certified: true});
-                    }
-                    if (merchant_certified || datasource_certified){
-                        //认证商户升级为数据源通过
-                        if ((this.account_type === 'merchant') && datasource_certified){
-                            //变更本地账户类型别写入配置文件
-                            this.commonSettings.account_type =  'datasource';
-                            let datasource_config = {
-                                account_name: this.account.account_name,
-                                private_key: this.account.private_key
-                            };
-                            let self = this;
-                            this.$http.all([
-                                this.$http({
-                                    method: 'post',
-                                    url: '/api/write_config',
-                                    data: {
-                                        type: 'common',
-                                        config: this.commonSettings
-                                    }
-                                }),
-                                this.$http({
-                                    method: 'post',
-                                    url: '/api/write_config',
-                                    data: {
-                                        type: 'datasource',
-                                        merchant_config: null,
-                                        datasource_config: datasource_config,
-                                        is_merchant_open: true,
-                                    }
-                                }),
-                            ]).then(this.$http.spread(function () {
-                                self.setAccountType({account_type: 'datasource'});
-                                self.setCommonSetting({common_setting: self.commonSettings});
-                                self.$http.get('/api/fetch_merchant/' + self.account.account_name + '/' + self.account_type).then((res)=>{
-                                    self.formDatasource.merchant_name = res.data.name;
-                                    self.merchant_name = res.data.name;
-                                    self.merchant_alias = res.data.alias;
-                                    self.loaded = true;
-                                }).catch((err)=>{
-                                    console.error(err);
-                                });
-                            })).catch((err)=>{
-                                console.error(err);
-                            });
-                        }else{
-                            this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
-                                this.formDatasource.merchant_name = res.data.name;
-                                this.merchant_name = res.data.name;
-                                this.merchant_alias = res.data.alias;
-                                this.loaded = true;
-                            }).catch((err)=>{
-                                console.error(err);
-                            });
-                        }
-                    }else{
-                        this.loaded = true;
-                    }
-                }).catch((err)=>{
-                    console.error(err);
-                });
+                this.merchant_certified = res.data.merchant_expiration_date !== '1970-01-01T00:00:00';
+                this.datasource_certified = res.data.datasource_expiration_date !== '1970-01-01T00:00:00';
+                if (this.merchant_certified&&(this.account_type === 'merchant')) {
+                    this.setCertified({certified: true});
+                }
+                if (this.datasource_certified) {
+                    this.setCertified({certified: true});
+                }
+                return this.getApplyingStatus();
             }).catch((err)=>{
-                console.error(err);
+                Handler.error(err);
             });
+        },
+        computed: {
+            ...mapGetters({
+                account: 'account',
+                account_type: 'account_type',
+                certified: 'certified',
+                commonSettings: 'common_setting'
+            })
         },
         methods: {
             ...mapActions({
@@ -455,6 +396,75 @@
             },
             closeDatasource() {
                 this.datasource_modal = false;
+            },
+            upgradeDatasource() {
+                //升级为数据源
+                this.commonSettings.account_type =  'datasource';
+                let datasource_config = {
+                    account_name: this.account.account_name,
+                    private_key: this.account.private_key
+                };
+                let self = this;
+                this.$http.all([
+                    this.$http({
+                        method: 'post',
+                        url: '/api/write_config',
+                        data: {
+                            type: 'common',
+                            config: this.commonSettings
+                        }
+                    }),
+                    this.$http({
+                        method: 'post',
+                        url: '/api/write_config',
+                        data: {
+                            type: 'datasource',
+                            merchant_config: null,
+                            datasource_config: datasource_config,
+                            is_merchant_open: true,
+                        }
+                    }),
+                ]).then(this.$http.spread(function () {
+                    self.setAccountType({account_type: 'datasource'});
+                    self.setCommonSetting({common_setting: self.commonSettings});
+                    return this.getMerchantInfo();
+                })).catch((err)=>{
+                    Handler.error(err);
+                });
+            },
+            getApplyingStatus() {
+                this.$http.get('/api/is_applying/' + this.account.account_name).then((res) => {
+                    if ((res.data.merchant_status === 'PASSED')&&!this.merchant_certified){
+                        res.data.merchant_status = 'INITIAL';
+                    }
+                    if ((res.data.datasource_status === 'PASSED')&&!this.datasource_certified){
+                        res.data.datasource_status = 'INITIAL';
+                    }
+                    this.is_applying = ((res.data.merchant_status === 'INITIAL')||(res.data.datasource_status === 'INITIAL'));
+                    if (this.merchant_certified || this.datasource_certified){
+                        //认证商户升级为数据源通过
+                        if ((this.account_type === 'merchant') && this.datasource_certified){
+                            //升级为数据源
+                            this.upgradeDatasource();
+                        }else{
+                            this.getMerchantInfo();
+                        }
+                    }else{
+                        this.loaded = true;
+                    }
+                }).catch((err)=>{
+                    Handler.error(err);
+                });
+            },
+            getMerchantInfo() {
+                this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
+                    this.formDatasource.merchant_name = res.data.name;
+                    this.merchant_name = res.data.name;
+                    this.merchant_alias = res.data.alias;
+                    this.loaded = true;
+                }).catch((err)=>{
+                    Handler.error(err);
+                });
             },
             sendMerchantForm(name) {
                 this.loading = true;
@@ -479,9 +489,34 @@
                             this.$Message.success('申请成功');
                         }).catch((err)=>{
                             this.loading = false;
-                            console.error(err);
-                            let error_msg = JSON.parse(err.response.data.response.text).base ? JSON.parse(err.response.data.response.text).base[0] : '未知错误';
-                            this.$Message.error('申请失败:' + error_msg);
+                            this.$Message.error('申请失败:' + Handler.error(err));
+                        });
+                    } else {
+                        this.loading = false;
+                        this.$Message.error('验证失败');
+                    }
+                });
+            },
+            sendDatasourceForm(name) {
+                this.loading = true;
+                this.$refs[name].validate((valid) => {
+                    if (valid) {
+                        this.$http({
+                            method: 'post',
+                            url: '/api/apply_datasource',
+                            data: {
+                                'apply_info': this.formDatasource,
+                                'account_name': this.account.account_name,
+                                'account_type': this.account_type,
+                            }
+                        }).then(() => {
+                            this.loading = false;
+                            this.datasource_modal = false;
+                            this.is_applying = true;
+                            this.$Message.success('申请成功');
+                        }).catch((err)=>{
+                            this.loading = false;
+                            this.$Message.error('申请失败:' + Handler.error(err));
                         });
                     } else {
                         this.loading = false;
@@ -509,49 +544,12 @@
                     self.formMerchant.cert_image = this.result;
                 };
             },
-            sendDatasourceForm(name) {
-                this.loading = true;
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.$http({
-                            method: 'post',
-                            url: '/api/apply_datasource',
-                            data: {
-                                'apply_info': this.formDatasource,
-                                'account_name': this.account.account_name,
-                                'account_type': this.account_type,
-                            }
-                        }).then(() => {
-                            this.loading = false;
-                            this.datasource_modal = false;
-                            this.is_applying = true;
-                            this.$Message.success('申请成功');
-                        }).catch((err)=>{
-                            this.loading = false;
-                            console.error(err);
-                            let error_msg = JSON.parse(err.response.data.response.text).base ? JSON.parse(err.response.data.response.text).base[0] : '未知错误';
-                            this.$Message.error('申请失败:' + error_msg);
-                        });
-                    } else {
-                        this.loading = false;
-                        this.$Message.error('验证失败');
-                    }
-                });
-            },
             lastStep() {
                 this.$emit('last');
             },
             nextStep() {
                 this.$emit('next');
             }
-        },
-        computed: {
-            ...mapGetters({
-                account: 'account',
-                account_type: 'account_type',
-                certified: 'certified',
-                commonSettings: 'common_setting'
-            }),
         }
     };
 </script>
