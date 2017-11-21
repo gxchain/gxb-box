@@ -3,9 +3,6 @@ let handler = {
         let msg = '未知错误';
         if (error.response) {
             console.error(error.response);
-            console.error(error.response.data.response);
-            console.error(error.response.data.response.text);
-            console.error(error.response.data.response.text.base);
 
             if (error.response.data && error.response.data.message){
                 msg = error.response.data.message;

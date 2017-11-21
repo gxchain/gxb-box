@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        <Modal v-model="merchant_modal" width="50%">
+        <Modal v-model="merchant_modal" width="80%">
             <p slot="header" class="center">
                 <span>商户认证</span>
             </p>
@@ -196,7 +196,7 @@
             </div>
         </Modal>
 
-        <Modal v-model="datasource_modal" width="50%">
+        <Modal v-model="datasource_modal" width="80%">
             <p slot="header" class="center">
                 <span>数据源认证</span>
             </p>
