@@ -563,7 +563,7 @@
                 product.price = product.refer_price;
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
                 product.version = product.schema_contexts[0].version;
-                product.current_url = 'http://'+ this.commonSettings.box_ip +':'+ this.commonSettings.port +'/rpc/' + product.id + '/' + product.version;
+                product.current_url = 'http://'+ this.commonSettings.box_ip +':'+ this.commonSettings.port +'/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                 product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                 product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
