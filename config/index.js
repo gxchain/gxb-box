@@ -17,7 +17,7 @@ module.exports = {
       "wss://node8.gxb.io",
       "wss://node11.gxb.io"
     ],
-    faucet_url: "http://opengateway.gxb.io",
+    faucet_url: "https://opengateway.gxb.io",
     referrer: "opengateway",
     visualizationConfig: {
         "common": {
@@ -29,7 +29,7 @@ module.exports = {
                 "wss://node8.gxb.io",
                 "wss://node11.gxb.io"
             ],
-            "faucet_url": "http://opengateway.gxb.io",
+            "faucet_url": "https://opengateway.gxb.io",
         }
     },
     // Gzip off by default as many popular static hosts such as
@@ -53,18 +53,18 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     witnesses: [
-      "ws://192.168.1.118:28090"
+      "ws://47.96.164.78:28090"
     ],
-    faucet_url: "http://192.168.1.118:1337/gateway",
+    faucet_url: "http://47.96.164.78:8888",
     referrer: "nathan",
     visualizationConfig: {
         "common": {
             "port": 3000,
             "ipfs_addr": "/ip4/139.196.138.193/tcp/5001",
             "witnesses": [
-                "ws://192.168.1.118:28090"
+                "ws://47.96.164.78:28090"
             ],
-            "faucet_url": "http://192.168.1.118:1337/gateway",
+            "faucet_url": "http://47.96.164.78:8888",
             "referrer": "nathan"
         }
     },
