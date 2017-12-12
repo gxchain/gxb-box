@@ -30,7 +30,7 @@
 
 </style>
 <template>
-    <header id="header">
+    <Header id="header">
         <Menu mode="horizontal" :active-name="active_nav" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
@@ -57,7 +57,7 @@
                 </div>
             </div>
         </Menu>
-    </header>
+    </Header>
 </template>
 <script>
     import {mapGetters} from 'vuex';
