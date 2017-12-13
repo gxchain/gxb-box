@@ -5,6 +5,7 @@ import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
 import ZipArchive from '../services/ZipArchive';
 import fs from 'fs';
+
 let router = express.Router();
 
 /**
@@ -12,9 +13,9 @@ let router = express.Router();
  */
 
 router.get('/fetch_config', function (req, res) {
-    ConfigStore.init().then((config)=>{
+    ConfigStore.init().then((config) => {
         res.send(config);
-    }).catch((err)=>{
+    }).catch((err) => {
         res.status(400).send(err);
     });
 });
@@ -23,7 +24,7 @@ router.get('/fetch_config', function (req, res) {
  * 写入配置文件
  */
 
-router.post('/write_config',function (req, res) {
+router.post('/write_config', function (req, res) {
     if ((req.body.type === 'common') || (req.body.type === 'merchant') || (req.body.type === 'datasource')) {
         if (req.body.type === 'common') {
             ConfigStore.common_set(JSON.stringify(req.body.config)).then((result) => {
@@ -47,7 +48,7 @@ router.post('/write_config',function (req, res) {
                 res.status(400).send(err);
             });
         }
-    }else{
+    } else {
         res.status(404).send({
             status: 404,
             message: '请求错误'
@@ -168,7 +169,7 @@ router.get('/fetch_data_market_categories_info/:category_id', function (req, res
  */
 
 router.get('/fetch_free_data_products/:category_id/:page/:pageSize', function (req, res) {
-    DataService.fetch_free_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+    DataService.fetch_free_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords || '').then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);
@@ -192,7 +193,7 @@ router.get('/fetch_free_data_product_details/:product_id', function (req, res) {
  */
 
 router.get('/fetch_league_list/:category_id/:page/:pageSize', function (req, res) {
-    DataService.fetch_league_list(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords||'').then((result) => {
+    DataService.fetch_league_list(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords || '').then((result) => {
         res.send(result);
     }).catch((err) => {
         res.status(400).send(err);
@@ -234,7 +235,6 @@ router.get('/fetch_league_data_products/:data_product_ids', function (req, res) 
         res.status(400).send(err);
     });
 });
-
 
 /**
  * 数据盒子服务 - 启动
@@ -300,9 +300,9 @@ router.get('/download/:filename', function (req, res) {
     let filename = req.params.filename;
     let path = 'archive/' + req.params.filename;
     fs.exists(path, function (exists) {
-        if (exists){
+        if (exists) {
             res.download(path, filename);
-        }else{
+        } else {
             res.status(404).send({
                 status: 404,
                 message: '请求错误'

@@ -3,12 +3,14 @@
         height: 80px;
         line-height: 80px;
     }
-    .layout-header{
+
+    .layout-header {
         width: 90%;
         height: 80px;
         margin: 0 auto;
     }
-    .layout-logo{
+
+    .layout-logo {
         width: 167px;
         height: 30px;
         background: url("/static/img/gxb-box.png");
@@ -18,12 +20,13 @@
         position: relative;
         top: 25px;
     }
-    .layout-nav{
+
+    .layout-nav {
         height: inherit;
         float: right;
     }
 
-    .layout-nav .account{
+    .layout-nav .account {
         float: left;
         padding: 0 20px;
     }
@@ -61,13 +64,11 @@
 </template>
 <script>
     import {mapGetters} from 'vuex';
+
     export default {
-        data () {
-            return {};
-        },
         methods: {
-            route(name) {
-                switch (name){
+            route (name) {
+                switch (name) {
                     case '1':
                         this.$router.push('/init');
                         break;
@@ -87,7 +88,7 @@
             ...mapGetters({
                 account: 'account',
                 init_step: 'init_step',
-                active_nav: 'active_nav',
+                active_nav: 'active_nav'
             })
         }
     };

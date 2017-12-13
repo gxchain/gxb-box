@@ -18,9 +18,13 @@ let autoOpenBrowser = config.dev.autoOpenBrowser;
 app.use(require('connect-history-api-fallback')({
     index: '/',
     rewrites: [
-        {from: '/^\/abc$/', to: '/'},
         {
-            from: '/api/*', to: function (options) {
+            from: '/^abc$/',
+            to: '/'
+        },
+        {
+            from: '/api/*',
+            to: function (options) {
                 return options.parsedUrl.href;
             }
         }
@@ -51,8 +55,7 @@ if (app.get('env') === 'development') {
 
     let staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory);
     app.use(staticPath, express.static('./static'));
-}
-else {
+} else {
     app.use(logger('combined'));
     app.use(express.static('./dist'));
 }
@@ -64,8 +67,7 @@ let connected = false;
 const connectedCheck = function (req, res, next) {
     if (connected) {
         next();
-    }
-    else {
+    } else {
         res.status(500).send({
             message: '正在初始化数据,请稍后再试'
         });
@@ -81,7 +83,7 @@ app.use(function (req, res, next) {
 });
 
 if (app.get('env') === 'development') {
-    app.use(function (err, req, res, next) {
+    app.use(function (err, req, res) {
         res.status(err.status || 500);
         res.send({
             message: err.message,
@@ -90,7 +92,7 @@ if (app.get('env') === 'development') {
     });
 }
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     res.status(err.status || 500);
     res.send({
         message: err.message,
@@ -103,7 +105,7 @@ app.use(function (err, req, res, next) {
  */
 const get_ip_address = () => {
     let interfaces = os.networkInterfaces();
-    for(let devName in interfaces){
+    for (let devName in interfaces) {
         if (interfaces.hasOwnProperty(devName)) {
             let iface = interfaces[devName];
             for (let i = 0; i < iface.length; i++) {
@@ -152,8 +154,7 @@ let connect = function (callback) {
             setTimeout(function () {
                 connect(callback);
             }, 3000);
-        }
-        else {
+        } else {
             connectionManager.urls = urls;
             connectionManager.connectWithFallback(true).then(() => {
                 console.log('witnesses已连接');
@@ -179,7 +180,7 @@ let connect = function (callback) {
  */
 let initConnection = function () {
     console.log('检查配置文件...');
-    //检查配置文件
+    // 检查配置文件
     let config_path = path.resolve(process.cwd(), './config/config.json');
     fs.exists(config_path, function (exists) {
         if (exists) {
@@ -189,8 +190,7 @@ let initConnection = function () {
                 let _config = app.get('env') === 'development' ? config.dev.visualizationConfig : config.build.visualizationConfig;
                 fs.writeFileSync(config_path, JSON.stringify(_config));
                 startServer();
-            }
-            catch (ex) {
+            } catch (ex) {
                 console.error('获取配置信息失败,请检查:\n1. 请确认配置文件以及读写权限 \n', ex);
             }
         }
@@ -262,7 +262,7 @@ connect(function () {
 /**
  * Event listener for HTTP server "error" event.
  */
-function onError(error) {
+function onError (error) {
     if (error.syscall !== 'listen') {
         throw error;
     }
@@ -288,17 +288,17 @@ function onError(error) {
 
 process.stdin.resume();
 
-function exitHandler(reason, err) {
+function exitHandler (reason, err) {
     if (err) console.log(err.stack);
     console.log('程序退出:', reason);
     process.exit();
 }
 
-//do something when app is closing
+// do something when app is closing
 process.on('exit', exitHandler.bind(null, 'exit'));
 
-//catches ctrl+c event
+// catches ctrl+c event
 process.on('SIGINT', exitHandler.bind(null, 'SIGINT'));
 
-//catches uncaught exceptions
+// catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, 'uncaughtException'));

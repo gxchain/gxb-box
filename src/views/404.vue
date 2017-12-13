@@ -3,6 +3,7 @@
         width: 100%;
         padding: 30px;
     }
+
     @keyframes error404animation {
         0% {
             transform: rotateZ(0deg);
@@ -23,14 +24,16 @@
             transform: rotateZ(0deg);
         }
     }
+
     .error404-body-con {
         width: 700px;
         height: 500px;
         position: absolute;
         left: 50%;
         top: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
     }
+
     .error404-body-con-title {
         text-align: center;
         font-size: 240px;
@@ -40,12 +43,14 @@
         line-height: 260px;
         margin-top: 40px;
     }
+
     .error404-body-con-title span {
         display: inline-block;
         color: #19be6b;
         font-size: 230px;
         animation: error404animation 3s ease 0s infinite alternate;
     }
+
     .error404-body-con-message {
         display: block;
         text-align: center;
@@ -54,6 +59,7 @@
         letter-spacing: 12px;
         color: #dddde2;
     }
+
     .error404-btn-con {
         text-align: center;
         padding: 20px 0;
@@ -67,7 +73,8 @@
             <p class="error404-body-con-message">YOU&nbsp;&nbsp;LOOK&nbsp;&nbsp;LOST</p>
             <div class="error404-btn-con">
                 <Button @click="goHome()" size="large" style="width: 200px;" type="text">返回首页</Button>
-                <Button @click="backPage()" size="large" style="width: 200px;margin-left: 40px;" type="primary">返回上一页</Button>
+                <Button @click="backPage()" size="large" style="width: 200px;margin-left: 40px;" type="primary">返回上一页
+                </Button>
             </div>
         </div>
     </div>

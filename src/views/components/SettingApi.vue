@@ -14,7 +14,7 @@
         margin: 20px 0;
     }
 
-    .setting-btn{
+    .setting-btn {
         text-align: center;
     }
 </style>
@@ -31,7 +31,7 @@
                     <InputNumber v-model="formValidate.port" placeholder="请输入端口"></InputNumber>
                 </FormItem>
                 <FormItem label="水龙头地址" prop="faucet_url">
-                    <Input v-model="formValidate.faucet_url" placeholder="请输入水龙头地址"></Input>
+                    <i-input v-model="formValidate.faucet_url" placeholder="请输入水龙头地址"></i-input>
                 </FormItem>
                 <Collapse value="api_list" style="margin-bottom: 20px">
                     <Panel name="api_list">
@@ -49,10 +49,10 @@
             <Button type="error" @click="removeApiServer()">移除API服务器</Button>
         </div>
 
-        <Modal  v-model="add_modal" title="添加新的 websocket API" @on-ok="handleAdd()">
-            <Input v-model="add_api">
+        <Modal v-model="add_modal" title="添加新的 websocket API" @on-ok="handleAdd()">
+            <i-input v-model="add_api">
                 <span slot="prepend">wss://</span>
-            </Input>
+            </i-input>
         </Modal>
 
         <Modal v-model="remove_modal" title="删除 websocket API" @on-ok="handleRemove()">
@@ -67,7 +67,7 @@
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
-        data() {
+        data () {
             return {
                 formValidate: {
                     port: 3000,
@@ -75,7 +75,7 @@
                 },
                 ruleValidate: {
                     port: [
-                        {required: true, type: 'integer', message: '只能输入数字', trigger: 'blur' }
+                        {required: true, type: 'integer', message: '只能输入数字', trigger: 'blur'}
                     ],
                     faucet_url: [
                         {required: true, type: 'url', message: '水龙头地址必须为URL', trigger: 'blur'}
@@ -88,38 +88,38 @@
                 remove_api: ''
             };
         },
-        created (){
+        created () {
             this.api_list = this.commonSettings.witnesses;
             this.formValidate.port = Number(this.commonSettings.port);
             this.formValidate.faucet_url = this.commonSettings.faucet_url;
         },
         computed: {
             ...mapGetters({
-                commonSettings: 'common_setting',
-            }),
+                commonSettings: 'common_setting'
+            })
         },
         methods: {
             ...mapActions({
                 setCommonSetting: 'setCommonSetting'
             }),
-            handleAdd() {
-                if (this.add_api === ''){
+            handleAdd () {
+                if (this.add_api === '') {
                     this.$Message.error('地址不能为空');
-                }else{
+                } else {
                     this.api_list.push('wss://' + this.add_api);
                 }
             },
-            handleRemove() {
-                if (this.remove_api === ''){
+            handleRemove () {
+                if (this.remove_api === '') {
                     this.$Message.error('请选择要删除的地址');
-                }else{
+                } else {
                     this.api_list = this.api_list.filter(t => t !== this.remove_api);
                 }
             },
-            saveConfig() {
+            saveConfig () {
                 this.$refs['formValidate'].validate((valid) => {
                     if (valid) {
-                        if (this.api_list.length > 0){
+                        if (this.api_list.length > 0) {
                             this.commonSettings.port = Number(this.formValidate.port);
                             this.commonSettings.faucet_url = this.formValidate.faucet_url;
                             this.commonSettings.witnesses = this.api_list;
@@ -137,7 +137,7 @@
                             }).catch((err) => {
                                 this.$Message.error('保存失败:' + Handler.error(err));
                             });
-                        }else{
+                        } else {
                             this.$Message.error('API服务器列表不能为空');
                         }
                     } else {
@@ -145,12 +145,12 @@
                     }
                 });
             },
-            addApiServer() {
+            addApiServer () {
                 this.add_modal = true;
             },
-            removeApiServer() {
+            removeApiServer () {
                 this.remove_modal = true;
-            },
+            }
         }
     };
 </script>

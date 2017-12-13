@@ -1,17 +1,17 @@
 <style scoped>
-    .facolor-info{
+    .facolor-info {
         color: #2d8cf0;
     }
 
-    .facolor-success{
+    .facolor-success {
         color: #19be6b;
     }
 
-    .facolor-warning{
+    .facolor-warning {
         color: #ff9900;
     }
 
-    .facolor-error{
+    .facolor-error {
         color: #ed3f14;
     }
 
@@ -23,30 +23,31 @@
         padding: 30px;
     }
 
-    .spin-container{
+    .spin-container {
         display: inline-block;
         width: 100%;
         height: 100%;
         position: relative;
     }
 
-    .loaded-container{
+    .loaded-container {
         width: 100%;
         height: 100%;
     }
 
-    .product-header{
+    .product-header {
         position: relative;
         min-height: 130px;
         display: flex;
         flex-direction: row;
     }
-    .product-tab{
+
+    .product-tab {
         margin-top: 25px;
         flex: 1;
     }
 
-    .product-icon{
+    .product-icon {
         width: 125px;
         height: 125px;
         border: 1px solid #eee;
@@ -54,12 +55,12 @@
         padding: 30px;
     }
 
-    .product-icon img{
+    .product-icon img {
         width: 100%;
         height: 100%;
     }
 
-    .product-info{
+    .product-info {
         margin-left: 25px;
         flex: 1;
         display: flex;
@@ -77,7 +78,7 @@
         padding-right: 5px;
     }
 
-    .product-info .tag{
+    .product-info .tag {
         display: inline-block;
         font-size: 12px;
         line-height: 14px;
@@ -89,7 +90,8 @@
         color: #2d8cf0;
         border: 1px solid #2d8cf0;
     }
-    .product-info .desc{
+
+    .product-info .desc {
         line-height: 16px;
         height: 32px;
         overflow: hidden;
@@ -97,39 +99,39 @@
         color: #9ea7b4;
     }
 
-    .product-info .arguments{
+    .product-info .arguments {
         flex: 1;
         display: flex;
         flex-direction: row;
     }
 
-    .product-info .arguments .argument{
+    .product-info .arguments .argument {
         flex: 1;
         align-self: center;
     }
 
-    .product-info .arguments .border{
+    .product-info .arguments .border {
         border-right: 1px solid #ddd;
     }
 
-    .product-info .arguments .argument p{
+    .product-info .arguments .argument p {
         height: 20px;
         line-height: 20px;
         color: #657180;
     }
 
-    .product-info .arguments .price{
+    .product-info .arguments .price {
         flex: 2;
         align-self: center;
     }
 
-    .product-info .arguments .price span{
+    .product-info .arguments .price span {
         color: #f0767f;
         font-size: 14px;
         padding-left: 30px;
     }
 
-    .product-tab .simpleline{
+    .product-tab .simpleline {
         line-height: 20px;
         padding: 12px 0;
         width: 100%;
@@ -146,7 +148,7 @@
     .product-tab .api_table {
         margin-top: 10px;
         width: 100%;
-        font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
         font-size: 12px;
         border-right: 1px solid #f2f2f2;
         border-left: 1px solid #f2f2f2;
@@ -190,11 +192,11 @@
         font-family: monospace;
     }
 
-    .product-tab .question{
+    .product-tab .question {
         margin-top: 10px;
     }
 
-    .api-test-modal.product-tab{
+    .api-test-modal.product-tab {
         margin-top: 0;
     }
 
@@ -204,16 +206,16 @@
 
     .api-test-modal .api-test-btn {
         margin-top: 5px;
-        font-size:12px;
-        color:#ff8503;
+        font-size: 12px;
+        color: #ff8503;
     }
 
-    .api-test-modal .simpleTable>.ivu-input-wrapper,
-    .api-test-modal .simpleTable>.ivu-select{
+    .api-test-modal .simpleTable > .ivu-input-wrapper,
+    .api-test-modal .simpleTable > .ivu-select {
         margin-top: 10px;
     }
 
-    .api-test-modal .left{
+    .api-test-modal .left {
         text-align: left;
     }
 
@@ -240,11 +242,13 @@
                     <div class="arguments">
                         <div class="argument">
                             <p><strong>数据ID：</strong><span>{{product_info.id}}</span></p>
-                            <p><strong>接口状态：</strong><span :class="product_info.status_class">{{product_info.status}}</span></p>
+                            <p><strong>接口状态：</strong><span
+                                    :class="product_info.status_class">{{product_info.status}}</span></p>
                         </div>
                         <div class="argument border">
                             <p><strong>当前版本：</strong><span>{{product_info.version}}</span></p>
-                            <p v-if="product_info.datasource"><strong>数据源：</strong><span>{{product_info.datasource}}</span></p>
+                            <p v-if="product_info.datasource">
+                                <strong>数据源：</strong><span>{{product_info.datasource}}</span></p>
                         </div>
                         <div class="price">
                             <p><span>{{formatterPrice(product_info.price)}} GXC/条</span></p>
@@ -255,28 +259,31 @@
             <div class="product-tab">
                 <Tabs size="small" value="1" :animated="false">
                     <TabPane label="对接说明" name="1">
-                        <div class="simpleline"><strong>接口地址：</strong><span class="url">{{product_info.current_url}}</span></div>
+                        <div class="simpleline"><strong>接口地址：</strong><span
+                                class="url">{{product_info.current_url}}</span></div>
                         <div class="simpleline"><strong>请求格式：</strong><span class="url">json</span></div>
                         <div class="simpleline"><strong>请求方式：</strong><span class="url">get post</span></div>
-                        <div class="simpleline"><strong>调用样例及调试工具：</strong><Button type="primary" icon="link" size="small" @click="openApiTest()">API测试工具</Button></div>
+                        <div class="simpleline"><strong>调用样例及调试工具：</strong>
+                            <Button type="primary" icon="link" size="small" @click="openApiTest()">API测试工具</Button>
+                        </div>
                         <div class="simpleline simpleTable">
                             <strong>请求参数说明：</strong>
                             <table class="api_table" border="0" cellspacing="0" cellpadding="0" v-if="currentSchema">
                                 <tbody>
-                                    <tr class="title">
-                                        <th width="20"></th>
-                                        <th width="100">名称</th>
-                                        <th width="80">类型</th>
-                                        <th width="60">必填</th>
-                                        <th>描述</th>
-                                    </tr>
-                                    <tr v-for="(item, key, index) in currentSchema.input" :key="index">
-                                        <td>&nbsp;</td>
-                                        <td class="url">{{key}}</td>
-                                        <td class="url">{{item.type}}</td>
-                                        <td class="url">{{item.required ? '是' : '否'}}</td>
-                                        <td>{{item.desc}}</td>
-                                    </tr>
+                                <tr class="title">
+                                    <th width="20"></th>
+                                    <th width="100">名称</th>
+                                    <th width="80">类型</th>
+                                    <th width="60">必填</th>
+                                    <th>描述</th>
+                                </tr>
+                                <tr v-for="(item, key, index) in currentSchema.input" :key="index">
+                                    <td>&nbsp;</td>
+                                    <td class="url">{{key}}</td>
+                                    <td class="url">{{item.type}}</td>
+                                    <td class="url">{{item.required ? '是' : '否'}}</td>
+                                    <td>{{item.desc}}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -284,18 +291,18 @@
                             <strong>返回参数说明：</strong>
                             <table class="api_table" border="0" cellspacing="0" cellpadding="0" v-if="currentSchema">
                                 <tbody>
-                                    <tr class="title">
-                                        <th width="20"></th>
-                                        <th width="100">名称</th>
-                                        <th width="80">类型</th>
-                                        <th>描述</th>
-                                    </tr>
-                                    <tr v-for="(item, key, index) in currentSchema.output" :key="index">
-                                        <td>&nbsp;</td>
-                                        <td class="url">{{key}}</td>
-                                        <td class="url">{{item.type}}</td>
-                                        <td>{{item.desc}}</td>
-                                    </tr>
+                                <tr class="title">
+                                    <th width="20"></th>
+                                    <th width="100">名称</th>
+                                    <th width="80">类型</th>
+                                    <th>描述</th>
+                                </tr>
+                                <tr v-for="(item, key, index) in currentSchema.output" :key="index">
+                                    <td>&nbsp;</td>
+                                    <td class="url">{{key}}</td>
+                                    <td class="url">{{item.type}}</td>
+                                    <td>{{item.desc}}</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -375,7 +382,8 @@
                             <strong>其他相关内容：</strong>
                             <div class="question">
                                 <p>如有不明白之处，请和您的公信宝专属商户经理联系。</p>
-                                <p>如果您还没有专属商户经理，请访问公信宝官方网站联系我们 <a target="_blank" href="https://gxb.io">https://gxb.io</a></p>
+                                <p>如果您还没有专属商户经理，请访问公信宝官方网站联系我们 <a target="_blank"
+                                                                  href="https://gxb.io">https://gxb.io</a></p>
                             </div>
                         </div>
                     </TabPane>
@@ -390,11 +398,11 @@
             <Form :label-width="60" label-position="top">
                 <div class="simpleline simpleTable">
                     <strong>接口名称：</strong>
-                    <Input v-model="product_info.product_name" readonly></Input>
+                    <i-input v-model="product_info.product_name" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
                     <strong>接口地址：</strong>
-                    <Input v-model="product_info.current_url" readonly></Input>
+                    <i-input v-model="product_info.current_url" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
                     <strong>请求方式：</strong>
@@ -421,7 +429,7 @@
                             <td class="url">{{item.type}}</td>
                             <td class="url">{{item.required ? '是' : '否'}}</td>
                             <td>{{item.desc}}</td>
-                            <td><Input v-model="apiTestParams[key]"></Input></td>
+                            <td><i-input v-model="apiTestParams[key]"></i-input></td>
                         </tr>
                         </tbody>
                     </table>
@@ -479,14 +487,14 @@
                 }
             };
         },
-        created() {
-            if (this.product){
+        created () {
+            if (this.product) {
                 this.formatterLeagueData(this.product);
-            }else{
+            } else {
                 this.formatterFreeData(this.$route.query.id);
             }
         },
-        beforeDestory() {
+        beforeDestory () {
             clearInterval(this.apiInterval);
         },
         watch: {
@@ -496,19 +504,19 @@
         },
         computed: {
             ...mapGetters({
-                commonSettings: 'common_setting',
+                commonSettings: 'common_setting'
             })
         },
         methods: {
-            formatterPrice(price){
+            formatterPrice (price) {
                 return price / 100000;
             },
-            formatterFreeData(product_id){
+            formatterFreeData (product_id) {
                 let product;
-                this.$http.get('/api/fetch_free_data_product_details/' + product_id).then((res)=>{
+                this.$http.get('/api/fetch_free_data_product_details/' + product_id).then((res) => {
                     product = res.data;
                     product.id = product_id;
-                    switch (product.status){
+                    switch (product.status) {
                         case 0:
                             product.status = '未发布';
                             product.status_class = 'facolor-warning';
@@ -528,25 +536,25 @@
                             self.currentSchema = schema;
                         }
                     });
-                    product.current_url = 'http://'+ this.commonSettings.box_ip +':'+ this.commonSettings.port +'/rpc/' + product.id + '/' + product.version;
+                    product.current_url = 'http://' + this.commonSettings.box_ip + ':' + this.commonSettings.port + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
                     return this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id);
-                }).then((res)=>{
+                }).then((res) => {
                     product.category_name = res.data.category_name;
                     this.product_info = product;
                     this.loaded = true;
-                }).catch((err)=>{
+                }).catch((err) => {
                     Handler.error(err);
                     if (err.response.data.data.code === 10) {
                         this.$router.push('/404');
                     }
                 });
             },
-            formatterLeagueData(product_info){
+            formatterLeagueData (product_info) {
                 let product = product_info;
-                switch (product.status){
+                switch (product.status) {
                     case 0:
                         product.status = '未发布';
                         product.status_class = 'facolor-warning';
@@ -563,21 +571,21 @@
                 product.price = product.refer_price;
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
                 product.version = product.schema_contexts[0].version;
-                product.current_url = 'http://'+ this.commonSettings.box_ip +':'+ this.commonSettings.port +'/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
+                product.current_url = 'http://' + this.commonSettings.box_ip + ':' + this.commonSettings.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                 product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                 product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
-                this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id).then((res)=>{
+                this.$http.get('/api/fetch_data_market_categories_info/' + product.category_id).then((res) => {
                     product.category_name = res.data.category_name;
                     this.product_info = product;
                     this.loaded = true;
-                }).catch((err)=>{
+                }).catch((err) => {
                     Handler.error(err);
                 });
             },
-            getSampleVal(def){
+            getSampleVal (def) {
                 let resultObj = {};
-                if (typeof def.sample != 'undefined') {
+                if (typeof def.sample !== 'undefined') {
                     return def.sample;
                 }
                 switch (def.type) {
@@ -607,7 +615,7 @@
                             return this.getSampleVal(col);
                         });
                     case 'enum':
-                        if (!def.enums || def.enums.length == 0) {
+                        if (!def.enums || def.enums.length === 0) {
                             console.log('异常的枚举返回类型定义');
                             return '';
                         }
@@ -616,7 +624,7 @@
                         return null;
                 }
             },
-            genCURLCode(currentSchema, url){
+            genCURLCode (currentSchema, url) {
                 let params = {};
                 if (currentSchema) {
                     for (let key in currentSchema.input) {
@@ -626,13 +634,13 @@
                         'curl -X POST \\',
                         url + ' \\',
                         '-H \'content-type: application/json\' \\',
-                        '-d \''+ JSON.stringify(params, null, '  ') + '\''
+                        '-d \'' + JSON.stringify(params, null, '  ') + '\''
                     ].join('\n');
                 } else {
                     return '//schema context未定义';
                 }
             },
-            genJavaCode(currentSchema, url){
+            genJavaCode (currentSchema, url) {
                 let params = {};
                 if (currentSchema) {
                     for (let key in currentSchema.input) {
@@ -655,7 +663,7 @@
                     return '//schema context未定义';
                 }
             },
-            genNodeCode(currentSchema, url){
+            genNodeCode (currentSchema, url) {
                 let params = {};
                 if (currentSchema) {
                     for (let key in currentSchema.input) {
@@ -669,7 +677,7 @@
                     };
                     return [
                         'var request = require("request");',
-                        'var options = ' + JSON.stringify(options, null, ' ') +';',
+                        'var options = ' + JSON.stringify(options, null, ' ') + ';',
                         '',
                         'request(options, function (error, response, body) {',
                         '  if (error) throw new Error(error);',
@@ -681,10 +689,10 @@
                     return '//schema context未定义';
                 }
             },
-            openApiTest(){
+            openApiTest () {
                 this.apiTestModal = true;
             },
-            sendApiTest(){
+            sendApiTest () {
                 let beginTime = new Date();
                 this.apiTestResponse = null;
                 this.apiTestData = null;
@@ -699,12 +707,12 @@
                     this.apiTestResponse = res.data;
                     if (this.apiTestResponse.data.request_id) {
                         let self = this;
-                        this.apiInterval = setInterval(function(){
+                        this.apiInterval = setInterval(function () {
                             self.$http({
                                 method: 'GET',
-                                url: 'http://'+ self.commonSettings.box_ip +':'+ self.commonSettings.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data',
+                                url: 'http://' + self.commonSettings.box_ip + ':' + self.commonSettings.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
                             }).then((res) => {
-                                if (res.data.length !== 0){
+                                if (res.data.length !== 0) {
                                     let endTime = new Date();
                                     self.apiTestCostTime = endTime - beginTime;
                                     self.apiTestData = res.data;
@@ -714,7 +722,7 @@
                             });
                         }, 500);
                     }
-                }).catch((err)=>{
+                }).catch((err) => {
                     this.$Message.error('请求失败:' + Handler.error(err));
                     this.loading = false;
                 });

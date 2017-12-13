@@ -21,7 +21,7 @@
         methods: {
         },
         components: {
-            ConsoleManage: ConsoleManage,
+            ConsoleManage: ConsoleManage
         }
     };
 </script>

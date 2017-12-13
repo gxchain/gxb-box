@@ -8,7 +8,7 @@
         font-weight: normal;
     }
 
-    .subtitle{
+    .subtitle {
         font-weight: bold;
         padding-bottom: 10px;
     }
@@ -19,7 +19,7 @@
         margin: 20px 0;
     }
 
-    .setting-btn{
+    .setting-btn {
         text-align: center;
     }
 
@@ -37,29 +37,29 @@
         font-family: monospace;
     }
 
-    .package{
+    .package {
         display: flex;
         flex-direction: row;
         padding: 5px 0;
     }
 
-    .package .name{
-        flex:3;
+    .package .name {
+        flex: 3;
     }
 
-    .package .size{
-        flex:2;
+    .package .size {
+        flex: 2;
     }
 
-    .package .time{
-        flex:2;
+    .package .time {
+        flex: 2;
     }
 
-    .package .download{
-        flex:1;
+    .package .download {
+        flex: 1;
     }
 
-    .clearHistory{
+    .clearHistory {
         float: right;
         margin-top: 6px;
         margin-right: 6px;
@@ -75,7 +75,7 @@
         <div class="setting-cont">
             <Form :label-width="100">
                 <Alert type="error">可视化配置服务（推荐内网服务器使用，以免私钥泄露）</Alert>
-                <FormItem label="可视化配置" >
+                <FormItem label="可视化配置">
                     <RadioGroup v-model="visual_packages">
                         <Radio label="1">是</Radio>
                         <Radio label="0">否</Radio>
@@ -125,30 +125,30 @@
     import Handler from '../../libs/handler';
 
     export default {
-        data() {
+        data () {
             return {
                 loading: false,
                 visual_packages: '1',
-                packages_list: [],
+                packages_list: []
             };
         },
-        created (){
+        created () {
             this.packages_list = localStorage.getItem('__gxbBox__prodPackages') ? JSON.parse(localStorage.getItem('__gxbBox__prodPackages')) : [];
         },
         methods: {
-            startZip() {
+            startZip () {
                 this.loading = true;
                 this.$http.get('/api/get_box_prod_zip/' + this.visual_packages).then((res) => {
                     this.loading = false;
                     res.data.time = util.formatDateTime(res.data.time);
                     this.packages_list.unshift(res.data);
                     localStorage.setItem('__gxbBox__prodPackages', JSON.stringify(this.packages_list));
-                }).catch((err)=>{
+                }).catch((err) => {
                     this.loading = false;
                     this.$Message.error('打包失败:' + Handler.error(err));
                 });
             },
-            clearHistory() {
+            clearHistory () {
                 this.packages_list = [];
                 localStorage.removeItem('__gxbBox__prodPackages');
             }

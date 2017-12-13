@@ -48,7 +48,7 @@
     import Footer from './views/common/Footer';
 
     export default {
-        data() {
+        data () {
             return {};
         },
         components: {

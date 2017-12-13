@@ -1,4 +1,5 @@
-src/router.js
-src/libs/util.js
-src/libs/handler.js
+build
+test
+config
+server/utils/dictionary_en.js
 src/vendors.js

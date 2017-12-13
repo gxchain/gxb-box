@@ -5,7 +5,7 @@ import {Apis} from 'gxbjs-ws';
  */
 const fetch_data_market_categories = function (data_market_type) {
     return Apis.instance().db_api().exec('list_data_market_categories', [data_market_type]).then(function (res) {
-        let result = (res||[]).filter(function (cate) {
+        let result = (res || []).filter(function (cate) {
             return cate.status === 1;
         });
         return result;
@@ -26,7 +26,7 @@ const fetch_data_market_categories_info = function (category_id) {
  * 获取自由市场产品列表
  */
 const fetch_free_data_products = function (category_id, page, pageSize, keywords) {
-    return Apis.instance().db_api().exec('list_free_data_products', [category_id, page * pageSize, pageSize, '', keywords,false]).then(function (res) {
+    return Apis.instance().db_api().exec('list_free_data_products', [category_id, page * pageSize, pageSize, '', keywords, false]).then(function (res) {
         let result = {
             list: res.data,
             total: res.filtered_total
@@ -65,7 +65,7 @@ const fetch_free_data_product_details = function (product_id) {
             category_id: result.category_id,
             schema_contexts: schema_contexts,
             price: result.price,
-            icon: result.icon,
+            icon: result.icon
         };
         return data;
     });
@@ -75,7 +75,7 @@ const fetch_free_data_product_details = function (product_id) {
  * 获取联盟市场联盟列表
  */
 const fetch_league_list = function (category_id, page, pageSize, keywords) {
-    return Apis.instance().db_api().exec('list_leagues', [category_id, page * pageSize, pageSize, '', keywords,false]).then(function (res) {
+    return Apis.instance().db_api().exec('list_leagues', [category_id, page * pageSize, pageSize, '', keywords, false]).then(function (res) {
         let result = {
             list: res.data,
             total: res.filtered_total

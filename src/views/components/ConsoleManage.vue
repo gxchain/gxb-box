@@ -4,26 +4,26 @@
         height: 100%;
     }
 
-    .spin-container{
+    .spin-container {
         display: inline-block;
         width: 100%;
         height: 100%;
         position: relative;
     }
 
-    .loaded-container{
+    .loaded-container {
         width: 100%;
         height: 100%;
         display: flex;
         flex-direction: column;
     }
 
-    .server-status{
+    .server-status {
         height: 90px;
         margin-bottom: 15px;
     }
 
-    .server-logs{
+    .server-logs {
         flex: 1;
         border: 1px solid #dddee1;
         position: relative;
@@ -45,7 +45,7 @@
 
     .server-logs .log-box {
         flex: 1;
-        height:0;
+        height: 0;
         padding-top: 5px;
         text-align: left;
         overflow-y: auto;
@@ -53,11 +53,11 @@
         color: #fff;
     }
 
-    .server-logs .log-box .out{
+    .server-logs .log-box .out {
         color: #19be6b
     }
 
-    .server-logs .log-box .err{
+    .server-logs .log-box .err {
         color: #ed3f14
     }
 
@@ -65,6 +65,7 @@
         content: "\2590";
         animation: blinker 1s linear infinite;
     }
+
     .server-logs .log-box ul li {
         font-size: 12px;
         background-color: transparent;
@@ -88,13 +89,15 @@
     }
 </style>
 <style>
-    td.state-online{
+    td.state-online {
         color: #19be6b
     }
-    td.state-stopped{
+
+    td.state-stopped {
         color: #ed3f14
     }
-    td.state-info{
+
+    td.state-info {
         color: #2d8cf0
     }
 </style>
@@ -142,7 +145,7 @@
                     },
                     {
                         title: '名称',
-                        key: 'name',
+                        key: 'name'
                     },
                     {
                         title: '模式',
@@ -183,7 +186,7 @@
                         width: 200,
                         align: 'center',
                         render: (h) => {
-                            if (this.pm2_status){
+                            if (this.pm2_status) {
                                 return h('div', [
                                     h('Button', {
                                         props: {
@@ -216,7 +219,7 @@
                                         }
                                     }, '重启')
                                 ]);
-                            }else{
+                            } else {
                                 return h('div', [
                                     h('Button', {
                                         props: {
@@ -236,12 +239,12 @@
                     }
                 ],
                 pm2_list: [],
-                pm2_logs: [],
+                pm2_logs: []
             };
         },
-        created() {
+        created () {
             this.$http.get('/api/fetch_box').then((res) => {
-                if (res.data && res.data.length && res.data.length > 0){
+                if (res.data && res.data.length && res.data.length > 0) {
                     this.boxRender(res.data[0]);
                 }
                 this.loaded = true;
@@ -250,7 +253,7 @@
             });
         },
         methods: {
-            boxRender (data){
+            boxRender (data) {
                 let pm2 = {};
                 pm2.pid = data.pid;
                 pm2.pm_id = data.pm_id;
@@ -261,7 +264,7 @@
                 pm2.cpu = data.monit.cpu + '%';
                 pm2.memory = (data.monit.memory / 1024 / 1024).toFixed(2) + 'MB';
                 pm2.state = data.pm2_env.status;
-                switch (pm2.state){
+                switch (pm2.state) {
                     case 'online':
                         pm2.cellClassName = {state: 'state-online'};
                         this.pm2_status = true;
@@ -276,13 +279,13 @@
                 this.pm2_list = [];
                 this.pm2_list.push(pm2);
             },
-            boxStop (){
+            boxStop () {
                 this.loading[0] = true;
                 this.$http.get('/api/box_stop').then((res) => {
-                    if (res.data && res.data.length && res.data.length > 0){
+                    if (res.data && res.data.length && res.data.length > 0) {
                         this.pm2_status = false;
                         this.boxRender(res.data[0]);
-                    }else{
+                    } else {
                         this.$Message.error('服务停止失败:未知错误');
                     }
                     this.loading[0] = false;
@@ -290,13 +293,13 @@
                     this.$Message.error('服务停止失败:' + Handler.error(err));
                 });
             },
-            boxRestart (){
+            boxRestart () {
                 this.loading[1] = true;
                 this.$http.get('/api/box_restart').then((res) => {
-                    if (res.data && res.data.length && res.data.length > 0){
+                    if (res.data && res.data.length && res.data.length > 0) {
                         this.pm2_status = true;
                         this.boxRender(res.data[0]);
-                    }else{
+                    } else {
                         this.$Message.error('服务重启失败:未知错误');
                     }
                     this.loading[1] = false;
@@ -307,26 +310,26 @@
         },
         socket: {
             events: {
-                message(type, msg) {
-                    if (msg){
+                message (type, msg) {
+                    if (msg) {
                         let msg_list = msg.split('\n');
-                        for (let i=0; i < msg_list.length; i++){
-                            if (msg_list[i] !== ''){
+                        for (let i = 0; i < msg_list.length; i++) {
+                            if (msg_list[i] !== '') {
                                 this.pm2_logs.push({
                                     type: type,
                                     tip: msg_list[i]
                                 });
                             }
                         }
-                        //滚动到底部
-                        if (document.getElementById('scroll-box')){
+                        // 滚动到底部
+                        if (document.getElementById('scroll-box')) {
                             setTimeout(function () {
                                 document.getElementById('scroll-box').scrollTop = document.getElementById('scroll-box').scrollHeight;
-                            },500);
+                            }, 500);
                         }
                     }
                 },
-                system(data) {
+                system (data) {
                     this.boxRender(data[0]);
                 }
             }

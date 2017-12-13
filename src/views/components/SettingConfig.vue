@@ -10,7 +10,7 @@
         margin: 20px 0;
     }
 
-    .setting-cont{
+    .setting-cont {
         text-align: center;
     }
 </style>
@@ -30,11 +30,11 @@
     import AccountConfig from './AccountConfig.vue';
 
     export default {
-        data() {
+        data () {
             return {};
         },
         methods: {
-            restartBox(){
+            restartBox () {
                 this.$emit('restart');
             }
         },

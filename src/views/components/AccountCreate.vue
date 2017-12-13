@@ -3,15 +3,17 @@
         cursor: pointer;
         color: #2d8cf0
     }
+
     .important {
         color: #ed3f14
     }
+
     .step-btn-box {
         margin: 25px 0;
     }
 </style>
 <style>
-    .account_input .ivu-input{
+    .account_input .ivu-input {
         text-transform: lowercase;
     }
 </style>
@@ -26,13 +28,16 @@
                     <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                         <FormItem label="账号" prop="account_name">
                             <Row>
-                                <Col span="18"><Input v-model="formValidate.account_name" placeholder="sample_user" class="account_input"></Input></Col>
-                                <Col span="4" offset="2">
-                                <Button type="ghost" @click="createAccount('formValidate')" :loading="loading">
-                                    <span v-show="!loading">创建账号</span>
-                                    <span v-show="loading">创建中...</span>
-                                </Button>
-                                </Col>
+                                <i-col span="18">
+                                    <i-input v-model="formValidate.account_name" placeholder="sample_user"
+                                       class="account_input"></i-input>
+                                </i-col>
+                                <i-col span="4" offset="2">
+                                    <Button type="ghost" @click="createAccount('formValidate')" :loading="loading">
+                                        <span v-show="!loading">创建账号</span>
+                                        <span v-show="loading">创建中...</span>
+                                    </Button>
+                                </i-col>
                             </Row>
                         </FormItem>
                     </Form>
@@ -46,16 +51,19 @@
                     <Form ref="formValidate2" :model="formValidate2" :rules="ruleValidate2" :label-width="80">
                         <FormItem label="私钥" prop="private_key">
                             <Row>
-                                <Col span="18">
-                                <div @click="changeShowType()"><Icon class="ivu-input-icon" type="eye"></Icon></div>
-                                <Input :type="show_type" v-model="formValidate2.private_key" placeholder="请输入账户私钥"></Input>
-                                </Col>
-                                <Col span="4" offset="2">
-                                <Button type="ghost" @click="importAccount('formValidate2')" :loading="loading">
-                                    <span v-show="!loading">导入</span>
-                                    <span v-show="loading">导入...</span>
-                                </Button>
-                                </Col>
+                                <i-col span="18">
+                                    <div @click="changeShowType()">
+                                        <Icon class="ivu-input-icon" type="eye"></Icon>
+                                    </div>
+                                    <i-input :type="show_type" v-model="formValidate2.private_key"
+                                       placeholder="请输入账户私钥"></i-input>
+                                </i-col>
+                                <i-col span="4" offset="2">
+                                    <Button type="ghost" @click="importAccount('formValidate2')" :loading="loading">
+                                        <span v-show="!loading">导入</span>
+                                        <span v-show="loading">导入...</span>
+                                    </Button>
+                                </i-col>
                             </Row>
                         </FormItem>
                     </Form>
@@ -73,7 +81,7 @@
             </Alert>
         </div>
 
-        <div class="action-import-success"  v-if="created&&imported">
+        <div class="action-import-success" v-if="created&&imported">
             <Alert type="success">账号导入成功</Alert>
         </div>
 
@@ -91,10 +99,10 @@
         data () {
             const validateAccount = (rule, value, callback) => {
                 value = value.toLowerCase();
-                if (value.length < 3){
+                if (value.length < 3) {
                     callback(new Error('账户名长度不少于3位'));
                 }
-                if (value.length > 63){
+                if (value.length > 63) {
                     callback(new Error('账户名长度不超过63位'));
                 }
                 let ref = value.split('.');
@@ -116,7 +124,7 @@
                         callback(new Error('每个帐户段长度不少于3位'));
                     }
                 }
-                if (!(/[0-9-]/.test(value) || !/[aeiouy]/.test(value))){
+                if (!(/[0-9-]/.test(value) || !/[aeiouy]/.test(value))) {
                     callback(new Error('包含至少一个横杠、数字或者不含元音字母'));
                 }
                 this.$http.get('/api/fetch_account/' + value).then((res) => {
@@ -136,7 +144,7 @@
                 is_bak: false,
                 show_type: 'password',
                 formValidate: {
-                    account_name: '',
+                    account_name: ''
                 },
                 ruleValidate: {
                     account_name: [
@@ -145,17 +153,17 @@
                     ]
                 },
                 formValidate2: {
-                    private_key: '',
+                    private_key: ''
                 },
                 ruleValidate2: {
                     private_key: [
                         {required: true, message: '私钥不能为空', trigger: 'blur'}
                     ]
-                },
+                }
             };
         },
-        created (){
-            if (this.account){
+        created () {
+            if (this.account) {
                 this.formValidate.account_name = this.account.account_name;
                 this.created = true;
             }
@@ -163,14 +171,14 @@
         computed: {
             ...mapGetters({
                 account: 'account',
-                account_type: 'account_type',
-            }),
+                account_type: 'account_type'
+            })
         },
         methods: {
             ...mapActions({
                 setAccount: 'setAccount'
             }),
-            createAccount (name){
+            createAccount (name) {
                 this.loading = true;
                 this.$refs[name].validate((valid) => {
                     if (valid) {
@@ -186,7 +194,7 @@
                             this.$Message.success('账号创建成功');
                             this.setAccount({account: res.data});
                             this.created = true;
-                        }).catch((err)=>{
+                        }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('账号创建失败:' + Handler.error(err));
                         });
@@ -196,7 +204,7 @@
                     }
                 });
             },
-            importAccount (name){
+            importAccount (name) {
                 this.loading = true;
                 this.$refs[name].validate((valid) => {
                     if (valid) {
@@ -214,7 +222,7 @@
                             this.created = true;
                             this.is_bak = true;
                             this.imported = true;
-                        }).catch((err)=>{
+                        }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('账号导入失败:' + Handler.error(err));
                         });
@@ -225,19 +233,19 @@
                 });
             },
             changeShowType () {
-                if (this.show_type === 'password'){
+                if (this.show_type === 'password') {
                     this.show_type = 'text';
-                }else{
+                } else {
                     this.show_type = 'password';
                 }
             },
-            bakStep (){
+            bakStep () {
                 this.is_bak = true;
             },
-            lastStep (){
+            lastStep () {
                 this.$emit('last');
             },
-            nextStep (){
+            nextStep () {
                 this.$emit('next');
             }
         }

@@ -1,5 +1,5 @@
 <style scoped>
-    .merchant-type,.datasource-type {
+    .merchant-type, .datasource-type {
         margin-bottom: 15px;
     }
 </style>
@@ -31,9 +31,9 @@
                 setAccount: 'setAccount',
                 setCommonSetting: 'setCommonSetting'
             }),
-            changeType (type){
+            changeType (type) {
                 this.commonSettings.account_type = type;
-                //写入文件
+                // 写入文件
                 this.$http({
                     method: 'post',
                     url: '/api/write_config',
@@ -47,17 +47,17 @@
 
                     return this.$http.get('/api/fetch_config');
                 }).then((res) => {
-                    if (res.data[type] && res.data[type].account_name && res.data[type].private_key){
+                    if (res.data[type] && res.data[type].account_name && res.data[type].private_key) {
                         let account_info = {
                             account_name: res.data[type].account_name,
                             private_key: res.data[type].private_key
                         };
                         this.setAccount({account: account_info});
-                    }else{
+                    } else {
                         this.setAccount({account: null});
                     }
                     this.$emit('next');
-                }).catch((err)=> {
+                }).catch((err) => {
                     this.$Message.error('保存配置失败:' + Handler.error(err));
                 });
             }

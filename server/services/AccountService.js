@@ -21,8 +21,8 @@ const fetch_account = function (account_name) {
  * 创建账号
  */
 const create_account = function (account_type, new_account_name, protocol) {
-    let brainkey = key.suggest_brain_key( dictionary.en );
-    let private_key = key.get_brainPrivateKey( brainkey );
+    let brainkey = key.suggest_brain_key(dictionary.en);
+    let private_key = key.get_brainPrivateKey(brainkey);
     let owner_pubkey = private_key.toPublicKey().toPublicKeyString();
     let active_pubkey = private_key.toPublicKey().toPublicKeyString();
     let body = {
@@ -44,20 +44,20 @@ const create_account = function (account_type, new_account_name, protocol) {
         request
             .post(faucetAddress + '/account/register')
             .send(body)
-            .set('Accpet','application/json')
+            .set('Accpet', 'application/json')
             .set('Content-Type', 'application/json')
             .end(function (err) {
                 if (err) {
                     reject(err);
                 } else {
-                    if (account_type === 'merchant'){
-                        return ConfigStroe.merchant_set(JSON.stringify(account_config)).then((res)=>{
+                    if (account_type === 'merchant') {
+                        return ConfigStroe.merchant_set(JSON.stringify(account_config)).then((res) => {
                             resolve(res.data);
                         }).catch((err) => {
                             reject(err);
                         });
-                    }else{
-                        ConfigStroe.datasource_set(null, JSON.stringify(account_config), false).then((res)=>{
+                    } else {
+                        ConfigStroe.datasource_set(null, JSON.stringify(account_config), false).then((res) => {
                             resolve(res.data);
                         }).catch((err) => {
                             reject(err);
@@ -90,13 +90,13 @@ const import_account = function (account_type, private_key) {
                     'account_name': account[0].name,
                     'private_key': private_key
                 };
-                if (account_type === 'merchant'){
+                if (account_type === 'merchant') {
                     return ConfigStroe.merchant_set(JSON.stringify(account_config));
-                }else{
+                } else {
                     return ConfigStroe.datasource_set(null, JSON.stringify(account_config), false);
                 }
             })
-            .then((res)=>{
+            .then((res) => {
                 resolve(res.data);
             })
             .catch((err) => {
@@ -121,19 +121,18 @@ const sortJSON = function (json) {
 /**
  * 获取签名
  */
-const getSign = function (body = '',type) {
+const getSign = function (body = '', type) {
     return new Promise(function (resolve, reject) {
         try {
             let private_key;
-            if (type === 'merchant'){
+            if (type === 'merchant') {
                 private_key = ConfigStroe.get_merchant_private_key();
-            }else{
+            } else {
                 private_key = ConfigStroe.get_datasource_private_key();
             }
             let signature = Signature.sign(body, private_key).toHex();
             resolve(signature);
-        }
-        catch (ex) {
+        } catch (ex) {
             reject(ex);
         }
     });
@@ -147,7 +146,7 @@ const fetch_merchant = function (account_name, account_type, protocol) {
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
-            .then((account)=> {
+            .then((account) => {
                 body.account_id = account.id;
                 body = sortJSON(body);
                 return getSign(JSON.stringify(body), account_type);
@@ -157,9 +156,9 @@ const fetch_merchant = function (account_name, account_type, protocol) {
                 request
                     .get(faucetAddress + '/merchant/info')
                     .query(body)
-                    .set('Accpet','application/json')
+                    .set('Accpet', 'application/json')
                     .set('Content-Type', 'application/json')
-                    .end(function (err,res) {
+                    .end(function (err, res) {
                         if (err) {
                             reject(err);
                         } else {
@@ -167,7 +166,7 @@ const fetch_merchant = function (account_name, account_type, protocol) {
                         }
                     });
             })
-            .catch(err=>reject(err));
+            .catch(err => reject(err));
     });
 };
 
@@ -178,7 +177,7 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
-            .then((account)=>{
+            .then((account) => {
                 body.account_id = account.id;
                 body = sortJSON(body);
                 return getSign(JSON.stringify(body), account_type);
@@ -188,9 +187,9 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
                 request
                     .post(faucetAddress + '/merchant/create')
                     .send(body)
-                    .set('Accpet','application/json')
+                    .set('Accpet', 'application/json')
                     .set('Content-Type', 'application/json')
-                    .end(function (err,res) {
+                    .end(function (err, res) {
                         if (err) {
                             reject(err);
                         } else {
@@ -198,7 +197,7 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
                         }
                     });
             })
-            .catch(err=>reject(err));
+            .catch(err => reject(err));
     });
 };
 
@@ -209,7 +208,7 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
-            .then((account)=>{
+            .then((account) => {
                 body.account_id = account.id;
                 body = sortJSON(body);
                 return getSign(JSON.stringify(body), account_type);
@@ -219,9 +218,9 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
                 request
                     .post(faucetAddress + '/dataSource/create')
                     .send(body)
-                    .set('Accpet','application/json')
+                    .set('Accpet', 'application/json')
                     .set('Content-Type', 'application/json')
-                    .end(function (err,res) {
+                    .end(function (err, res) {
                         if (err) {
                             reject(err);
                         } else {
@@ -229,7 +228,7 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
                         }
                     });
             })
-            .catch(err=>reject(err));
+            .catch(err => reject(err));
     });
 };
 
@@ -244,9 +243,9 @@ const is_applying = function (account_name, protocol) {
                 request
                     .get(faucetAddress + '/account/apply_status')
                     .query({account_id: account.id})
-                    .set('Accpet','application/json')
+                    .set('Accpet', 'application/json')
                     .set('Content-Type', 'application/json')
-                    .end(function (err,res) {
+                    .end(function (err, res) {
                         if (err) {
                             reject(err);
                         } else {
@@ -264,9 +263,9 @@ const fetch_league_members = function (league_id, protocol) {
         request
             .get(faucetAddress + '/leagueDataSource/memberInfo')
             .query({league_id: league_id})
-            .set('Accpet','application/json')
+            .set('Accpet', 'application/json')
             .set('Content-Type', 'application/json')
-            .end(function (err,res) {
+            .end(function (err, res) {
                 if (err) {
                     reject(err);
                 } else {

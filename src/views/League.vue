@@ -1,17 +1,17 @@
 <style scoped>
-    .facolor-info{
+    .facolor-info {
         color: #2d8cf0;
     }
 
-    .facolor-success{
+    .facolor-success {
         color: #19be6b;
     }
 
-    .facolor-warning{
+    .facolor-warning {
         color: #ff9900;
     }
 
-    .facolor-error{
+    .facolor-error {
         color: #ed3f14;
     }
 
@@ -23,26 +23,26 @@
         padding: 30px;
     }
 
-    .spin-container{
+    .spin-container {
         display: inline-block;
         width: 100%;
         height: 100%;
         position: relative;
     }
 
-    .loaded-container{
+    .loaded-container {
         width: 100%;
         height: 100%;
     }
 
-    .league-intro{
+    .league-intro {
         position: relative;
         min-height: 130px;
         display: flex;
         flex-direction: row;
     }
 
-    .league-icon{
+    .league-icon {
         width: 125px;
         height: 125px;
         border: 1px solid #eee;
@@ -50,12 +50,12 @@
         padding: 30px;
     }
 
-    .league-icon img{
+    .league-icon img {
         width: 100%;
         height: 100%;
     }
 
-    .league-info{
+    .league-info {
         margin-left: 25px;
         flex: 1;
         display: flex;
@@ -73,7 +73,7 @@
         padding-right: 5px;
     }
 
-    .league-info .tag{
+    .league-info .tag {
         display: inline-block;
         font-size: 12px;
         line-height: 14px;
@@ -85,7 +85,8 @@
         color: #2d8cf0;
         border: 1px solid #2d8cf0;
     }
-    .league-info .desc{
+
+    .league-info .desc {
         line-height: 16px;
         height: 32px;
         overflow: hidden;
@@ -93,35 +94,35 @@
         color: #9ea7b4;
     }
 
-    .league-info .arguments{
+    .league-info .arguments {
         flex: 1;
         display: flex;
         flex-direction: row;
     }
 
-    .league-info .arguments .argument{
+    .league-info .arguments .argument {
         flex: 1;
         align-self: center;
     }
 
-    .league-info .arguments .argument p{
+    .league-info .arguments .argument p {
         height: 20px;
         line-height: 20px;
         color: #657180;
     }
 
-    .member-info{
+    .member-info {
         display: inline-block;
         text-align: center;
         padding: 15px;
     }
 
-    .member-info .member-icon{
+    .member-info .member-icon {
         width: 60px;
         height: 60px;
     }
 
-    .member-info .member-name{
+    .member-info .member-name {
         margin-top: 15px;
     }
 </style>
@@ -134,16 +135,16 @@
             <Tabs value="1" :animated="false">
                 <TabPane label="联盟数据" name="1">
                     <Row v-if="product_list.length > 0">
-                        <Col span="4">
+                        <i-col span="4">
                             <Menu width="auto" :active-name="current" size="small" @on-select="changeProduct">
                                 <MenuItem :name="index" v-for="(product,index) in product_list" :key="index">
                                     {{product.product_name}}
                                 </MenuItem>
                             </Menu>
-                        </Col>
-                        <Col span="20">
+                        </i-col>
+                        <i-col span="20">
                             <div is="Product" :product="current_product"></div>
-                        </Col>
+                        </i-col>
                     </Row>
                 </TabPane>
                 <TabPane label="联盟介绍" name="2">
@@ -160,7 +161,8 @@
                             <div class="arguments">
                                 <div class="argument">
                                     <p><strong>ID：</strong><span>{{league_info.id}}</span></p>
-                                    <p><strong>状态：</strong><span :class="league_info.status_class">{{league_info.status}}</span></p>
+                                    <p><strong>状态：</strong><span :class="league_info.status_class">{{league_info.status}}</span>
+                                    </p>
                                 </div>
                                 <div class="argument">
                                     <p><strong>数据产品：</strong><span>{{league_info.data_products_num}}个</span></p>
@@ -172,7 +174,9 @@
                 </TabPane>
                 <TabPane label="联盟成员" name="3">
                     <div class="member-info" v-for="(member, index) in member_list" :key="index" v-if="member_list">
-                        <div class="member-icon"><AccountImage :account="member.merchant_name"></AccountImage></div>
+                        <div class="member-icon">
+                            <AccountImage :account="member.merchant_name"></AccountImage>
+                        </div>
                         <div class="member-name"><span>{{member.alias}}</span></div>
                     </div>
                 </TabPane>
@@ -191,19 +195,19 @@
                 loaded: false,
                 league_info: {},
                 product_list: [],
-                member_list:[],
+                member_list: [],
                 current: 0,
                 current_product: {}
             };
         },
-        created() {
+        created () {
             let self = this;
             this.$http.all([
                 this.$http.get('/api/fetch_league_info/' + this.$route.query.id),
                 this.$http.get('/api/fetch_league_members/' + this.$route.query.id)
             ]).then(this.$http.spread(function (res1, res2) {
                 self.formatterLeague(res1.data, res2.data);
-            })).catch((err)=>{
+            })).catch((err) => {
                 Handler.error(err);
                 if (err.response.data.data.code === 10) {
                     this.$router.push('/404');
@@ -211,10 +215,10 @@
             });
         },
         methods: {
-            formatterLeague(league_info, member_list){
+            formatterLeague (league_info, member_list) {
                 this.league_info = league_info;
                 this.member_list = member_list;
-                switch (this.league_info.status){
+                switch (this.league_info.status) {
                     case 0:
                         this.league_info.status = '未发布';
                         this.league_info.status_class = 'facolor-warning';
@@ -230,18 +234,18 @@
                 }
                 this.league_info.data_products_num = this.league_info.data_products && this.league_info.data_products.length > 0 ? this.league_info.data_products.length : 0;
                 this.league_info.members_num = this.league_info.members && this.league_info.members.length > 0 ? this.league_info.members.length : 0;
-                this.$http.get('/api/fetch_data_market_categories_info/' + this.league_info.category_id).then((res)=>{
+                this.$http.get('/api/fetch_data_market_categories_info/' + this.league_info.category_id).then((res) => {
                     this.league_info.category_name = res.data.category_name;
                     return this.$http.get('/api/fetch_league_data_products/' + JSON.stringify(this.league_info.data_products));
-                }).then((res)=>{
+                }).then((res) => {
                     this.product_list = res.data;
                     this.current_product = this.product_list[0];
                     this.loaded = true;
-                }).catch((err)=>{
+                }).catch((err) => {
                     Handler.error(err);
                 });
             },
-            changeProduct(index){
+            changeProduct (index) {
                 this.current_product = this.product_list[index];
             }
         },

@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import Routers from './router';
 import Vuex from 'vuex';
 import Util from './libs/util';
-import App from './app.vue';
+import App from './App.vue';
 import axios from 'axios';
 import VueWebsocket from 'vue-websocket';
 import VueTimeago from 'vue-timeago';
@@ -38,45 +38,45 @@ const store = new Vuex.Store({
         init_step: state => state.init_step,
         certified: state => state.certified,
         active_nav: state => state.active_nav,
-        common_setting: state => state.common_setting,
+        common_setting: state => state.common_setting
     },
     mutations: {
-        setAccountType(state, payload) {
+        setAccountType (state, payload) {
             state.account_type = payload.account_type;
         },
-        setAccount(state, payload) {
+        setAccount (state, payload) {
             state.account = payload.account;
         },
-        setInitStep(state, payload) {
+        setInitStep (state, payload) {
             state.init_step = payload.init_step;
         },
-        setCertified(state, payload) {
+        setCertified (state, payload) {
             state.certified = payload.certified;
         },
-        setActiveNav(state, payload) {
+        setActiveNav (state, payload) {
             state.active_nav = payload.active_nav;
         },
-        setCommonSetting(state, payload) {
+        setCommonSetting (state, payload) {
             state.common_setting = payload.common_setting;
         }
     },
     actions: {
-        setAccountType({commit}, payload) {
+        setAccountType ({commit}, payload) {
             commit('setAccountType', payload);
         },
-        setAccount({commit}, payload) {
+        setAccount ({commit}, payload) {
             commit('setAccount', payload);
         },
-        setInitStep({commit}, payload) {
+        setInitStep ({commit}, payload) {
             commit('setInitStep', payload);
         },
-        setCertified({commit}, payload) {
+        setCertified ({commit}, payload) {
             commit('setCertified', payload);
         },
-        setActiveNav({commit}, payload) {
+        setActiveNav ({commit}, payload) {
             commit('setActiveNav', payload);
         },
-        setCommonSetting({commit}, payload) {
+        setCommonSetting ({commit}, payload) {
             commit('setCommonSetting', payload);
         }
     }
@@ -93,7 +93,7 @@ router.beforeEach((to, from, next) => {
     iView.LoadingBar.start();
     Util.title(to.meta.title);
 
-    switch (to.path.split('/')[1]){
+    switch (to.path.split('/')[1]) {
         case 'init':
             store.state.active_nav = '1';
             break;
@@ -114,12 +114,12 @@ router.beforeEach((to, from, next) => {
             break;
     }
 
-    //初始化未完成，强制进入初始化
-    if ((store.state.init_step !== 'finished') && (to.path !== '/init')){
+    // 初始化未完成，强制进入初始化
+    if ((store.state.init_step !== 'finished') && (to.path !== '/init')) {
         next('/init');
     }
-    //初始化已完成，禁止进入初始化
-    if ((store.state.init_step === 'finished') && (to.path === '/init')){
+    // 初始化已完成，禁止进入初始化
+    if ((store.state.init_step === 'finished') && (to.path === '/init')) {
         next('/');
     }
     next();
@@ -130,10 +130,10 @@ router.afterEach(() => {
     window.scrollTo(0, 0);
 });
 
-//验证初始化是否完成 - 加载配置文件
+// 验证初始化是否完成 - 加载配置文件
 axios.get('/api/fetch_config').then((res) => {
     store.state.common_setting = res.data['common'];
-    //是否选择账户类型
+    // 是否选择账户类型
     if (res.data['common'].account_type) {
         store.state.account_type = res.data['common'].account_type;
         if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
@@ -141,7 +141,7 @@ axios.get('/api/fetch_config').then((res) => {
                 account_name: res.data[store.state.account_type].account_name,
                 private_key: res.data[store.state.account_type].private_key
             };
-            //是否已完成认证
+            // 是否已完成认证
             axios.get('/api/fetch_account/' + res.data[store.state.account_type].account_name).then((res) => {
                 let account = res.data;
                 if (store.state.account_type === 'merchant') {
@@ -156,15 +156,15 @@ axios.get('/api/fetch_config').then((res) => {
                 if (store.state.certified) {
                     axios.get('/api/fetch_box').then((res) => {
                         if (res.data && res.data.length && res.data.length > 0) {
-                            //状态:pm2已启动过 - init-finished
+                            // 状态:pm2已启动过 - init-finished
                             store.state.init_step = 'finished';
                         } else {
-                            //是否已完善配置
+                            // 是否已完善配置
                             if ((store.state.account.callback_url) || (store.state.account.service && store.state.account.subscribed_data_product)) {
-                                //状态:pm2未启动过 - init-step5
+                                // 状态:pm2未启动过 - init-step5
                                 store.state.init_step = 4;
                             } else {
-                                //状态:账号已认证，配置未完善 - init-step4
+                                // 状态:账号已认证，配置未完善 - init-step4
                                 store.state.init_step = 3;
                             }
                         }
@@ -179,7 +179,7 @@ axios.get('/api/fetch_config').then((res) => {
                     });
                 } else {
                     store.state.init_step = 2;
-                    //状态:账号未完成认证 - init-step3
+                    // 状态:账号未完成认证 - init-step3
                     new Vue({
                         el: '#app',
                         router: router,
@@ -192,7 +192,7 @@ axios.get('/api/fetch_config').then((res) => {
             });
         } else {
             store.state.init_step = 1;
-            //状态:尚未创建或导入账号 - init-step2
+            // 状态:尚未创建或导入账号 - init-step2
             new Vue({
                 el: '#app',
                 router: router,
@@ -200,9 +200,9 @@ axios.get('/api/fetch_config').then((res) => {
                 render: h => h(App)
             });
         }
-    }else{
+    } else {
         store.state.init_step = 0;
-        //状态:首次访问 - init-step1
+        // 状态:首次访问 - init-step1
         new Vue({
             el: '#app',
             router: router,

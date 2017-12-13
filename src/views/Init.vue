@@ -33,21 +33,21 @@
         text-align: center;
     }
 
-    .init .step-box{
+    .init .step-box {
         width: 80%;
         margin-left: 15%;
     }
 
-    .init .operation-box{
+    .init .operation-box {
         width: 65%;
         margin: 50px auto 0;
     }
 
-    .init .operation-box{
+    .init .operation-box {
         text-align: center;
     }
 
-    .init .operation-box .ivu-form-item{
+    .init .operation-box .ivu-form-item {
         text-align: center;
     }
 
@@ -89,7 +89,7 @@
             return {
                 loading: false,
                 current: 0,
-                list:{
+                list: {
                     0: 'AccountType',
                     1: 'AccountCreate',
                     2: 'AccountCertification',
@@ -98,10 +98,10 @@
                 }
             };
         },
-        created() {
-            if (this.init_step !== 'finished'){
+        created () {
+            if (this.init_step !== 'finished') {
                 this.current = Number(this.init_step);
-            }else{
+            } else {
                 this.$router.push('/');
             }
         },
@@ -112,12 +112,12 @@
         },
         methods: {
             ...mapActions({
-                setInitStep: 'setInitStep',
+                setInitStep: 'setInitStep'
             }),
-            lastStep (){
+            lastStep () {
                 this.current -= 1;
             },
-            nextStep (){
+            nextStep () {
                 this.current += 1;
                 this.setInitStep({init_step: this.current});
             }

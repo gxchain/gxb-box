@@ -4,14 +4,14 @@
         padding: 30px;
     }
 
-    .layout-content-main{
+    .layout-content-main {
         padding: 0 30px;
     }
 </style>
 <template>
     <div class="setting">
         <Row>
-            <Col span="5">
+            <i-col span="5">
                 <Menu :active-name="String(current)" width="auto" @on-select="route">
                     <MenuItem name="0">
                         <Icon type="person"></Icon>
@@ -30,12 +30,12 @@
                         打包管理
                     </MenuItem>
                 </Menu>
-            </Col>
-            <Col span="19">
+            </i-col>
+            <i-col span="19">
                 <div class="layout-content-main">
                     <div v-bind:is="list[current]" v-on:restart="restartBox()"></div>
                 </div>
-            </Col>
+            </i-col>
         </Row>
     </div>
 </template>
@@ -51,7 +51,7 @@
             return {
                 loading: false,
                 current: localStorage.getItem('__gxbBox__activeSetting') ? Number(localStorage.getItem('__gxbBox__activeSetting')) : 0,
-                list:{
+                list: {
                     0: 'SettingAccount',
                     1: 'SettingConfig',
                     2: 'SettingApi',
@@ -60,8 +60,8 @@
             };
         },
         methods: {
-            route(name) {
-                switch (name){
+            route (name) {
+                switch (name) {
                     case '0':
                         this.current = 0;
                         break;
@@ -75,9 +75,9 @@
                         this.current = 3;
                         break;
                 }
-                localStorage.setItem('__gxbBox__activeSetting',this.current);
+                localStorage.setItem('__gxbBox__activeSetting', this.current);
             },
-            restartBox(){
+            restartBox () {
                 this.$http.get('/api/box_restart').then(() => {
                     this.$router.push('/console');
                 }).catch((err) => {

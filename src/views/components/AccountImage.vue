@@ -23,19 +23,18 @@
             }
         },
         watch: {
-            account() {
+            account () {
                 this.drawCanvas();
             },
-            size() {
+            size () {
                 this.drawCanvas();
             }
         },
         methods: {
-            drawCanvas() {
+            drawCanvas () {
                 if (this.account) {
                     jdenticon.update(this.$refs.canvas, this.hash, 0);
-                }
-                else {
+                } else {
                     let ctx = this.$refs.canvas.getContext('2d');
                     ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
                     let size = ctx.canvas.width;
@@ -47,7 +46,7 @@
                 }
             }
         },
-        mounted() {
+        mounted () {
             this.drawCanvas();
         }
     };

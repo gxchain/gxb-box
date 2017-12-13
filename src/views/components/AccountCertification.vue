@@ -1,5 +1,5 @@
 <style scoped>
-    .step-btn-box{
+    .step-btn-box {
         margin: 25px 0;
     }
 
@@ -18,7 +18,7 @@
         display: inline-block;
     }
 
-    .spin-container{
+    .spin-container {
         display: inline-block;
         width: 200px;
         height: 100px;
@@ -33,7 +33,7 @@
         text-align: center;
     }
 
-    .apply-merchant{
+    .apply-merchant {
         margin-bottom: 15px;
     }
 
@@ -48,7 +48,7 @@
         cursor: pointer
     }
 
-    .upload-file-status{
+    .upload-file-status {
         color: #19be6b;
         margin-left: 5px;
     }
@@ -67,7 +67,7 @@
     }
 
     .view-btn:hover {
-        color:#2d8cf0
+        color: #2d8cf0
     }
 
 </style>
@@ -113,7 +113,7 @@
                     <span class="info" v-else>认证数据源</span>
                     <div @click="applyDatasource()" v-if="((account_type === 'merchant') && (scene !== 'init'))">
                         <Tooltip content="升级为数据源" placement="top" class="view-btn">
-                            <Icon  type="person-add"></Icon>
+                            <Icon type="person-add"></Icon>
                         </Tooltip>
                     </div>
                 </Alert>
@@ -137,16 +137,16 @@
                 </FormItem>
                 <div class="split-line"><span class="txt">基本信息</span></div>
                 <FormItem label="公司名称" prop="name">
-                    <Input v-model="formMerchant.name" placeholder="公司名称用于发票抬头，请谨慎填写"></Input>
+                    <i-input v-model="formMerchant.name" placeholder="公司名称用于发票抬头，请谨慎填写"></i-input>
                 </FormItem>
                 <FormItem label="公司别称" prop="alias">
-                    <Input v-model="formMerchant.alias" placeholder="公司的简称（将作为商户名），例如浙江电信"></Input>
+                    <i-input v-model="formMerchant.alias" placeholder="公司的简称（将作为商户名），例如浙江电信"></i-input>
                 </FormItem>
                 <FormItem label="所在地区" prop="areas">
                     <Cascader :data="cityList" v-model="formMerchant.areas" placeholder="请选择所在地区，暂不支持港澳台地区"></Cascader>
                 </FormItem>
                 <FormItem label="详细地址" prop="address">
-                    <Input v-model="formMerchant.address" placeholder="补充详细的街道、小区、楼号、房号等地址"></Input>
+                    <i-input v-model="formMerchant.address" placeholder="补充详细的街道、小区、楼号、房号等地址"></i-input>
                 </FormItem>
                 <div class="split-line"><span class="txt">企业信息</span></div>
                 <FormItem label="证件类型" prop="cert_type">
@@ -156,13 +156,13 @@
                     </RadioGroup>
                 </FormItem>
                 <FormItem label="营业执照编号" prop="cert_no">
-                    <Input v-model="formMerchant.cert_no"></Input>
+                    <i-input v-model="formMerchant.cert_no"></i-input>
                 </FormItem>
                 <FormItem label="税务登记证编号" prop="tax_no" v-if="formMerchant.cert_type === 'normal'">
-                    <Input v-model="formMerchant.tax_no"></Input>
+                    <i-input v-model="formMerchant.tax_no"></i-input>
                 </FormItem>
                 <FormItem label="组织机构编号" prop="org_no" v-if="formMerchant.cert_type === 'normal'">
-                    <Input v-model="formMerchant.org_no"></Input>
+                    <i-input v-model="formMerchant.org_no"></i-input>
                 </FormItem>
                 <FormItem label="营业执照副本" prop="cert_image">
                     <div class="ivu-form-item-content">
@@ -181,13 +181,13 @@
                 </FormItem>
                 <div class="split-line"><span class="txt">联系人信息</span></div>
                 <FormItem label="联系人姓名" prop="contact_name">
-                    <Input v-model="formMerchant.contact_name"></Input>
+                    <i-input v-model="formMerchant.contact_name"></i-input>
                 </FormItem>
                 <FormItem label="联系人电话" prop="contact_tel">
-                    <Input v-model="formMerchant.contact_tel"></Input>
+                    <i-input v-model="formMerchant.contact_tel"></i-input>
                 </FormItem>
                 <FormItem label="联系人邮箱" prop="contact_mail">
-                    <Input v-model="formMerchant.contact_mail"></Input>
+                    <i-input v-model="formMerchant.contact_mail"></i-input>
                 </FormItem>
             </Form>
             <div slot="footer" class="center">
@@ -207,10 +207,12 @@
                 </FormItem>
                 <div class="split-line"><span class="txt">数据源信息</span></div>
                 <FormItem label="生产数据描述" prop="ability_desc">
-                    <Input type="textarea" v-model="formDatasource.ability_desc" :rows="4" placeholder="请对贵公司所生产的数据类型进行描述"></Input>
+                    <i-input type="textarea" v-model="formDatasource.ability_desc" :rows="4"
+                           placeholder="请对贵公司所生产的数据类型进行描述"></i-input>
                 </FormItem>
                 <FormItem label="数据生成能力" prop="data_desc">
-                    <Input type="textarea" v-model="formDatasource.data_desc" :rows="4" placeholder="公信宝仅接入有数据原始生产能力的商户，请贵商户对准备接入公信宝数据源的数据生产过程加以简单说明"></Input>
+                    <i-input type="textarea" v-model="formDatasource.data_desc" :rows="4"
+                           placeholder="公信宝仅接入有数据原始生产能力的商户，请贵商户对准备接入公信宝数据源的数据生产过程加以简单说明"></i-input>
                 </FormItem>
 
             </Form>
@@ -229,7 +231,7 @@
 
     export default {
         props: ['scene'],
-        data() {
+        data () {
             const isValidCertNo = (rule, value, callback) => {
                 if (util.isValidBusCode(value)) {
                     if ((this.formMerchant.cert_type === 'normal') && (value.length !== 15)) {
@@ -325,7 +327,7 @@
                         {validator: isValidOrgCode, trigger: 'blur'}
                     ],
                     cert_image: [
-                        {required: true, message: '请上传营业执照副本', trigger: 'blur'},
+                        {required: true, message: '请上传营业执照副本', trigger: 'blur'}
                     ],
                     contact_name: [
                         {required: true, message: '请填写联系人姓名', trigger: 'blur'},
@@ -343,31 +345,31 @@
                 formDatasource: {
                     merchant_name: '',
                     data_desc: '',
-                    ability_desc: '',
+                    ability_desc: ''
                 },
                 datasourceValidate: {
                     data_desc: [
                         {required: true, message: '请填写数据描述', trigger: 'blur'}
                     ],
                     ability_desc: [
-                        {required: true, message: '请填写生产能力描述', trigger: 'blur'},
+                        {required: true, message: '请填写生产能力描述', trigger: 'blur'}
                     ]
-                },
+                }
             };
         },
-        created(){
-            //初始化账号认证：获取认证状态
+        created () {
+            // 初始化账号认证：获取认证状态
             this.$http.get('/api/fetch_account/' + this.account.account_name).then((res) => {
                 this.merchant_certified = res.data.merchant_expiration_date !== '1970-01-01T00:00:00';
                 this.datasource_certified = res.data.datasource_expiration_date !== '1970-01-01T00:00:00';
-                if (this.merchant_certified&&(this.account_type === 'merchant')) {
+                if (this.merchant_certified && (this.account_type === 'merchant')) {
                     this.setCertified({certified: true});
                 }
                 if (this.datasource_certified) {
                     this.setCertified({certified: true});
                 }
                 return this.getApplyingStatus();
-            }).catch((err)=>{
+            }).catch((err) => {
                 Handler.error(err);
             });
         },
@@ -385,21 +387,21 @@
                 setCertified: 'setCertified',
                 setCommonSetting: 'setCommonSetting'
             }),
-            applyMerchant() {
+            applyMerchant () {
                 this.merchant_modal = true;
             },
-            closeMerchant() {
+            closeMerchant () {
                 this.merchant_modal = false;
             },
-            applyDatasource() {
+            applyDatasource () {
                 this.datasource_modal = true;
             },
-            closeDatasource() {
+            closeDatasource () {
                 this.datasource_modal = false;
             },
-            upgradeDatasource() {
-                //升级为数据源
-                this.commonSettings.account_type =  'datasource';
+            upgradeDatasource () {
+                // 升级为数据源
+                this.commonSettings.account_type = 'datasource';
                 let datasource_config = {
                     account_name: this.account.account_name,
                     private_key: this.account.private_key
@@ -421,52 +423,52 @@
                             type: 'datasource',
                             merchant_config: null,
                             datasource_config: datasource_config,
-                            is_merchant_open: true,
+                            is_merchant_open: true
                         }
-                    }),
+                    })
                 ]).then(this.$http.spread(function () {
                     self.setAccountType({account_type: 'datasource'});
                     self.setCommonSetting({common_setting: self.commonSettings});
                     return this.getMerchantInfo();
-                })).catch((err)=>{
+                })).catch((err) => {
                     Handler.error(err);
                 });
             },
-            getApplyingStatus() {
+            getApplyingStatus () {
                 this.$http.get('/api/is_applying/' + this.account.account_name).then((res) => {
-                    if ((res.data.merchant_status === 'PASSED')&&!this.merchant_certified){
+                    if ((res.data.merchant_status === 'PASSED') && !this.merchant_certified) {
                         res.data.merchant_status = 'INITIAL';
                     }
-                    if ((res.data.datasource_status === 'PASSED')&&!this.datasource_certified){
+                    if ((res.data.datasource_status === 'PASSED') && !this.datasource_certified) {
                         res.data.datasource_status = 'INITIAL';
                     }
-                    this.is_applying = ((res.data.merchant_status === 'INITIAL')||(res.data.datasource_status === 'INITIAL'));
-                    if (this.merchant_certified || this.datasource_certified){
-                        //认证商户升级为数据源通过
-                        if ((this.account_type === 'merchant') && this.datasource_certified){
-                            //升级为数据源
+                    this.is_applying = ((res.data.merchant_status === 'INITIAL') || (res.data.datasource_status === 'INITIAL'));
+                    if (this.merchant_certified || this.datasource_certified) {
+                        // 认证商户升级为数据源通过
+                        if ((this.account_type === 'merchant') && this.datasource_certified) {
+                            // 升级为数据源
                             this.upgradeDatasource();
-                        }else{
+                        } else {
                             this.getMerchantInfo();
                         }
-                    }else{
+                    } else {
                         this.loaded = true;
                     }
-                }).catch((err)=>{
+                }).catch((err) => {
                     Handler.error(err);
                 });
             },
-            getMerchantInfo() {
+            getMerchantInfo () {
                 this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
                     this.formDatasource.merchant_name = res.data.name;
                     this.merchant_name = res.data.name;
                     this.merchant_alias = res.data.alias;
                     this.loaded = true;
-                }).catch((err)=>{
+                }).catch((err) => {
                     Handler.error(err);
                 });
             },
-            sendMerchantForm(name) {
+            sendMerchantForm (name) {
                 this.loading = true;
                 this.$refs[name].validate((valid) => {
                     if (valid) {
@@ -480,14 +482,14 @@
                             data: {
                                 'apply_info': this.formMerchant,
                                 'account_name': this.account.account_name,
-                                'account_type': this.account_type,
+                                'account_type': this.account_type
                             }
                         }).then(() => {
                             this.loading = false;
                             this.merchant_modal = false;
                             this.is_applying = true;
                             this.$Message.success('申请成功');
-                        }).catch((err)=>{
+                        }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('申请失败:' + Handler.error(err));
                         });
@@ -497,7 +499,7 @@
                     }
                 });
             },
-            sendDatasourceForm(name) {
+            sendDatasourceForm (name) {
                 this.loading = true;
                 this.$refs[name].validate((valid) => {
                     if (valid) {
@@ -507,14 +509,14 @@
                             data: {
                                 'apply_info': this.formDatasource,
                                 'account_name': this.account.account_name,
-                                'account_type': this.account_type,
+                                'account_type': this.account_type
                             }
                         }).then(() => {
                             this.loading = false;
                             this.datasource_modal = false;
                             this.is_applying = true;
                             this.$Message.success('申请成功');
-                        }).catch((err)=>{
+                        }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('申请失败:' + Handler.error(err));
                         });
@@ -524,7 +526,7 @@
                     }
                 });
             },
-            handleCertImageChange(e) {
+            handleCertImageChange (e) {
                 let file = e.target.files[0];
                 if (!/\.(jpe?g|png)$/i.test(file.name)) {
                     this.$Message.error('格式不正确,请重新选择');
@@ -544,10 +546,10 @@
                     self.formMerchant.cert_image = this.result;
                 };
             },
-            lastStep() {
+            lastStep () {
                 this.$emit('last');
             },
-            nextStep() {
+            nextStep () {
                 this.$emit('next');
             }
         }

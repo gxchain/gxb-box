@@ -50,10 +50,10 @@
     }
 
     .view-btn:hover {
-        color:#2d8cf0
+        color: #2d8cf0
     }
 
-    .mar-top-15{
+    .mar-top-15 {
         margin-top: 15px;
     }
 </style>
@@ -79,7 +79,9 @@
                 <Alert type="info">
                     <span v-show="is_show">{{account.private_key}}</span>
                     <span v-show="!is_show">--------- 点击右侧按钮查看私钥 ---------</span>
-                    <div @click="showPrivateKey()"><Icon class="view-btn" type="eye"></Icon></div>
+                    <div @click="showPrivateKey()">
+                        <Icon class="view-btn" type="eye"></Icon>
+                    </div>
                 </Alert>
             </div>
         </div>
@@ -90,7 +92,7 @@
     import {mapGetters} from 'vuex';
 
     export default {
-        data() {
+        data () {
             return {
                 is_show: false
             };
@@ -101,7 +103,7 @@
             })
         },
         methods: {
-            showPrivateKey(){
+            showPrivateKey () {
                 this.is_show = !this.is_show;
             }
         },

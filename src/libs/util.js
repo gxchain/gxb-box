@@ -11,16 +11,16 @@ let util = {
      */
     isValidOrgCode: function (orgCode) {
         var ret = false;
-        var codeVal = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        var codeVal = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
         var intVal = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35];
         var crcs = [3, 7, 9, 10, 5, 8, 4, 2];
-        if (orgCode && orgCode.length == 10) {
+        if (orgCode && orgCode.length === 10) {
             var sum = 0;
             for (var i = 0; i < 8; i++) {
                 var codeI = orgCode.substring(i, i + 1);
                 var valI = -1;
                 for (var j = 0; j < codeVal.length; j++) {
-                    if (codeI == codeVal[j]) {
+                    if (codeI === codeVal[j]) {
                         valI = intVal[j];
                         break;
                     }
@@ -29,18 +29,15 @@ let util = {
             }
             var crc = 11 - (sum % 11);
             switch (crc) {
-                case 10:
-                {
-                    crc = "X";
+                case 10: {
+                    crc = 'X';
                     break;
                 }
-                default:
-                {
+                default: {
                     break;
                 }
             }
-            //alert(“crc=”+crc+”,inputCrc=”+orgCode.substring(9));
-            if (crc == orgCode.substring(9)) {
+            if (crc === orgCode.substring(9)) {
                 ret = true;
             }
         }
@@ -67,9 +64,9 @@ let util = {
      * 二、顺序码是7-14位，顺序码指工商行政管理机关在其管辖范围内按照先
      * 后次序为申请登记注册的市场主体所分配的顺序号。为了便于管理和
      * 赋码，8位顺序码中的第1位（自左至右）采用以下分配规则：
-     *　　 1）内资各类企业使用“0”、“1”、“2”、“3”；
-     *　　 2）外资企业使用“4”、“5”；
-     *　　 3）个体工商户使用“6”、“7”、“8”、“9”。
+     * 1）内资各类企业使用“0”、“1”、“2”、“3”；
+     * 2）外资企业使用“4”、“5”；
+     * 3）个体工商户使用“6”、“7”、“8”、“9”。
      * 顺序码是系统根据企业性质情况自动生成的。
      * 三、校验码是最后一位，校验码用于检验本体码的正确性
      *
@@ -81,7 +78,7 @@ let util = {
      */
     isValidBusCode: function (busCode) {
         var ret = false;
-        if (busCode.length == 15) {
+        if (busCode.length === 15) {
             var sum = 0;
             var s = [];
             var p = [];
@@ -91,51 +88,46 @@ let util = {
             for (var i = 0; i < busCode.length; i++) {
                 a[i] = parseInt(busCode.substring(i, i + 1), m);
                 s[i] = (p[i] % (m + 1)) + a[i];
-                if (0 == s[i] % m) {
+                if (s[i] % m === 0) {
                     p[i + 1] = 10 * 2;
                 } else {
                     p[i + 1] = (s[i] % m) * 2;
                 }
             }
-            if (1 == (s[14] % m)) {
-                //营业执照编号正确!
-                //alert(“营业执照编号正确!”);
+            if ((s[14] % m) === 1) {
+                // 营业执照编号正确!
                 ret = true;
             } else {
-                //营业执照编号错误!
+                // 营业执照编号错误!
                 ret = false;
-                //alert(“营业执照编号错误!”);
             }
-        } else if (busCode.length == 18) {
+        } else if (busCode.length === 18) {
             var reg = /^[1-9A-GY]{1}[1239]{1}[1-5]{1}[0-9]{5}[0-9A-Z]{10}$/;
             if (!reg.test(busCode)) {
                 ret = false;
-            }
-            else {
+            } else {
                 var str = '0123456789ABCDEFGHJKLMNPQRTUWXY';
                 var ws = [1, 3, 9, 27, 19, 26, 16, 17, 20, 29, 25, 13, 8, 24, 10, 30, 28];
-                var codes = new Array();
+                var codes = [];
                 codes[0] = busCode.substr(0, busCode.length - 1);
                 codes[1] = busCode.substr(busCode.length - 1, busCode.length);
-                var sum = 0;
-                for (var i = 0; i < 17; i++) {
+                sum = 0;
+                for (let i = 0; i < 17; i++) {
                     sum += str.indexOf(codes[0].charAt(i)) * ws[i];
                 }
                 var c18 = 31 - (sum % 31);
-                if (c18 == 31) {
+                if (c18 === 31) {
                     c18 = 'Y';
-                } else if (c18 == 30) {
+                } else if (c18 === 30) {
                     c18 = '0';
                 }
 
-                if (str.charAt(c18) != codes[1]) {
+                if (str.charAt(c18) !== codes[1]) {
                     ret = false;
-                }
-                else {
+                } else {
                     ret = true;
                 }
             }
-
         }
         return ret;
     },
@@ -144,13 +136,13 @@ let util = {
      */
     isValidTaxCode: function (taxCode) {
         var ret = false;
-        if (taxCode.length == 15 && /\d{6}.test(taxCode.substr(0,6))/ && this.isValidOrgCode(taxCode.substr(5))) {
+        if (taxCode.length === 15 && /\d{6}.test(taxCode.substr(0,6))/ && this.isValidOrgCode(taxCode.substr(5))) {
             ret = true;
         }
         return ret;
     },
 
-    formatDateTime: function(inputTime) {
+    formatDateTime: function (inputTime) {
         let date = new Date(inputTime);
         let y = date.getFullYear();
         let m = date.getMonth() + 1;
@@ -163,7 +155,7 @@ let util = {
         let second = date.getSeconds();
         minute = minute < 10 ? ('0' + minute) : minute;
         second = second < 10 ? ('0' + second) : second;
-        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     },
 
     title: function (title) {
