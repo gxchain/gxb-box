@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import Routers from './router';
 import Vuex from 'vuex';
 import Util from './libs/util';
-import App from './App.vue';
+import App from './app.vue';
 import axios from 'axios';
 import VueWebsocket from 'vue-websocket';
 import VueTimeago from 'vue-timeago';
