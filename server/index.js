@@ -6,7 +6,7 @@ import http from 'http';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import {Apis, Manager} from 'gxbjs-ws';
+import ConnectService from './services/ConnectService';
 import config from '../config';
 
 require('debug')('gxb-box:server');
@@ -60,39 +60,25 @@ if (app.get('env') === 'development') {
     app.use(express.static('./dist'));
 }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({limit: '2mb'}));
+app.use(bodyParser.urlencoded({
+    extended: false,
+    limit: '2mb'
+}));
 
-let connected = false;
 const connectedCheck = function (req, res, next) {
-    if (connected) {
-        next();
-    } else {
-        res.status(500).send({
-            message: '正在初始化数据,请稍后再试'
-        });
-    }
+    ConnectService.connect(req.query.env, false, function (connected) {
+        if (connected) {
+            next();
+        } else {
+            res.status(500).send({message: '正在初始化数据,请稍后再试'});
+        }
+    });
 };
 
 app.use('/api', connectedCheck, require('./routes/api'));
 
-app.use(function (req, res, next) {
-    let err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-if (app.get('env') === 'development') {
-    app.use(function (err, req, res) {
-        res.status(err.status || 500);
-        res.send({
-            message: err.message,
-            error: err
-        });
-    });
-}
-
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.send({
         message: err.message,
@@ -116,85 +102,6 @@ const get_ip_address = () => {
             }
         }
     }
-};
-
-/**
- * 过滤可连接的节点
- * @param latencies
- * @param witnesses
- * @returns {Array.<T>|*}
- */
-const filterAndSortURLs = (latencies, witnesses) => {
-    return witnesses
-        .filter(a => {
-            /* Only keep the nodes we were able to connect to */
-            return !!latencies[a];
-        })
-        .sort((a, b) => {
-            return latencies[a] - latencies[b];
-        });
-};
-
-let witnesses = app.get('env') === 'development' ? config.dev.witnesses : config.build.witnesses;
-if (witnesses.length === 0) {
-    console.error('未配置启动节点');
-    process.exit(1);
-}
-/**
- * 连接witness
- * @param callback
- */
-let connect = function (callback) {
-    let connectionManager = new Manager({url: witnesses[0], urls: witnesses});
-    connectionManager.checkConnections().then((resp) => {
-        let urls = filterAndSortURLs(resp, witnesses);
-        console.log(urls);
-        if (urls.length === 0) {
-            console.error('无可用连接,3秒后重试');
-            setTimeout(function () {
-                connect(callback);
-            }, 3000);
-        } else {
-            connectionManager.urls = urls;
-            connectionManager.connectWithFallback(true).then(() => {
-                console.log('witnesses已连接');
-                connected = true;
-                callback && callback();
-            }).catch((ex) => {
-                console.error('连接失败,3秒后重试', ex.message);
-                setTimeout(function () {
-                    connect(callback);
-                }, 3000);
-            });
-        }
-    }).catch((ex) => {
-        console.error('检查连接失败,3秒后重试', ex.message);
-        setTimeout(function () {
-            connect(callback);
-        }, 3000);
-    });
-};
-
-/**
- * 初始化连接
- */
-let initConnection = function () {
-    console.log('检查配置文件...');
-    // 检查配置文件
-    let config_path = path.resolve(process.cwd(), './config/config.json');
-    fs.exists(config_path, function (exists) {
-        if (exists) {
-            startServer();
-        } else {
-            try {
-                let _config = app.get('env') === 'development' ? config.dev.visualizationConfig : config.build.visualizationConfig;
-                fs.writeFileSync(config_path, JSON.stringify(_config));
-                startServer();
-            } catch (ex) {
-                console.error('获取配置信息失败,请检查:\n1. 请确认配置文件以及读写权限 \n', ex);
-            }
-        }
-    });
 };
 
 /**
@@ -230,34 +137,36 @@ let startServer = function () {
         });
         let local_ip = get_ip_address();
         console.log('公信宝数据盒子配置系统已启动');
-        console.log('> 访问地址：' + 'http://' + local_ip + ':' + port);
+        console.log('> 请使用浏览器访问：' + 'http://' + local_ip + ':' + port);
     });
 };
 
-// websocket 状态处理
-Apis.setRpcConnectionStatusCallback(function (status) {
-    let statusMap = {
-        open: '开启',
-        closed: '关闭',
-        error: '错误',
-        reconnect: '重新连接'
-    };
-    console.log('witness当前状态:', statusMap[status] || status);
-    if (status === 'reconnect') {
-        console.log('断开重连');
-    } else if (connected && (status === 'closed' || status === 'error')) { // 出错重连
-        connected = false;
-        console.log('重新连接其他witness');
-        connect(function () {
-            initConnection();
-        });
-    }
-});
+/**
+ * 初始化连接
+ */
+let initConnection = function () {
+    console.log('检查配置文件...');
+    // 检查配置文件
+    let config_path = path.resolve(process.cwd(), './config/config.json');
+    fs.exists(config_path, function (exists) {
+        if (exists) {
+            startServer();
+        } else {
+            try {
+                let _config = {};
+                fs.writeFileSync(config_path, JSON.stringify(_config));
+                startServer();
+            } catch (ex) {
+                console.error('获取配置信息失败,请检查:\n 请确认配置文件以及读写权限 \n', ex);
+            }
+        }
+    });
+};
 
-// 首次连接
-connect(function () {
-    initConnection();
-});
+/**
+ * 首次连接
+ */
+initConnection();
 
 /**
  * Event listener for HTTP server "error" event.

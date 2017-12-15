@@ -24,28 +24,22 @@ nvm use v6
 ```
 git clone https://github.com/gxchain/gxb-box.git
 ```
-
-## 依赖安装
-
-调试模式依赖于babel-node, 在克隆的工程下执行以下命令安装依赖:
-
+## 快速开始
 
 ```
-npm install -g babel-node
 npm install
+npm run build
+npm run server-gui
 ```
 
 ## 开发模式启动
 
-```
-npm start
-```
-
-## 部署和生产环境启动
+开发模式依赖于babel-node, 在克隆的工程下执行以下命令安装依赖:
 
 ```
-npm run build
-npm run server
+npm install -g babel-node
+npm install
+npm run dev
 ```
 
 ## 对接文档
@@ -57,7 +51,7 @@ npm run server
 A: 多重签名涉及到效率问题, 数据交易采用活跃权限进行单重签名, 请勿在参与数据交易的账户中设置多重签名,以免造成签名验证失败
 
 ### Q: 发生错误:"获取初始信息失败,请检查:账号(merchant或者datasource)是否正确配置"
-A: 检查config.json文件是否配置了错误的merchant或者datasource账户名, 如果是商户则**不需要**datasource配置，如果是数据源则**不一定需要**商户配置
+A: 检查config/config.json文件是否配置了错误的merchant或者datasource账户名, 如果是商户则**不需要**datasource配置，如果是数据源则**不一定需要**商户配置
 
 商户配置示例:
 

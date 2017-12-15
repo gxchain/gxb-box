@@ -29,34 +29,18 @@ export default {
                             reject(err);
                         });
                         archive.pipe(output);
-                        archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
                         if (visual === '1') {
                             archive.directory(path.join(process.cwd(), './dist'), './dist', {date: new Date()});
-                            archive.directory(path.join(process.cwd(), './server-dist'), './server-dist', {date: new Date()});
-                            archive.file(path.join(process.cwd(), './start-server.sh'), {
-                                date: new Date(),
-                                name: 'start.sh'
-                            });
-                            archive.file(path.join(process.cwd(), './start-server.cmd'), {
-                                date: new Date(),
-                                name: 'start.cmd'
-                            });
+                            archive.directory(path.join(process.cwd(), './server-gui-dist'), './server-gui-dist', {date: new Date()});
+                            archive.file(path.join(process.cwd(), './start-gui.sh'), {date: new Date(), name: 'start.sh'});
+                            archive.file(path.join(process.cwd(), './start-gui.cmd'), {date: new Date(), name: 'start.cmd'});
                         } else {
-                            archive.file(path.join(process.cwd(), './start-box.sh'), {
-                                date: new Date(),
-                                name: 'start.sh'
-                            });
-                            archive.file(path.join(process.cwd(), './start-box.cmd'), {
-                                date: new Date(),
-                                name: 'start.cmd'
-                            });
+                            archive.file(path.join(process.cwd(), './start-box.sh'), {date: new Date(), name: 'start.sh'});
+                            archive.file(path.join(process.cwd(), './start-box.cmd'), {date: new Date(), name: 'start.cmd'});
                         }
                         archive.directory(path.join(process.cwd(), './server-box-dist'), './server-box-dist', {date: new Date()});
-                        archive.file(path.join(process.cwd(), './upgrade.sh'), {date: new Date(), name: 'upgrade.sh'});
-                        archive.file(path.join(process.cwd(), './package.json'), {
-                            date: new Date(),
-                            name: 'package.json'
-                        });
+                        archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
+                        archive.file(path.join(process.cwd(), './package.json'), {date: new Date(), name: 'package.json'});
                         archive.finalize();
                     });
                 } else {
@@ -76,27 +60,17 @@ export default {
                         reject(err);
                     });
                     archive.pipe(output);
-                    archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
                     if (visual === '1') {
                         archive.directory(path.join(process.cwd(), './dist'), './dist', {date: new Date()});
-                        archive.directory(path.join(process.cwd(), './server-dist'), './server-dist', {date: new Date()});
-                        archive.file(path.join(process.cwd(), './start-server.sh'), {
-                            date: new Date(),
-                            name: 'start.sh'
-                        });
-                        archive.file(path.join(process.cwd(), './start-server.cmd'), {
-                            date: new Date(),
-                            name: 'start.cmd'
-                        });
+                        archive.directory(path.join(process.cwd(), './server-gui-dist'), './server-gui-dist', {date: new Date()});
+                        archive.file(path.join(process.cwd(), './start-gui.sh'), {date: new Date(), name: 'start.sh'});
+                        archive.file(path.join(process.cwd(), './start-gui.cmd'), {date: new Date(), name: 'start.cmd'});
                     } else {
                         archive.file(path.join(process.cwd(), './start-box.sh'), {date: new Date(), name: 'start.sh'});
-                        archive.file(path.join(process.cwd(), './start-box.cmd'), {
-                            date: new Date(),
-                            name: 'start.cmd'
-                        });
+                        archive.file(path.join(process.cwd(), './start-box.cmd'), {date: new Date(), name: 'start.cmd'});
                     }
                     archive.directory(path.join(process.cwd(), './server-box-dist'), './server-box-dist', {date: new Date()});
-                    archive.file(path.join(process.cwd(), './upgrade.sh'), {date: new Date(), name: 'upgrade.sh'});
+                    archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
                     archive.file(path.join(process.cwd(), './package.json'), {date: new Date(), name: 'package.json'});
                     archive.finalize();
                 }

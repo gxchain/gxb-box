@@ -1,5 +1,7 @@
 import Promise from 'bluebird';
 import {PrivateKey} from 'gxbjs';
+import BoxService from './BoxService';
+import ConnectService from './ConnectService';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -90,8 +92,8 @@ export default {
                 fs.writeFileSync(config_path, JSON.stringify(_config));
                 self.config = _config;
                 resolve({
-                    message: '数据源账号配置保存成功',
-                    data: {
+                    'message': '数据源账号配置保存成功',
+                    'data': {
                         'account_name': _config.datasource.account_name,
                         'private_key': _config.datasource.private_key
                     }
@@ -99,6 +101,33 @@ export default {
             } catch (ex) {
                 reject(ex);
             }
+        });
+    },
+    import (env, config) {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            env = env === 'development' ? 'production' : 'development';
+            // 停止GXB-BOX-PM2
+            BoxService.box_delete().then(() => {
+                ConnectService.connect(env, true, function () {
+                    try {
+                        let _config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
+                        fs.writeFileSync(config_path, config);
+                        self.config = JSON.parse(config);
+                        resolve({
+                            'message': '系统切换配置成功',
+                            'data': {
+                                'old_config': _config,
+                                'new_config': config
+                            }
+                        });
+                    } catch (ex) {
+                        reject(ex);
+                    }
+                });
+            }).catch((ex) => {
+                reject(ex);
+            });
         });
     },
     get_merchant_private_key () {

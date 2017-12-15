@@ -7,9 +7,6 @@ import dictionary from '../utils/dictionary_en';
 import request from 'superagent';
 import config from '../../config';
 
-let faucetAddress = process.env.NODE_ENV === 'production' ? config.build.faucet_url : config.dev.faucet_url;
-let referrer = process.env.NODE_ENV === 'production' ? config.build.referrer : config.dev.referrer;
-
 /**
  * 获取账户信息
  */
@@ -20,7 +17,9 @@ const fetch_account = function (account_name) {
 /**
  * 创建账号
  */
-const create_account = function (account_type, new_account_name, protocol) {
+const create_account = function (env, account_type, new_account_name, protocol) {
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
+    let referrer = env === 'production' ? config.build.referrer : config.dev.referrer;
     let brainkey = key.suggest_brain_key(dictionary.en);
     let private_key = key.get_brainPrivateKey(brainkey);
     let owner_pubkey = private_key.toPublicKey().toPublicKeyString();
@@ -141,8 +140,9 @@ const getSign = function (body = '', type) {
 /**
  * 获取商户信息
  */
-const fetch_merchant = function (account_name, account_type, protocol) {
+const fetch_merchant = function (env, account_name, account_type, protocol) {
     let body = {};
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
@@ -173,7 +173,8 @@ const fetch_merchant = function (account_name, account_type, protocol) {
 /**
  * 申请认证商户
  */
-const apply_merchant = function (body, account_name, account_type, protocol) {
+const apply_merchant = function (env, body, account_name, account_type, protocol) {
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
@@ -204,7 +205,8 @@ const apply_merchant = function (body, account_name, account_type, protocol) {
 /**
  * 申请认证数据源
  */
-const apply_datasource = function (body, account_name, account_type, protocol) {
+const apply_datasource = function (env, body, account_name, account_type, protocol) {
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
@@ -235,7 +237,8 @@ const apply_datasource = function (body, account_name, account_type, protocol) {
 /**
  * 获取申请状态
  */
-const is_applying = function (account_name, protocol) {
+const is_applying = function (env, account_name, protocol) {
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         fetch_account(account_name)
@@ -257,7 +260,8 @@ const is_applying = function (account_name, protocol) {
     });
 };
 
-const fetch_league_members = function (league_id, protocol) {
+const fetch_league_members = function (env, league_id, protocol) {
+    let faucetAddress = env === 'production' ? config.build.faucet_url : config.dev.faucet_url;
     faucetAddress = protocol === 'https:' ? faucetAddress.replace(/http:\/\//, 'https://') : faucetAddress;
     return new Promise(function (resolve, reject) {
         request

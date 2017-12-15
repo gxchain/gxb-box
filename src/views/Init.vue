@@ -57,8 +57,8 @@
         <div class="layout-content-main">
             <h1><img src="/static/img/init.svg"></h1>
             <h2>欢迎使用GXB-BOX!</h2>
-            <div class="step-box">
-                <Steps :current="current">
+            <div class="step-box" v-if="init_step !== 0">
+                <Steps :current="current-1">
                     <Step title="步骤1" content="选择商户/数据源"></Step>
                     <Step title="步骤2" content="创建/导入账号"></Step>
                     <Step title="步骤3" content="账号认证"></Step>
@@ -78,6 +78,7 @@
 </template>
 <script>
     import {mapGetters, mapActions} from 'vuex';
+    import EnvType from './components/EnvType.vue';
     import AccountType from './components/AccountType.vue';
     import AccountCreate from './components/AccountCreate.vue';
     import AccountConfig from './components/AccountConfig.vue';
@@ -90,11 +91,12 @@
                 loading: false,
                 current: 0,
                 list: {
-                    0: 'AccountType',
-                    1: 'AccountCreate',
-                    2: 'AccountCertification',
-                    3: 'AccountConfig',
-                    4: 'GxbBoxStart'
+                    0: 'EnvType',
+                    1: 'AccountType',
+                    2: 'AccountCreate',
+                    3: 'AccountCertification',
+                    4: 'AccountConfig',
+                    5: 'GxbBoxStart'
                 }
             };
         },
@@ -123,6 +125,7 @@
             }
         },
         components: {
+            EnvType: EnvType,
             AccountType: AccountType,
             AccountCreate: AccountCreate,
             AccountConfig: AccountConfig,

@@ -5,12 +5,12 @@
   "main": "index.js",
   "scripts": {
     "preinstall": "npm install pm2 -g",
-    "start": "webpack --progress --hide-modules --config build/webpack.box-server.config.js && NODE_ENV=development nodemon server/index.js --exec babel-node --watch server",
-    "clear": "rm -rf dist server-dist sever-box-dist",
+    "clear": "rm -rf dist server-gui-dist server-box-dist",
     "prebuild": "npm run clear",
     "build": "node build/build.js && webpack --progress --hide-modules --config build/webpack.gui-server.config.js && webpack --progress --hide-modules --config build/webpack.box-server.config.js",
-    "server": "NODE_ENV=production node server-dist/index.js",
-    "start-box": "nodemon lib/index.js --exec babel-node",
+    "dev": "webpack --progress --hide-modules --config build/webpack.box-server.config.js && NODE_ENV=development nodemon server/index.js --exec babel-node --watch server",
+    "dev-box": "nodemon lib/index.js --exec babel-node",
+    "server-gui": "NODE_ENV=production node server-gui-dist/index.js",
     "server-box": "pm2 start ./server-box-dist/gxb-box.js"
   },
   "repository": {

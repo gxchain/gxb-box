@@ -16,6 +16,7 @@ router.get('/fetch_config', function (req, res) {
     ConfigStore.init().then((config) => {
         res.send(config);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -25,11 +26,12 @@ router.get('/fetch_config', function (req, res) {
  */
 
 router.post('/write_config', function (req, res) {
-    if ((req.body.type === 'common') || (req.body.type === 'merchant') || (req.body.type === 'datasource')) {
+    if ((req.body.type === 'common') || (req.body.type === 'merchant') || (req.body.type === 'datasource') || (req.body.type === 'import')) {
         if (req.body.type === 'common') {
             ConfigStore.common_set(JSON.stringify(req.body.config)).then((result) => {
                 res.send(result);
             }).catch((err) => {
+                console.error(err);
                 res.status(400).send(err);
             });
         }
@@ -37,6 +39,7 @@ router.post('/write_config', function (req, res) {
             ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((result) => {
                 res.send(result);
             }).catch((err) => {
+                console.error(err);
                 res.status(400).send(err);
             });
         }
@@ -45,6 +48,15 @@ router.post('/write_config', function (req, res) {
             ConfigStore.datasource_set(merchant_config, JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((result) => {
                 res.send(result);
             }).catch((err) => {
+                console.error(err);
+                res.status(400).send(err);
+            });
+        }
+        if (req.body.type === 'import') {
+            ConfigStore.import(req.query.env, JSON.stringify(req.body.config)).then((result) => {
+                res.send(result);
+            }).catch((err) => {
+                console.error(err);
                 res.status(400).send(err);
             });
         }
@@ -64,6 +76,7 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
     AccountService.fetch_account(req.params.account_id_or_name).then((account) => {
         res.send(account);
     }).catch(err => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -73,9 +86,10 @@ router.get('/fetch_account/:account_id_or_name', function (req, res) {
  */
 
 router.post('/create_account', function (req, res) {
-    AccountService.create_account(req.body.type, req.body.name, req.protocol).then((account) => {
+    AccountService.create_account(req.query.env, req.body.type, req.body.name, req.protocol).then((account) => {
         res.send(account);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -88,6 +102,7 @@ router.post('/import_account', function (req, res) {
     AccountService.import_account(req.body.type, req.body.private_key).then((account) => {
         res.send(account);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -97,9 +112,10 @@ router.post('/import_account', function (req, res) {
  */
 
 router.post('/apply_merchant', function (req, res) {
-    AccountService.apply_merchant(req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
+    AccountService.apply_merchant(req.query.env, req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -109,9 +125,10 @@ router.post('/apply_merchant', function (req, res) {
  */
 
 router.post('/apply_datasource', function (req, res) {
-    AccountService.apply_datasource(req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
+    AccountService.apply_datasource(req.query.env, req.body.apply_info, req.body.account_name, req.body.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -121,9 +138,10 @@ router.post('/apply_datasource', function (req, res) {
  */
 
 router.get('/is_applying/:account_name', function (req, res) {
-    AccountService.is_applying(req.params.account_name, req.protocol).then((result) => {
+    AccountService.is_applying(req.query.env, req.params.account_name, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -133,9 +151,10 @@ router.get('/is_applying/:account_name', function (req, res) {
  */
 
 router.get('/fetch_merchant/:account_name/:account_type', function (req, res) {
-    AccountService.fetch_merchant(req.params.account_name, req.params.account_type, req.protocol).then((result) => {
+    AccountService.fetch_merchant(req.query.env, req.params.account_name, req.params.account_type, req.protocol).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -148,6 +167,7 @@ router.get('/fetch_data_market_categories/:data_market_type', function (req, res
     DataService.fetch_data_market_categories(req.params.data_market_type).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -160,6 +180,7 @@ router.get('/fetch_data_market_categories_info/:category_id', function (req, res
     DataService.fetch_data_market_categories_info(req.params.category_id).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -172,6 +193,7 @@ router.get('/fetch_free_data_products/:category_id/:page/:pageSize', function (r
     DataService.fetch_free_data_products(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords || '').then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -184,6 +206,7 @@ router.get('/fetch_free_data_product_details/:product_id', function (req, res) {
     DataService.fetch_free_data_product_details(req.params.product_id).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -196,6 +219,7 @@ router.get('/fetch_league_list/:category_id/:page/:pageSize', function (req, res
     DataService.fetch_league_list(req.params.category_id, req.params.page, req.params.pageSize, req.params.keywords || '').then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -208,6 +232,7 @@ router.get('/fetch_league_info/:league_id', function (req, res) {
     DataService.fetch_league_info(req.params.league_id).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -217,9 +242,10 @@ router.get('/fetch_league_info/:league_id', function (req, res) {
  */
 
 router.get('/fetch_league_members/:league_id', function (req, res) {
-    AccountService.fetch_league_members(req.params.league_id, req.protocol).then((members) => {
+    AccountService.fetch_league_members(req.query.env, req.params.league_id, req.protocol).then((members) => {
         res.send(members);
     }).catch(err => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -232,6 +258,7 @@ router.get('/fetch_league_data_products/:data_product_ids', function (req, res) 
     DataService.fetch_league_data_products(req.params.data_product_ids).then((result) => {
         res.send(result);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -244,6 +271,7 @@ router.get('/box_start', function (req, res) {
     BoxService.box_start().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -256,6 +284,20 @@ router.get('/box_stop', function (req, res) {
     BoxService.box_stop().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
+        console.error(err);
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 数据盒子服务 - 删除
+ */
+
+router.get('/box_delete', function (req, res) {
+    BoxService.box_delete().then((pm2) => {
+        res.send(pm2);
+    }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -268,6 +310,7 @@ router.get('/box_restart', function (req, res) {
     BoxService.box_restart().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -280,6 +323,7 @@ router.get('/fetch_box', function (req, res) {
     BoxService.fetch_box().then((pm2) => {
         res.send(pm2);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });
@@ -292,6 +336,7 @@ router.get('/get_box_prod_zip/:visual', function (req, res) {
     ZipArchive.get_box_prod_zip(req.params.visual).then((zip) => {
         res.send(zip);
     }).catch((err) => {
+        console.error(err);
         res.status(400).send(err);
     });
 });

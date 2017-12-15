@@ -24,27 +24,22 @@ nvm use v6
 git clone https://github.com/gxchain/gxb-box.git
 ```
 
-## Install dependencies
-
-Test mode depends on babel-node, execute the following commands to install dependencies under cloned engineering mode:
-
+## Quick start
 
 ```
-npm install -g babel-node
 npm install
+npm run build
+npm run server-gui
 ```
 
 ## Development mode start
 
-```
-npm start
-```
-
-## Deployment environment then start
+Development mode depends on babel-node, execute the following commands to install dependencies under cloned engineering mode:
 
 ```
-npm run build
-npm run server
+npm install -g babel-node
+npm install
+npm run dev
 ```
 
 ## Docking files
@@ -55,7 +50,7 @@ npm run server
 ### Q: Data transaction failed after set multi-signature
 A: We recommend to use single signature for data transactions, due to the efficiency limitation of multi-signature
 ### Q: Error: "failed to get initial information, please check configuration of merchant account and datasource account".
-A: Check config.json to see if the name of merchant or datasource is correct. For merchant, NO need for datasource configuration; for datasource, do not have to perform merchant configuration.
+A: Check config/config.json to see if the name of merchant or datasource is correct. For merchant, NO need for datasource configuration; for datasource, do not have to perform merchant configuration.
 
 merchant configuration sample:
 

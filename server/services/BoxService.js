@@ -61,6 +61,37 @@ const box_stop = function () {
 };
 
 /**
+ * 数据盒子服务 - 删除
+ */
+const box_delete = function () {
+    return new Promise(function (resolve, reject) {
+        pm2.connect(function (err) {
+            if (err) {
+                reject(err);
+                process.exit(2);
+            }
+            pm2.describe('gxb-box-pm2', function (err, processDescription) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (processDescription.length === 0) {
+                        resolve();
+                    } else {
+                        pm2.delete('gxb-box-pm2', function (err) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve();
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    });
+};
+
+/**
  * 数据盒子服务 - 重启
  */
 const box_restart = function () {
@@ -134,6 +165,7 @@ const fetch_box = function () {
 export default {
     box_start,
     box_stop,
+    box_delete,
     box_restart,
     fetch_box
 };

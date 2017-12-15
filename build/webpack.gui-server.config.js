@@ -14,7 +14,7 @@ fs.readdirSync('node_modules')
 module.exports = {
     entry: ['../server/index.js'],
     output: {
-        path: path.resolve(__dirname, '../server-dist'),
+        path: path.resolve(__dirname, '../server-gui-dist'),
         filename: 'index.js'
     },
     target: 'node',
