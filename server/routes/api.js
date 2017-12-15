@@ -4,6 +4,7 @@ import AccountService from '../services/AccountService';
 import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
 import ZipArchive from '../services/ZipArchive';
+import ConnectService from '../services/ConnectService';
 import fs from 'fs';
 
 let router = express.Router();
@@ -41,6 +42,19 @@ router.post('/save_config', function (req, res) {
 router.post('/change_config_env', function (req, res) {
     ConfigStore.change_config_env(req.query.env, req.body.config).then((result) => {
         res.send(result);
+    }).catch((err) => {
+        console.error(err);
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 获取本机IP
+ */
+
+router.get('/get_ip_address', function (req, res) {
+    ConnectService.get_ip_address().then((box_ip) => {
+        res.send(box_ip);
     }).catch((err) => {
         console.error(err);
         res.status(400).send(err);

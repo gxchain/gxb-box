@@ -1,5 +1,6 @@
 import {Apis, Manager} from 'gxbjs-ws';
 import {ChainStore} from 'gxbjs';
+import os from 'os';
 
 let connected = false;
 let connectionManager = null;
@@ -38,6 +39,27 @@ let connect = function (witnesses, reconnect, callback) {
     });
 };
 
+const get_ip_address = function () {
+    return new Promise((resolve, reject) => {
+        try {
+            let interfaces = os.networkInterfaces();
+            for (let devName in interfaces) {
+                if (interfaces.hasOwnProperty(devName)) {
+                    let iface = interfaces[devName];
+                    for (let i = 0; i < iface.length; i++) {
+                        let alias = iface[i];
+                        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                            return resolve(alias.address);
+                        }
+                    }
+                }
+            }
+        } catch (ex) {
+            reject(ex);
+        }
+    });
+};
+
 /**
  * websocket 状态处理
  * @param status
@@ -64,5 +86,6 @@ Apis.setRpcConnectionStatusCallback(function (status) {
 });
 
 export default {
-    connect
+    connect,
+    get_ip_address
 };

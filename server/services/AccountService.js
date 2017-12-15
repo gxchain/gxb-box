@@ -2,7 +2,7 @@ import Promise from 'bluebird';
 import {key, PrivateKey, Signature} from 'gxbjs';
 import {Apis} from 'gxbjs-ws';
 import Immutable from 'immutable';
-import ConfigStroe from './ConfigStore';
+import ConfigStore from './ConfigStore';
 import dictionary from '../utils/dictionary_en';
 import request from 'superagent';
 import gui_config from '../../config';
@@ -106,9 +106,9 @@ const getSign = function (body = '', type) {
         try {
             let private_key;
             if (type === 'merchant') {
-                private_key = ConfigStroe.get_merchant_private_key();
+                private_key = ConfigStore.get_merchant_private_key();
             } else {
-                private_key = ConfigStroe.get_datasource_private_key();
+                private_key = ConfigStore.get_datasource_private_key();
             }
             let signature = Signature.sign(body, private_key).toHex();
             resolve(signature);

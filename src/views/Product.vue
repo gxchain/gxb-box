@@ -470,6 +470,7 @@
                 loaded: false,
                 product_info: {},
                 currentSchema: null,
+                box_ip: '',
                 apiTestModal: false,
                 apiTestType: 'GET',
                 apiTestParams: {},
@@ -488,11 +489,16 @@
             };
         },
         created () {
-            if (this.product) {
-                this.formatterLeagueData(this.product);
-            } else {
-                this.formatterFreeData(this.$route.query.id);
-            }
+            this.$http.get('/api/get_ip_address').then((res) => {
+                this.box_ip = res.data;
+                if (this.product) {
+                    this.formatterLeagueData(this.product);
+                } else {
+                    this.formatterFreeData(this.$route.query.id);
+                }
+            }).catch((err) => {
+                Handler.error(err);
+            });
         },
         beforeDestroy () {
             clearInterval(this.apiInterval);
@@ -536,7 +542,7 @@
                             self.currentSchema = schema;
                         }
                     });
-                    product.current_url = 'http://' + this.config.common.box_ip + ':' + this.config.common.port + '/rpc/' + product.id + '/' + product.version;
+                    product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -571,7 +577,7 @@
                 product.price = product.refer_price;
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
                 product.version = product.schema_contexts[0].version;
-                product.current_url = 'http://' + this.config.common.box_ip + ':' + this.config.common.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
+                product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                 product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                 product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -710,7 +716,7 @@
                         this.apiInterval = setInterval(function () {
                             self.$http({
                                 method: 'GET',
-                                url: 'http://' + self.config.common.box_ip + ':' + self.config.common.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
+                                url: 'http://' + self.box_ip + ':' + self.config.common.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
                             }).then((res) => {
                                 if (res.data.length !== 0) {
                                     let endTime = new Date();

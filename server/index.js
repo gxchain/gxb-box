@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 import http from 'http';
 import path from 'path';
 import fs from 'fs';
-import os from 'os';
 import ConnectService from './services/ConnectService';
 import gui_config from '../config';
 
@@ -88,24 +87,6 @@ app.use(function (err, req, res, next) {
 });
 
 /**
- * 获取本机IP
- */
-const get_ip_address = () => {
-    let interfaces = os.networkInterfaces();
-    for (let devName in interfaces) {
-        if (interfaces.hasOwnProperty(devName)) {
-            let iface = interfaces[devName];
-            for (let i = 0; i < iface.length; i++) {
-                let alias = iface[i];
-                if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-                    return alias.address;
-                }
-            }
-        }
-    }
-};
-
-/**
  * 启动web服务
  */
 let serverStarted = false;
@@ -136,9 +117,10 @@ let startServer = function () {
                 opn(uri);
             }
         });
-        let local_ip = get_ip_address();
-        console.log('公信宝数据盒子配置系统已启动');
-        console.log('> 请使用浏览器访问：' + 'http://' + local_ip + ':' + port);
+        ConnectService.get_ip_address().then((local_ip) => {
+            console.log('公信宝数据盒子配置系统已启动');
+            console.log('> 请使用浏览器访问：' + 'http://' + local_ip + ':' + port);
+        });
     });
 };
 
