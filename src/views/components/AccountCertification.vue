@@ -378,14 +378,15 @@
                 account: 'account',
                 account_type: 'account_type',
                 certified: 'certified',
-                commonSettings: 'common_setting'
+                config: 'config',
+                env_type: 'env_type'
             })
         },
         methods: {
             ...mapActions({
                 setAccountType: 'setAccountType',
                 setCertified: 'setCertified',
-                setCommonSetting: 'setCommonSetting'
+                setConfig: 'setConfig'
             }),
             applyMerchant () {
                 this.merchant_modal = true;
@@ -401,41 +402,25 @@
             },
             upgradeDatasource () {
                 // 升级为数据源
-                this.commonSettings.account_type = 'datasource';
-                let datasource_config = {
+                this.config.common.account_type = 'datasource';
+                this.config.datasource = {
                     account_name: this.account.account_name,
                     private_key: this.account.private_key
                 };
-                let self = this;
-                this.$http.all([
-                    this.$http({
-                        method: 'post',
-                        url: '/api/write_config',
-                        data: {
-                            type: 'common',
-                            config: this.commonSettings
-                        }
-                    }),
-                    this.$http({
-                        method: 'post',
-                        url: '/api/write_config',
-                        data: {
-                            type: 'datasource',
-                            merchant_config: null,
-                            datasource_config: datasource_config,
-                            is_merchant_open: true
-                        }
-                    })
-                ]).then(this.$http.spread(function () {
-                    self.setAccountType({account_type: 'datasource'});
-                    self.setCommonSetting({common_setting: self.commonSettings});
+                this.$http({
+                    method: 'post',
+                    url: '/api/save_config',
+                    data: { config: this.config }
+                }).then(() => {
+                    this.setAccountType({account_type: 'datasource'});
+                    this.setConfig({config: self.config});
                     return this.getMerchantInfo();
-                })).catch((err) => {
+                }).catch((err) => {
                     Handler.error(err);
                 });
             },
             getApplyingStatus () {
-                this.$http.get('/api/is_applying/' + this.account.account_name).then((res) => {
+                this.$http.get('/api/is_applying/' + this.account.account_name + '?env=' + this.env_type).then((res) => {
                     if ((res.data.merchant_status === 'PASSED') && !this.merchant_certified) {
                         res.data.merchant_status = 'INITIAL';
                     }
@@ -459,7 +444,7 @@
                 });
             },
             getMerchantInfo () {
-                this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type).then((res) => {
+                this.$http.get('/api/fetch_merchant/' + this.account.account_name + '/' + this.account_type + '?env=' + this.env_type).then((res) => {
                     this.formDatasource.merchant_name = res.data.name;
                     this.merchant_name = res.data.name;
                     this.merchant_alias = res.data.alias;
@@ -478,7 +463,7 @@
 
                         this.$http({
                             method: 'post',
-                            url: '/api/apply_merchant',
+                            url: '/api/apply_merchant?env=' + this.env_type,
                             data: {
                                 'apply_info': this.formMerchant,
                                 'account_name': this.account.account_name,
@@ -505,7 +490,7 @@
                     if (valid) {
                         this.$http({
                             method: 'post',
-                            url: '/api/apply_datasource',
+                            url: '/api/apply_datasource?env=' + this.env_type,
                             data: {
                                 'apply_info': this.formDatasource,
                                 'account_name': this.account.account_name,

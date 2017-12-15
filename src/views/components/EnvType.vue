@@ -30,7 +30,7 @@
         methods: {
             ...mapActions({
                 setEnvType: 'setEnvType',
-                setCommonSetting: 'setCommonSetting'
+                setConfig: 'setConfig'
             }),
             changeType (type) {
                 let _config;
@@ -39,18 +39,15 @@
                     _config = Util.testEnvConfig;
                 } else {
                     this.loadingProd = true;
-                    _config = Util.prodEnvConifg;
+                    _config = Util.prodEnvConfig;
                 }
                 // 写入文件
                 this.$http({
                     method: 'post',
-                    url: '/api/write_config?env=' + type,
-                    data: {
-                        config: _config,
-                        type: 'common'
-                    }
+                    url: '/api/change_config_env?env=' + type,
+                    data: { config: { 'common': _config } }
                 }).then(() => {
-                    this.setCommonSetting({common_setting: _config});
+                    this.setConfig({config: { 'common': _config }});
                     localStorage.setItem('__gxbBox__env', type);
                     this.setEnvType({env_type: type});
                     location.reload();

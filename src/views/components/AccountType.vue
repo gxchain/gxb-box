@@ -22,29 +22,25 @@
     export default {
         computed: {
             ...mapGetters({
-                commonSettings: 'common_setting'
+                config: 'config'
             })
         },
         methods: {
             ...mapActions({
                 setAccountType: 'setAccountType',
                 setAccount: 'setAccount',
-                setCommonSetting: 'setCommonSetting'
+                setConfig: 'setConfig'
             }),
             changeType (type) {
-                this.commonSettings.account_type = type;
+                this.config.common.account_type = type;
                 // 写入文件
                 this.$http({
                     method: 'post',
-                    url: '/api/write_config',
-                    data: {
-                        config: this.commonSettings,
-                        type: 'common'
-                    }
+                    url: '/api/save_config',
+                    data: { config: this.config }
                 }).then(() => {
-                    this.setCommonSetting({common_setting: this.commonSettings});
+                    this.setConfig({config: this.config});
                     this.setAccountType({account_type: type});
-
                     return this.$http.get('/api/fetch_config');
                 }).then((res) => {
                     if (res.data[type] && res.data[type].account_name && res.data[type].private_key) {

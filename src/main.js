@@ -31,7 +31,7 @@ const store = new Vuex.Store({
         init_step: 0,
         certified: false,
         active_nav: null,
-        common_setting: null
+        config: null
     },
     getters: {
         env_type: state => state.env_type,
@@ -40,7 +40,7 @@ const store = new Vuex.Store({
         init_step: state => state.init_step,
         certified: state => state.certified,
         active_nav: state => state.active_nav,
-        common_setting: state => state.common_setting
+        config: state => state.config
     },
     mutations: {
         setEnvType (state, payload) {
@@ -61,8 +61,8 @@ const store = new Vuex.Store({
         setActiveNav (state, payload) {
             state.active_nav = payload.active_nav;
         },
-        setCommonSetting (state, payload) {
-            state.common_setting = payload.common_setting;
+        setConfig (state, payload) {
+            state.config = payload.config;
         }
     },
     actions: {
@@ -84,8 +84,8 @@ const store = new Vuex.Store({
         setActiveNav ({commit}, payload) {
             commit('setActiveNav', payload);
         },
-        setCommonSetting ({commit}, payload) {
-            commit('setCommonSetting', payload);
+        setConfig ({commit}, payload) {
+            commit('setConfig', payload);
         }
     }
 });
@@ -140,10 +140,9 @@ router.afterEach(() => {
 
 if (localStorage.getItem('__gxbBox__env')) {
     store.state.env_type = localStorage.getItem('__gxbBox__env');
-    axios.defaults.params = {env: store.state.env_type};
     // 验证初始化是否完成 - 加载配置文件
-    axios.get('/api/fetch_config').then((res) => {
-        store.state.common_setting = res.data['common'];
+    axios.get('/api/fetch_config?env=' + store.state.env_type).then((res) => {
+        store.state.config = res.data;
         // 是否选择账户类型
         if (res.data['common'].account_type) {
             store.state.account_type = res.data['common'].account_type;

@@ -173,7 +173,7 @@ let util = {
         'referrer': 'nathan'
     },
 
-    prodEnvConifg: {
+    prodEnvConfig: {
         'port': 3000,
         'ipfs_addr': '/ip4/139.196.138.193/tcp/5001',
         'witnesses': [

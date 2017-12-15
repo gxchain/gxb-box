@@ -171,12 +171,15 @@
         computed: {
             ...mapGetters({
                 account: 'account',
-                account_type: 'account_type'
+                account_type: 'account_type',
+                config: 'config',
+                env_type: 'env_type'
             })
         },
         methods: {
             ...mapActions({
-                setAccount: 'setAccount'
+                setAccount: 'setAccount',
+                setConfig: 'setConfig'
             }),
             createAccount (name) {
                 this.loading = true;
@@ -184,16 +187,28 @@
                     if (valid) {
                         this.$http({
                             method: 'post',
-                            url: '/api/create_account',
+                            url: '/api/create_account?env=' + this.env_type,
                             data: {
                                 'type': this.account_type,
                                 'name': this.formValidate.account_name
                             }
                         }).then((res) => {
-                            this.loading = false;
                             this.$Message.success('账号创建成功');
                             this.setAccount({account: res.data});
                             this.created = true;
+                            if (this.account_type === 'merchant') {
+                                this.config.merchant = res.data;
+                            } else {
+                                this.config.datasource = res.data;
+                            }
+                            return this.$http({
+                                method: 'post',
+                                url: '/api/save_config',
+                                data: { config: this.config }
+                            });
+                        }).then(() => {
+                            this.setConfig({config: this.config});
+                            this.loading = false;
                         }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('账号创建失败:' + Handler.error(err));
@@ -216,12 +231,24 @@
                                 'private_key': this.formValidate2.private_key
                             }
                         }).then((res) => {
-                            this.loading = false;
                             this.$Message.success('账号导入成功');
                             this.setAccount({account: res.data});
                             this.created = true;
                             this.is_bak = true;
                             this.imported = true;
+                            if (this.account_type === 'merchant') {
+                                this.config.merchant = res.data;
+                            } else {
+                                this.config.datasource = res.data;
+                            }
+                            return this.$http({
+                                method: 'post',
+                                url: '/api/save_config',
+                                data: { config: this.config }
+                            });
+                        }).then(() => {
+                            this.setConfig({config: this.config});
+                            this.loading = false;
                         }).catch((err) => {
                             this.loading = false;
                             this.$Message.error('账号导入失败:' + Handler.error(err));

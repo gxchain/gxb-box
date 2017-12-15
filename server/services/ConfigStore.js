@@ -5,6 +5,7 @@ import ConnectService from './ConnectService';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import gui_config from '../../config';
 
 let config_path = path.resolve(process.cwd(), './config/config.json');
 
@@ -27,8 +28,7 @@ export default {
         let self = this;
         return new Promise((resolve, reject) => {
             try {
-                self.config = {};
-                self.config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
+                self.config = JSON.parse(fs.readFileSync(config_path, 'utf-8')) || {};
                 self.config.common.box_ip = self.get_ip_address();
                 resolve(self.config);
             } catch (ex) {
@@ -36,84 +36,31 @@ export default {
             }
         });
     },
-    common_set (config) {
+    set (config) {
         let self = this;
         return new Promise((resolve, reject) => {
             try {
-                let _config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
-                _config.common = JSON.parse(config);
-                fs.writeFileSync(config_path, JSON.stringify(_config));
-                self.config = _config;
+                fs.writeFileSync(config_path, JSON.stringify(config));
+                self.config = config;
                 resolve({
-                    'message': '系统配置保存成功',
-                    'data': _config.common
+                    'message': '系统配置保存成功'
                 });
             } catch (ex) {
                 reject(ex);
             }
         });
     },
-    merchant_set (config) {
+    change_config_env (env, config) {
         let self = this;
+        let witnesses = env === 'production' ? gui_config.build.witnesses : gui_config.dev.witnesses;
         return new Promise((resolve, reject) => {
-            try {
-                let _config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
-                if (_config.datasource) {
-                    delete (_config.datasource);
-                }
-                _config.merchant = JSON.parse(config);
-                fs.writeFileSync(config_path, JSON.stringify(_config));
-                self.config = _config;
-                resolve({
-                    'message': '商户账号配置保存成功',
-                    'data': {
-                        'account_name': _config.merchant.account_name,
-                        'private_key': _config.merchant.private_key
-                    }
-                });
-            } catch (ex) {
-                reject(ex);
-            }
-        });
-    },
-    datasource_set (merchant_config, datasource_config, is_merchant_open) {
-        let self = this;
-        return new Promise((resolve, reject) => {
-            try {
-                let _config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
-                if (!is_merchant_open) {
-                    delete (_config.merchant);
-                } else {
-                    if (merchant_config !== null) {
-                        _config.merchant = JSON.parse(merchant_config);
-                    }
-                }
-                _config.datasource = JSON.parse(datasource_config);
-                fs.writeFileSync(config_path, JSON.stringify(_config));
-                self.config = _config;
-                resolve({
-                    'message': '数据源账号配置保存成功',
-                    'data': {
-                        'account_name': _config.datasource.account_name,
-                        'private_key': _config.datasource.private_key
-                    }
-                });
-            } catch (ex) {
-                reject(ex);
-            }
-        });
-    },
-    import (env, config) {
-        let self = this;
-        return new Promise((resolve, reject) => {
-            env = env === 'development' ? 'production' : 'development';
             // 停止GXB-BOX-PM2
             BoxService.box_delete().then(() => {
-                ConnectService.connect(env, true, function () {
+                ConnectService.connect(witnesses, true, function () {
                     try {
                         let _config = JSON.parse(fs.readFileSync(config_path, 'utf-8'));
-                        fs.writeFileSync(config_path, config);
-                        self.config = JSON.parse(config);
+                        fs.writeFileSync(config_path, JSON.stringify(config));
+                        self.config = config;
                         resolve({
                             'message': '系统切换配置成功',
                             'data': {

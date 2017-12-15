@@ -504,7 +504,7 @@
         },
         computed: {
             ...mapGetters({
-                commonSettings: 'common_setting'
+                config: 'config'
             })
         },
         methods: {
@@ -536,7 +536,7 @@
                             self.currentSchema = schema;
                         }
                     });
-                    product.current_url = 'http://' + this.commonSettings.box_ip + ':' + this.commonSettings.port + '/rpc/' + product.id + '/' + product.version;
+                    product.current_url = 'http://' + this.config.common.box_ip + ':' + this.config.common.port + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -571,7 +571,7 @@
                 product.price = product.refer_price;
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
                 product.version = product.schema_contexts[0].version;
-                product.current_url = 'http://' + this.commonSettings.box_ip + ':' + this.commonSettings.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
+                product.current_url = 'http://' + this.config.common.box_ip + ':' + this.config.common.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                 product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                 product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -710,7 +710,7 @@
                         this.apiInterval = setInterval(function () {
                             self.$http({
                                 method: 'GET',
-                                url: 'http://' + self.commonSettings.box_ip + ':' + self.commonSettings.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
+                                url: 'http://' + self.config.common.box_ip + ':' + self.config.common.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
                             }).then((res) => {
                                 if (res.data.length !== 0) {
                                     let endTime = new Date();

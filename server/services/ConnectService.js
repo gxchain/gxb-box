@@ -1,18 +1,16 @@
 import {Apis, Manager} from 'gxbjs-ws';
 import {ChainStore} from 'gxbjs';
-import config from '../../config';
 
 let connected = false;
 let connectionManager = null;
-let _env;
+let _witnesses;
 
 /**
  * 连接witness
  * @param callback
  */
-let connect = function (env, reconnect, callback) {
-    let witnesses = env === 'development' ? config.dev.witnesses : config.build.witnesses;
-    _env = env;
+let connect = function (witnesses, reconnect, callback) {
+    _witnesses = witnesses || [];
     if (reconnect) {
         connected = false;
         connectionManager.url = witnesses[0];
@@ -61,7 +59,7 @@ Apis.setRpcConnectionStatusCallback(function (status) {
     } else if (connected && (status === 'closed' || status === 'error')) { // 出错重连
         connected = false;
         console.log('重新连接其他witness');
-        connect(_env, false, function () {});
+        connect(_witnesses, false, function () {});
     }
 });
 

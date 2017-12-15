@@ -160,7 +160,7 @@
 </template>
 <script>
     import Handler from '../../libs/handler';
-    import {mapGetters} from 'vuex';
+    import {mapGetters, mapActions} from 'vuex';
 
     export default {
         props: ['scene'],
@@ -252,22 +252,25 @@
         },
         computed: {
             ...mapGetters({
-                account_type: 'account_type'
+                account_type: 'account_type',
+                config: 'config'
             })
         },
         methods: {
+            ...mapActions({
+                setConfig: 'setConfig'
+            }),
             handleSubmit1 (name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
                         this.formValidate1.account_name = this.formValidate1.account_name.toLowerCase();
+                        this.config.merchant = this.formValidate1;
                         this.$http({
                             method: 'post',
-                            url: '/api/write_config',
-                            data: {
-                                config: this.formValidate1,
-                                type: 'merchant'
-                            }
+                            url: '/api/save_config',
+                            data: { config: this.config }
                         }).then(() => {
+                            this.setConfig({config: this.config});
                             this.$Message.success('提交成功');
                             this.$emit('next');
                             this.$emit('restart');
@@ -285,14 +288,14 @@
                         if (this.formValidate2.subscribed_data_product.length === 0) {
                             this.$Message.error('至少需要添加一个产品ID');
                         } else {
-                            let merchant_config = {
+                            this.config.merchant = {
                                 account_name: this.formValidate2.account_name.toLowerCase(),
                                 private_key: this.formValidate2.private_key,
                                 callback_url: this.formValidate2.callback_url,
                                 privacy_request_timeout: this.formValidate2.privacy_request_timeout,
                                 default_timeout: this.formValidate2.default_timeout
                             };
-                            let datasource_config = {
+                            this.config.datasource = {
                                 account_name: this.formValidate2.account_name.toLowerCase(),
                                 private_key: this.formValidate2.private_key,
                                 service: this.formValidate2.service,
@@ -300,14 +303,10 @@
                             };
                             this.$http({
                                 method: 'post',
-                                url: '/api/write_config',
-                                data: {
-                                    merchant_config: merchant_config,
-                                    datasource_config: datasource_config,
-                                    type: 'datasource',
-                                    is_merchant_open: this.is_merchant_open
-                                }
+                                url: '/api/save_config',
+                                data: { config: this.config }
                             }).then(() => {
+                                this.setConfig({config: this.config});
                                 this.$Message.success('提交成功');
                                 this.$emit('next');
                                 this.$emit('restart');

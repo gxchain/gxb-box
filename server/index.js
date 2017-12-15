@@ -7,13 +7,13 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import ConnectService from './services/ConnectService';
-import config from '../config';
+import gui_config from '../config';
 
 require('debug')('gxb-box:server');
 let app = express();
 let devMiddleware = null;
 let hotMiddleware = null;
-let autoOpenBrowser = config.dev.autoOpenBrowser;
+let autoOpenBrowser = gui_config.dev.autoOpenBrowser;
 
 app.use(require('connect-history-api-fallback')({
     index: '/',
@@ -53,7 +53,7 @@ if (app.get('env') === 'development') {
     app.use(devMiddleware);
     app.use(hotMiddleware);
 
-    let staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory);
+    let staticPath = path.posix.join(gui_config.dev.assetsPublicPath, gui_config.dev.assetsSubDirectory);
     app.use(staticPath, express.static('./static'));
 } else {
     app.use(logger('combined'));
@@ -67,7 +67,8 @@ app.use(bodyParser.urlencoded({
 }));
 
 const connectedCheck = function (req, res, next) {
-    ConnectService.connect(req.query.env, false, function (connected) {
+    let witnesses = req.query.env === 'production' ? gui_config.build.witnesses : gui_config.dev.witnesses;
+    ConnectService.connect(witnesses, false, function (connected) {
         if (connected) {
             next();
         } else {

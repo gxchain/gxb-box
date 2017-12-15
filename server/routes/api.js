@@ -25,47 +25,26 @@ router.get('/fetch_config', function (req, res) {
  * 写入配置文件
  */
 
-router.post('/write_config', function (req, res) {
-    if ((req.body.type === 'common') || (req.body.type === 'merchant') || (req.body.type === 'datasource') || (req.body.type === 'import')) {
-        if (req.body.type === 'common') {
-            ConfigStore.common_set(JSON.stringify(req.body.config)).then((result) => {
-                res.send(result);
-            }).catch((err) => {
-                console.error(err);
-                res.status(400).send(err);
-            });
-        }
-        if (req.body.type === 'merchant') {
-            ConfigStore.merchant_set(JSON.stringify(req.body.config)).then((result) => {
-                res.send(result);
-            }).catch((err) => {
-                console.error(err);
-                res.status(400).send(err);
-            });
-        }
-        if (req.body.type === 'datasource') {
-            let merchant_config = req.body.merchant_config !== null ? JSON.stringify(req.body.merchant_config) : null;
-            ConfigStore.datasource_set(merchant_config, JSON.stringify(req.body.datasource_config), req.body.is_merchant_open).then((result) => {
-                res.send(result);
-            }).catch((err) => {
-                console.error(err);
-                res.status(400).send(err);
-            });
-        }
-        if (req.body.type === 'import') {
-            ConfigStore.import(req.query.env, JSON.stringify(req.body.config)).then((result) => {
-                res.send(result);
-            }).catch((err) => {
-                console.error(err);
-                res.status(400).send(err);
-            });
-        }
-    } else {
-        res.status(404).send({
-            status: 404,
-            message: '请求错误'
-        });
-    }
+router.post('/save_config', function (req, res) {
+    ConfigStore.set(req.body.config).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        console.error(err);
+        res.status(400).send(err);
+    });
+});
+
+/**
+ * 切换配置环境
+ */
+
+router.post('/change_config_env', function (req, res) {
+    ConfigStore.change_config_env(req.query.env, req.body.config).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        console.error(err);
+        res.status(400).send(err);
+    });
 });
 
 /**

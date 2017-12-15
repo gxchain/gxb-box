@@ -107,8 +107,7 @@
                 env_type: 'env_type',
                 account: 'account',
                 init_step: 'init_step',
-                active_nav: 'active_nav',
-                common_setting: 'common_setting'
+                active_nav: 'active_nav'
             })
         },
         methods: {
@@ -148,11 +147,8 @@
                 // 写入文件
                 this.$http({
                     method: 'post',
-                    url: '/api/write_config',
-                    data: {
-                        config: _config,
-                        type: 'import'
-                    }
+                    url: '/api/change_config_env?env=development',
+                    data: { config: _config }
                 }).then((res) => {
                     localStorage.setItem('__gxbBox__ProdEnvSetting', JSON.stringify(res.data.data.old_config));
                     this.envTest = 'primary';
@@ -169,17 +165,14 @@
                 if (localStorage.getItem('__gxbBox__ProdEnvSetting')) {
                     _config = JSON.parse(localStorage.getItem('__gxbBox__ProdEnvSetting'));
                 } else {
-                    _config = {common: Util.prodEnvConifg};
+                    _config = {common: Util.prodEnvConfig};
                 }
                 this.loadingProd = true;
                 // 写入文件
                 this.$http({
                     method: 'post',
-                    url: '/api/write_config',
-                    data: {
-                        config: _config,
-                        type: 'import'
-                    }
+                    url: '/api/change_config_env?env=production',
+                    data: { config: _config }
                 }).then((res) => {
                     localStorage.setItem('__gxbBox__TestEnvSetting', JSON.stringify(res.data.data.old_config));
                     this.envTest = 'ghost';

@@ -188,6 +188,7 @@
     import Product from './Product.vue';
     import AccountImage from './components/AccountImage.vue';
     import Handler from '../libs/handler';
+    import {mapGetters} from 'vuex';
 
     export default {
         data () {
@@ -204,7 +205,7 @@
             let self = this;
             this.$http.all([
                 this.$http.get('/api/fetch_league_info/' + this.$route.query.id),
-                this.$http.get('/api/fetch_league_members/' + this.$route.query.id)
+                this.$http.get('/api/fetch_league_members/' + this.$route.query.id + '?env=' + this.env_type)
             ]).then(this.$http.spread(function (res1, res2) {
                 self.formatterLeague(res1.data, res2.data);
             })).catch((err) => {
@@ -213,6 +214,11 @@
                     this.$router.push('/404');
                 }
             });
+        },
+        computed: {
+            ...mapGetters({
+                env_type: 'env_type'
+            })
         },
         methods: {
             formatterLeague (league_info, member_list) {

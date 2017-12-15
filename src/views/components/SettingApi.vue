@@ -89,18 +89,18 @@
             };
         },
         created () {
-            this.api_list = this.commonSettings.witnesses;
-            this.formValidate.port = Number(this.commonSettings.port);
-            this.formValidate.faucet_url = this.commonSettings.faucet_url;
+            this.api_list = this.config.common.witnesses;
+            this.formValidate.port = Number(this.config.common.port);
+            this.formValidate.faucet_url = this.config.common.faucet_url;
         },
         computed: {
             ...mapGetters({
-                commonSettings: 'common_setting'
+                config: 'config'
             })
         },
         methods: {
             ...mapActions({
-                setCommonSetting: 'setCommonSetting'
+                setConfig: 'setConfig'
             }),
             handleAdd () {
                 if (this.add_api === '') {
@@ -120,18 +120,15 @@
                 this.$refs['formValidate'].validate((valid) => {
                     if (valid) {
                         if (this.api_list.length > 0) {
-                            this.commonSettings.port = Number(this.formValidate.port);
-                            this.commonSettings.faucet_url = this.formValidate.faucet_url;
-                            this.commonSettings.witnesses = this.api_list;
+                            this.config.common.port = Number(this.formValidate.port);
+                            this.config.common.faucet_url = this.formValidate.faucet_url;
+                            this.config.common.witnesses = this.api_list;
                             this.$http({
                                 method: 'post',
-                                url: '/api/write_config',
-                                data: {
-                                    config: this.commonSettings,
-                                    type: 'common'
-                                }
+                                url: '/api/save_config',
+                                data: { config: this.config }
                             }).then(() => {
-                                this.setCommonSetting({common_setting: this.commonSettings});
+                                this.setConfig({config: this.config});
                                 this.$Message.success('保存成功');
                                 this.$emit('restart');
                             }).catch((err) => {
