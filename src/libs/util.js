@@ -161,6 +161,28 @@ let util = {
     title: function (title) {
         title = title ? title + ' - GXB-BOX' : 'GXB-BOX';
         window.document.title = title;
+    },
+
+    testEnvConfig: {
+        'port': 3000,
+        'ipfs_addr': '/ip4/139.196.138.193/tcp/5001',
+        'witnesses': [
+            'ws://47.96.164.78:28090'
+        ],
+        'faucet_url': 'http://47.96.164.78:8888',
+        'referrer': 'nathan'
+    },
+
+    prodEnvConifg: {
+        'port': 3000,
+        'ipfs_addr': '/ip4/139.196.138.193/tcp/5001',
+        'witnesses': [
+            'wss://node1.gxb.io',
+            'wss://node5.gxb.io',
+            'wss://node8.gxb.io',
+            'wss://node11.gxb.io'
+        ],
+        'faucet_url': 'https://opengateway.gxb.io'
     }
 };
 
