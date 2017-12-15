@@ -494,7 +494,7 @@
                 this.formatterFreeData(this.$route.query.id);
             }
         },
-        beforeDestory () {
+        beforeDestroy () {
             clearInterval(this.apiInterval);
         },
         watch: {

@@ -1,4 +1,5 @@
 import {Apis, Manager} from 'gxbjs-ws';
+import {ChainStore} from 'gxbjs';
 import config from '../../config';
 
 let connected = false;
@@ -14,7 +15,8 @@ let connect = function (env, reconnect, callback) {
     _env = env;
     if (reconnect) {
         connected = false;
-        connectionManager = new Manager({url: witnesses[0], urls: witnesses});
+        connectionManager.url = witnesses[0];
+        connectionManager.urls = witnesses;
     }
     if (connected) {
         return callback(connected);
@@ -23,7 +25,16 @@ let connect = function (env, reconnect, callback) {
         connectionManager = new Manager({url: witnesses[0], urls: witnesses});
     }
     connectionManager.connectWithFallback(true).then(() => {
-        callback && callback(connected);
+        ChainStore.subscribed = false;
+        ChainStore.subError = null;
+        ChainStore.clearCache();
+        ChainStore.head_block_time_string = null;
+        ChainStore.init().then(() => {
+            callback && callback(connected);
+        }).catch(ex => {
+            console.error(ex);
+            callback && callback(connected);
+        });
     }).catch((ex) => {
         console.error(ex);
     });
@@ -46,6 +57,7 @@ Apis.setRpcConnectionStatusCallback(function (status) {
     }
     if (status === 'reconnect') {
         console.log('断开重连');
+        ChainStore.clearCache();
     } else if (connected && (status === 'closed' || status === 'error')) { // 出错重连
         connected = false;
         console.log('重新连接其他witness');
