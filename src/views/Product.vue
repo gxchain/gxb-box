@@ -53,6 +53,25 @@
         border: 1px solid #eee;
         border-radius: 2px;
         padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-icon .subscript{
+        color: #fff;
+        height: 20px;
+        width: 80px;
+        position: absolute;
+        right: -25px;
+        top: 5px;
+        text-align: center;
+        line-height: 20px;
+        background-color: #2d8cf0;
+        -moz-transform:rotate(45deg);
+        -webkit-transform:rotate(45deg);
+        -o-transform:rotate(45deg);
+        -ms-transform:rotate(45deg);
+        transform:rotate(45deg);
     }
 
     .product-icon img {
@@ -231,6 +250,7 @@
         <div class="loaded-container" v-show="loaded">
             <div class="product-header">
                 <div class="product-icon">
+                    <div class="subscript" v-if="product_info.privacy">隐私</div>
                     <img :src="product_info.icon">
                 </div>
                 <div class="product-info">
@@ -450,7 +470,8 @@
                     <strong>返回数据：</strong>
                     <div class="prediv">
                         <pre v-if="apiTestData">{{'共耗时:' + apiTestCostTime +'ms'}}<br/>{{JSON.stringify(apiTestData, null, '  ')}}</pre>
-                        <pre class="pre-loading" v-else><Spin fix></Spin></pre>
+                        <pre v-if="apiTestTimeOut">请求超时，请稍后重试</pre>
+                        <pre class="pre-loading" v-show="loading"><Spin fix></Spin></pre>
                     </div>
                 </div>
             </div>
@@ -477,6 +498,7 @@
                 apiTestResponse: null,
                 apiTestData: null,
                 apiTestCostTime: 0,
+                apiTestTimeOut: false,
                 apiInterval: null,
                 system_code: {
                     NOT_FOUND: {desc: '数据项不存在'},
@@ -542,6 +564,7 @@
                             self.currentSchema = schema;
                         }
                     });
+                    product.privacy = this.currentSchema.privacy;
                     product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
@@ -576,6 +599,7 @@
                 }
                 product.price = product.refer_price;
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
+                product.privacy = this.currentSchema.privacy;
                 product.version = product.schema_contexts[0].version;
                 product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
@@ -700,8 +724,10 @@
             },
             sendApiTest () {
                 let beginTime = new Date();
+                let timeOut = this.product_info.privacy ? this.config.merchant.privacy_request_timeout : this.config.merchant.default_timeout;
                 this.apiTestResponse = null;
                 this.apiTestData = null;
+                this.apiTestTimeOut = false;
                 this.loading = true;
                 this.$http({
                     method: this.apiTestType,
@@ -718,13 +744,23 @@
                                 method: 'GET',
                                 url: 'http://' + self.box_ip + ':' + self.config.common.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
                             }).then((res) => {
-                                if (res.data.length !== 0) {
-                                    let endTime = new Date();
-                                    self.apiTestCostTime = endTime - beginTime;
-                                    self.apiTestData = res.data;
+                                let endTime = new Date();
+                                let apiTestCostTime = endTime - beginTime;
+                                if (apiTestCostTime > timeOut) {
                                     clearInterval(self.apiInterval);
+                                    self.apiTestTimeOut = true;
                                     self.loading = false;
+                                } else {
+                                    if (res.data.length !== 0) {
+                                        clearInterval(self.apiInterval);
+                                        self.apiTestCostTime = apiTestCostTime;
+                                        self.apiTestData = res.data;
+                                        self.loading = false;
+                                    }
                                 }
+                            }).catch((err) => {
+                                this.$Message.error('请求失败:' + Handler.error(err));
+                                this.loading = false;
                             });
                         }, 500);
                     }

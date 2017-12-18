@@ -55,6 +55,7 @@
                         生产环境
                     </Button>
                 </ButtonGroup>
+                <Button type="error" size="small" style="margin-left: 10px" @click="openReloadModal">初始化</Button>
                 <div class="layout-nav">
                     <span class="account" v-if="account">
                         {{account.account_name.toUpperCase()}}
@@ -78,12 +79,25 @@
                 </div>
             </div>
         </Menu>
+        <Modal v-model="reloadModal" width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="information-circled"></Icon>
+                <span>初始化</span>
+            </p>
+            <div style="text-align:center">
+                <p>确定是否要清空当前所有配置？</p>
+                <p>请确保备份重要信息，清空后不可逆！</p>
+            </div>
+            <div slot="footer">
+                <Button type="error" size="large" long :loading="loadingModal" @click="reload">确定</Button>
+            </div>
+        </Modal>
     </Header>
 </template>
 <script>
     import Handler from '../../libs/handler';
     import Util from '../../libs/util';
-    import {mapGetters} from 'vuex';
+    import {mapGetters, mapActions} from 'vuex';
 
     export default {
         data () {
@@ -91,7 +105,9 @@
                 envTest: 'ghost',
                 envProd: 'ghost',
                 loadingTest: false,
-                loadingProd: false
+                loadingProd: false,
+                loadingModal: false,
+                reloadModal: false
             };
         },
         mounted () {
@@ -111,6 +127,9 @@
             })
         },
         methods: {
+            ...mapActions({
+                setReload: 'setReload'
+            }),
             route (name) {
                 switch (name) {
                     case '1':
@@ -182,6 +201,28 @@
                 }).catch((err) => {
                     this.loadingTest = false;
                     this.$Message.error('切换环境失败:' + Handler.error(err));
+                });
+            },
+            openReloadModal () {
+                this.reloadModal = true;
+            },
+            reload () {
+                this.loadingModal = true;
+                // 清空config
+                this.$http({
+                    method: 'post',
+                    url: '/api/change_config_env?env=' + this.env_type,
+                    data: { config: {} }
+                }).then((res) => {
+                    // 清空localStorage
+                    localStorage.clear();
+                    // 清空vuex store
+                    this.setReload();
+                    location.reload();
+                }).catch((err) => {
+                    this.loadingModal = false;
+                    this.reloadModal = false;
+                    this.$Message.error('初始化失败:' + Handler.error(err));
                 });
             }
         }
