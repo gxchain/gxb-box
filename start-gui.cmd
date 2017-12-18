@@ -1,2 +1,2 @@
 npm install -production
-npm run server
+npm run gui

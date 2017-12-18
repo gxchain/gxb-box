@@ -93,8 +93,8 @@
                                     <p>Windows系统，在cmd下执行：</p>
                                     <pre>./start.cmd</pre>
                                     <h3 class="subtitle">手动启动</h3>
-                                    <pre v-show="visual_packages === '1'">npm install -production<br>npm run server-gui</pre>
-                                    <pre v-show="visual_packages === '0'">npm install -production<br>npm run server-box</pre>
+                                    <pre v-show="visual_packages === '1'">npm install -production<br>npm run gui</pre>
+                                    <pre v-show="visual_packages === '0'">npm install -production<br>npm run box</pre>
                                 </div>
                             </div>
                         </Panel>
