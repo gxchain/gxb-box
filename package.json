@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "preinstall": "npm install pm2 -g",
-    "start":"npm run dev-gui",
-    "dev-gui": "npm run build && NODE_ENV=development nodemon server/index.js --exec babel-node --watch server",
-    "dev-box": "nodemon lib/index.js --exec babel-node",
+    "start":"npm run gui:dev",
+    "dev":"npm run gui:dev",
+    "gui:dev": "npm run build && NODE_ENV=development nodemon server/index.js --exec babel-node --watch server",
+    "box:dev": "nodemon lib/index.js --exec babel-node",
     "clear": "rm -rf dist server-gui-dist server-box-dist",
     "prebuild": "npm run clear",
     "build": "node build/build.js && webpack --progress --hide-modules --config build/webpack.gui-server.config.js && webpack --progress --hide-modules --config build/webpack.box-server.config.js",
