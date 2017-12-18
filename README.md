@@ -29,7 +29,7 @@ git clone https://github.com/gxchain/gxb-box.git
 ```
 npm install
 npm run build
-npm run server-gui
+npm run gui
 ```
 
 ## Development mode start
@@ -39,7 +39,7 @@ Development mode depends on babel-node, execute the following commands to instal
 ```
 npm install -g babel-node
 npm install
-npm run dev
+npm start
 ```
 
 ## Docking files
