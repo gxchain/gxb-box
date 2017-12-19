@@ -42,9 +42,6 @@ npm install
 npm start
 ```
 
-## 对接文档
-[https://doc.gxb.io/box/](https://doc.gxb.io/box/)
-
 ## 常见问题
 
 ### Q: 在设置了多重签名后,数据交易失败了

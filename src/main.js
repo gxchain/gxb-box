@@ -182,7 +182,7 @@ if (localStorage.getItem('__gxbBox__env')) {
                                 store.state.init_step = 'finished';
                             } else {
                                 // 是否已完善配置
-                                if ((store.state.config.merchant.callback_url) || (store.state.config.datasource.service && store.state.config.datasource.subscribed_data_product)) {
+                                if ((store.state.config.merchant && store.state.config.merchant.callback_url) || (store.state.config.datasource && store.state.config.datasource.service && store.state.config.datasource.subscribed_data_product)) {
                                     // 状态:pm2未启动过 - init-step5
                                     store.state.init_step = 5;
                                 } else {

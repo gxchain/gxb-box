@@ -42,9 +42,6 @@ npm install
 npm start
 ```
 
-## Docking files
-[https://doc.gxb.io/box/](https://doc.gxb.io/box/)
-
 ## FAQ
 
 ### Q: Data transaction failed after set multi-signature
