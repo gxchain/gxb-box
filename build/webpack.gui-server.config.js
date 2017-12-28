@@ -4,17 +4,17 @@ var path = require('path');
 
 var nodeModules = {};
 fs.readdirSync('node_modules')
-    .filter(function(x) {
+    .filter(function (x) {
         return ['.bin'].indexOf(x) === -1;
     })
-    .forEach(function(mod) {
+    .forEach(function (mod) {
         nodeModules[mod] = 'commonjs ' + mod;
     });
 
 module.exports = {
     entry: ['../server/index.js'],
     output: {
-        path: path.resolve(__dirname, '../server-gui-dist'),
+        path: path.resolve(__dirname, '../dist/gui-server'),
         filename: 'index.js'
     },
     target: 'node',
@@ -41,7 +41,7 @@ module.exports = {
                 ],
                 query: {
                     plugins: ['transform-runtime'],
-                    presets: ['es2015', 'stage-2'],
+                    presets: ['es2015', 'stage-2']
                 }
             },
             {
@@ -61,4 +61,4 @@ module.exports = {
             compress: {warnings: false}
         })
     ]
-}
+};

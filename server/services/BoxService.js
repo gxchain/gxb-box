@@ -19,7 +19,7 @@ const box_start = function () {
             }
             pm2.start({
                 name: 'gxb-box-pm2',
-                script: path.join(process.cwd(), 'server-box-dist/gxb-box.js'),
+                script: path.join(process.cwd(), 'dist/box/gxb-box.js'),
                 exec_mode: 'fork',
                 max_memory_restart: '100M'
             }, function (err, apps) {

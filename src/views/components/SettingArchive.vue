@@ -75,13 +75,6 @@
         <div v-if="env_type === 'production'">
             <div class="setting-cont">
                 <Form :label-width="100">
-                    <Alert type="error">可视化配置服务（推荐内网服务器使用，以免私钥泄露）</Alert>
-                    <FormItem label="可视化配置">
-                        <RadioGroup v-model="visual_packages">
-                            <Radio label="1">是</Radio>
-                            <Radio label="0">否</Radio>
-                        </RadioGroup>
-                    </FormItem>
                     <Collapse value="packages_list" style="margin-bottom: 20px">
                         <Panel name="packages_list">
                             Quick Start
@@ -93,8 +86,7 @@
                                     <p>Windows系统，在cmd下执行：</p>
                                     <pre>./start.cmd</pre>
                                     <h3 class="subtitle">手动启动</h3>
-                                    <pre v-show="visual_packages === '1'">npm install -production<br>npm run gui</pre>
-                                    <pre v-show="visual_packages === '0'">npm install -production<br>npm run box</pre>
+                                    <pre>npm install -production<br/>pm2 stop gxb-box<br/>npm run box</pre>
                                 </div>
                             </div>
                         </Panel>
@@ -135,7 +127,6 @@
         data () {
             return {
                 loading: false,
-                visual_packages: '1',
                 packages_list: []
             };
         },
@@ -150,7 +141,7 @@
         methods: {
             startZip () {
                 this.loading = true;
-                this.$http.get('/api/get_box_prod_zip/' + this.visual_packages).then((res) => {
+                this.$http.get('/api/get_box_prod_zip/0').then((res) => {
                     this.loading = false;
                     res.data.time = util.formatDateTime(res.data.time);
                     this.packages_list.unshift(res.data);

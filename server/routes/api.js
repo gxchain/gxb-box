@@ -3,7 +3,7 @@ import BoxService from '../services/BoxService';
 import AccountService from '../services/AccountService';
 import DataService from '../services/DataService';
 import ConfigStore from '../services/ConfigStore';
-import ZipArchive from '../services/ZipArchive';
+import {get_box_prod_zip} from '../services/ZipArchive';
 import ConnectService from '../services/ConnectService';
 import fs from 'fs';
 
@@ -326,7 +326,7 @@ router.get('/fetch_box', function (req, res) {
  */
 
 router.get('/get_box_prod_zip/:visual', function (req, res) {
-    ZipArchive.get_box_prod_zip(req.params.visual).then((zip) => {
+    get_box_prod_zip(req.params.visual).then((zip) => {
         res.send(zip);
     }).catch((err) => {
         console.error(err);

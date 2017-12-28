@@ -25,8 +25,6 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 es5
 dist
-server-gui-dist
-server-box-dist
 
 # Dependency directory
 # https://docs.npmjs.com/misc/faq#should-i-check-my-node-modules-folder-into-git
@@ -40,5 +38,4 @@ sample
 # prod
 .DS_Store
 */.DS_Store
-config/config.json
 archive

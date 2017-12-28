@@ -22,6 +22,7 @@
         "no-debugger": ["error"],
         "no-console": ["off"],
         "no-new": ["off"],
+        "eqeqeq": ["off"],
         "no-extend-native": ["off"],
         "camelcase": ["off"],
         "vue/jsx-uses-vars": 2

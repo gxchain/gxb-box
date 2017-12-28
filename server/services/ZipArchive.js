@@ -4,77 +4,62 @@ import path from 'path';
 import fs from 'fs';
 import archiver from 'archiver';
 
-export default {
-    get_box_prod_zip (visual) {
-        return new Promise((resolve, reject) => {
-            fs.exists(path.join(process.cwd(), './archive'), function (exists) {
-                if (!exists) {
-                    fs.mkdir(path.join(process.cwd(), './archive'), function (err) {
-                        if (err) {
-                            reject(err);
-                        }
-                        let archiveFileName = 'gxb-box-' + new Date().valueOf() + '.zip';
-                        let archiveFilePath = path.join(process.cwd(), './archive/' + archiveFileName);
-                        let archive = archiver('zip');
-                        let output = fs.createWriteStream(archiveFilePath);
-                        output.on('close', function () {
-                            let zip_info = {
-                                name: archiveFileName,
-                                size: archive.pointer() + ' total bytes',
-                                time: new Date().valueOf()
-                            };
-                            resolve(zip_info);
-                        });
-                        archive.on('error', function (err) {
-                            reject(err);
-                        });
-                        archive.pipe(output);
-                        if (visual === '1') {
-                            archive.directory(path.join(process.cwd(), './dist'), './dist', {date: new Date()});
-                            archive.directory(path.join(process.cwd(), './server-gui-dist'), './server-gui-dist', {date: new Date()});
-                            archive.file(path.join(process.cwd(), './start-gui.sh'), {date: new Date(), name: 'start.sh'});
-                            archive.file(path.join(process.cwd(), './start-gui.cmd'), {date: new Date(), name: 'start.cmd'});
-                        } else {
-                            archive.file(path.join(process.cwd(), './start-box.sh'), {date: new Date(), name: 'start.sh'});
-                            archive.file(path.join(process.cwd(), './start-box.cmd'), {date: new Date(), name: 'start.cmd'});
-                        }
-                        archive.directory(path.join(process.cwd(), './server-box-dist'), './server-box-dist', {date: new Date()});
-                        archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
-                        archive.file(path.join(process.cwd(), './package.json'), {date: new Date(), name: 'package.json'});
-                        archive.finalize();
-                    });
-                } else {
-                    let archiveFileName = 'gxb-box-' + new Date().valueOf() + '.zip';
-                    let archiveFilePath = path.join(process.cwd(), './archive/' + archiveFileName);
-                    let archive = archiver('zip');
-                    let output = fs.createWriteStream(archiveFilePath);
-                    output.on('close', function () {
-                        let zip_info = {
-                            name: archiveFileName,
-                            size: archive.pointer() + ' total bytes',
-                            time: new Date().valueOf()
-                        };
-                        resolve(zip_info);
-                    });
-                    archive.on('error', function (err) {
+/**
+ * 检查archive目录是否创建，未创建则创建
+ */
+export const create_archive_folder = () => {
+    return new Promise((resolve, reject) => {
+        fs.exists(path.join(process.cwd(), './archive'), function (exists) {
+            if (!exists) {
+                fs.mkdir(path.join(process.cwd(), './archive'), function (err) {
+                    if (err) {
                         reject(err);
-                    });
-                    archive.pipe(output);
-                    if (visual === '1') {
-                        archive.directory(path.join(process.cwd(), './dist'), './dist', {date: new Date()});
-                        archive.directory(path.join(process.cwd(), './server-gui-dist'), './server-gui-dist', {date: new Date()});
-                        archive.file(path.join(process.cwd(), './start-gui.sh'), {date: new Date(), name: 'start.sh'});
-                        archive.file(path.join(process.cwd(), './start-gui.cmd'), {date: new Date(), name: 'start.cmd'});
                     } else {
-                        archive.file(path.join(process.cwd(), './start-box.sh'), {date: new Date(), name: 'start.sh'});
-                        archive.file(path.join(process.cwd(), './start-box.cmd'), {date: new Date(), name: 'start.cmd'});
+                        resolve();
                     }
-                    archive.directory(path.join(process.cwd(), './server-box-dist'), './server-box-dist', {date: new Date()});
-                    archive.directory(path.join(process.cwd(), './config'), './config', {date: new Date()});
-                    archive.file(path.join(process.cwd(), './package.json'), {date: new Date(), name: 'package.json'});
-                    archive.finalize();
-                }
-            });
+                });
+            } else {
+                resolve();
+            }
         });
-    }
+    });
+};
+
+/**
+ * 打包
+ * @param visual 是否打包可视化模块
+ */
+export const get_box_prod_zip = () => {
+    return new Promise((resolve, reject) => {
+        create_archive_folder().then(() => {
+            let archiveFileName = 'gxb-box-' + new Date().valueOf() + '.zip';
+            let archiveFilePath = path.join(process.cwd(), './archive/' + archiveFileName);
+            let archive = archiver('zip');
+            let output = fs.createWriteStream(archiveFilePath);
+            output.on('close', function () {
+                let zip_info = {
+                    name: archiveFileName,
+                    size: archive.pointer() + ' total bytes',
+                    time: new Date().valueOf()
+                };
+                resolve(zip_info);
+            });
+            archive.on('error', function (err) {
+                reject(err);
+            });
+            archive.pipe(output);
+            archive.file(path.join(process.cwd(), './script/start.sh'), {
+                date: new Date(),
+                name: 'start-box.sh'
+            });
+            archive.file(path.join(process.cwd(), './script/start.cmd'), {
+                date: new Date(),
+                name: 'start-box.cmd'
+            });
+            archive.directory(path.join(process.cwd(), './dist/box'), './box', {date: new Date()});
+            archive.directory(path.join(process.cwd(), './dist/config'), './config', {date: new Date()});
+            archive.file(path.join(process.cwd(), './package.json'), {date: new Date(), name: 'package.json'});
+            archive.finalize();
+        }).catch(reject);
+    });
 };

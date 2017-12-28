@@ -56,7 +56,7 @@ if (app.get('env') === 'development') {
     app.use(staticPath, express.static('./static'));
 } else {
     app.use(logger('combined'));
-    app.use(express.static('./dist'));
+    app.use(express.static('./gui'));
 }
 
 app.use(bodyParser.json({limit: '2mb'}));
@@ -124,13 +124,35 @@ let startServer = function () {
     });
 };
 
+const mkdir = function (dirpath, dirname) {
+    if (typeof dirname === 'undefined') {
+        if (fs.existsSync(dirpath)) {
+            return;
+        } else {
+            mkdir(dirpath, path.dirname(dirpath));
+        }
+    } else {
+        if (dirname !== path.dirname(dirpath)) {
+            mkdir(dirpath);
+            return;
+        }
+        if (fs.existsSync(dirname)) {
+            fs.mkdirSync(dirpath);
+        } else {
+            mkdir(dirname, path.dirname(dirname));
+            fs.mkdirSync(dirpath);
+        }
+    }
+};
+
 /**
  * 初始化连接
  */
 let initConnection = function () {
     console.log('检查配置文件...');
     // 检查配置文件
-    let config_path = path.resolve(process.cwd(), './config/config.json');
+    mkdir(path.resolve(process.cwd(), './dist/config'));
+    let config_path = path.resolve(process.cwd(), './dist/config/config.json');
     fs.exists(config_path, function (exists) {
         if (exists) {
             startServer();

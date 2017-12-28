@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import gui_config from '../../config';
 
-let config_path = path.resolve(process.cwd(), './config/config.json');
+let config_path = path.resolve(process.cwd(), './dist/config/config.json');
 
 export default {
     init () {
