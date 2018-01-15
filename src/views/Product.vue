@@ -421,8 +421,12 @@
                     <i-input v-model="product_info.product_name" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
+                    <strong>接口服务器：</strong>
+                    <i-input v-model="api_server"></i-input>
+                </div>
+                <div class="simpleline simpleTable">
                     <strong>接口地址：</strong>
-                    <i-input v-model="product_info.current_url"></i-input>
+                    <i-input v-model="product_info.current_url" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
                     <strong>请求方式：</strong>
@@ -491,6 +495,7 @@
                 loaded: false,
                 product_info: {},
                 currentSchema: null,
+                api_server: '',
                 box_ip: '',
                 apiTestModal: false,
                 apiTestType: 'GET',
@@ -513,6 +518,7 @@
         created () {
             this.$http.get('/api/get_ip_address').then((res) => {
                 this.box_ip = res.data;
+                this.api_server = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') : this.box_ip + ':' + this.config.common.port;
                 if (this.product) {
                     this.formatterLeagueData(this.product);
                 } else {
@@ -528,6 +534,13 @@
         watch: {
             product: function (val) {
                 this.formatterLeagueData(val);
+            },
+            api_server: function (val) {
+                if (this.product) {
+                    this.formatterLeagueData(this.product);
+                } else {
+                    this.formatterFreeData(this.$route.query.id);
+                }
             }
         },
         computed: {
@@ -565,7 +578,7 @@
                         }
                     });
                     product.privacy = this.currentSchema.privacy;
-                    product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/' + product.id + '/' + product.version;
+                    product.current_url = this.api_server + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                     product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                     product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -601,7 +614,7 @@
                 this.currentSchema = JSON.parse(product.schema_contexts[0].schema_context);
                 product.privacy = this.currentSchema.privacy;
                 product.version = product.schema_contexts[0].version;
-                product.current_url = 'http://' + this.box_ip + ':' + this.config.common.port + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
+                product.current_url = this.api_server + '/rpc/league/' + this.$route.query.id + '/' + product.id + '/' + product.version;
                 product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
                 product.java_code = this.genJavaCode(this.currentSchema, product.current_url);
                 product.node_code = this.genNodeCode(this.currentSchema, product.current_url);
@@ -737,12 +750,13 @@
                     data: this.apiTestType === 'POST' ? qs.stringify(this.apiTestParams) : ''
                 }).then((res) => {
                     this.apiTestResponse = res.data;
+                    localStorage.setItem('__gxbBox__ApiServer', this.api_server);
                     if (this.apiTestResponse.data.request_id) {
                         let self = this;
                         this.apiInterval = setInterval(function () {
                             self.$http({
                                 method: 'GET',
-                                url: 'http://' + self.box_ip + ':' + self.config.common.port + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
+                                url: self.api_server + '/api/request/' + self.apiTestResponse.data.request_id + '/data'
                             }).then((res) => {
                                 let endTime = new Date();
                                 let apiTestCostTime = endTime - beginTime;
