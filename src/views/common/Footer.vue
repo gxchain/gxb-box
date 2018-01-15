@@ -11,14 +11,14 @@
     }
 </style>
 <template>
-    <Footer id="footer">
+    <div id="footer">
         <div class="layout-copy">
             @2017 Powered by GXB &nbsp;
             <a target="_blank" href="https://github.com/gxchain/gxb-box">
                 <Icon type="social-github"></Icon>
             </a>
         </div>
-    </Footer>
+    </div>
 </template>
 <script>
     export default {

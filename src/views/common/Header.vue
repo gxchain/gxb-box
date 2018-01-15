@@ -37,7 +37,7 @@
 
 </style>
 <template>
-    <Header id="header">
+    <div id="header">
         <Menu mode="horizontal" :active-name="active_nav" @on-select="route">
             <div class="layout-header">
                 <div class="layout-logo"></div>
@@ -92,7 +92,7 @@
                 <Button type="error" size="large" long :loading="loadingModal" @click="reload">确定</Button>
             </div>
         </Modal>
-    </Header>
+    </div>
 </template>
 <script>
     import Handler from '../../libs/handler';
