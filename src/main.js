@@ -156,7 +156,7 @@ if (localStorage.getItem('__gxbBox__env')) {
     axios.get('/api/fetch_config?env=' + store.state.env_type).then((res) => {
         store.state.config = res.data;
         // 是否选择账户类型
-        if (res.data['common'].account_type) {
+        if (res.data['common'] && res.data['common'].account_type) {
             store.state.account_type = res.data['common'].account_type;
             if (res.data[store.state.account_type] && res.data[store.state.account_type].account_name) {
                 store.state.account = {
