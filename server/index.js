@@ -59,10 +59,10 @@ if (app.get('env') === 'development') {
     app.use(express.static('./gui'));
 }
 
-app.use(bodyParser.json({limit: '2mb'}));
+app.use(bodyParser.json({limit: '20mb'}));
 app.use(bodyParser.urlencoded({
     extended: false,
-    limit: '2mb'
+    limit: '20mb'
 }));
 
 const connectedCheck = function (req, res, next) {
