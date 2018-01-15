@@ -518,7 +518,7 @@
         created () {
             this.$http.get('/api/get_ip_address').then((res) => {
                 this.box_ip = res.data;
-                this.api_server = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') : this.box_ip + ':' + this.config.common.port;
+                this.api_server = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') : 'http://' + this.box_ip + ':' + this.config.common.port;
                 if (this.product) {
                     this.formatterLeagueData(this.product);
                 } else {
