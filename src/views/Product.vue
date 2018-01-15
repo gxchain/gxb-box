@@ -422,7 +422,7 @@
                 </div>
                 <div class="simpleline simpleTable">
                     <strong>接口地址：</strong>
-                    <i-input v-model="product_info.current_url" readonly></i-input>
+                    <i-input v-model="product_info.current_url"></i-input>
                 </div>
                 <div class="simpleline simpleTable">
                     <strong>请求方式：</strong>
