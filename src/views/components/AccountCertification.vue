@@ -208,11 +208,11 @@
                 <div class="split-line"><span class="txt">数据源信息</span></div>
                 <FormItem label="生产数据描述" prop="ability_desc">
                     <i-input type="textarea" v-model="formDatasource.ability_desc" :rows="4"
-                           placeholder="请对贵公司所生产的数据类型进行描述"></i-input>
+                             placeholder="请对贵公司所生产的数据类型进行描述"></i-input>
                 </FormItem>
                 <FormItem label="数据生成能力" prop="data_desc">
                     <i-input type="textarea" v-model="formDatasource.data_desc" :rows="4"
-                           placeholder="公信宝仅接入有数据原始生产能力的商户，请贵商户对准备接入公信宝数据源的数据生产过程加以简单说明"></i-input>
+                             placeholder="公信宝仅接入有数据原始生产能力的商户，请贵商户对准备接入公信宝数据源的数据生产过程加以简单说明"></i-input>
                 </FormItem>
 
             </Form>
@@ -410,7 +410,7 @@
                 this.$http({
                     method: 'post',
                     url: '/api/save_config',
-                    data: { config: this.config }
+                    data: {config: this.config}
                 }).then(() => {
                     this.setAccountType({account_type: 'datasource'});
                     this.setConfig({config: self.config});
@@ -517,8 +517,8 @@
                     this.$Message.error('格式不正确,请重新选择');
                     return false;
                 }
-                if (file.size > 2 * 1024 * 1024) {
-                    this.$Message.error('图片大小不可超过2M');
+                if (file.size > 5 * 1024 * 1024) {
+                    this.$Message.error('图片大小不可超过5M');
                     return false;
                 }
                 this.filename = file.name;
