@@ -225,8 +225,6 @@
 
     .api-test-modal .api-test-btn {
         margin-top: 5px;
-        font-size: 12px;
-        color: #ff8503;
     }
 
     .api-test-modal .simpleTable > .ivu-input-wrapper,
@@ -240,6 +238,12 @@
 
     .pre-loading {
         position: relative;
+    }
+
+    .warning-tips {
+        font-size: 12px;
+        font-weight: normal;
+        color: #ff8503;
     }
 </style>
 <template>
@@ -285,6 +289,7 @@
                         <div class="simpleline"><strong>请求方式：</strong><span class="url">get post</span></div>
                         <div class="simpleline"><strong>调用样例及调试工具：</strong>
                             <Button type="primary" icon="link" size="small" @click="openApiTest()">API测试工具</Button>
+                            <Button type="primary" icon="link" size="small" @click="openDataSourceTest()" v-if="isSubscribed">数据源测试工具</Button>
                         </div>
                         <div class="simpleline simpleTable">
                             <strong>请求参数说明：</strong>
@@ -367,13 +372,13 @@
                         <div class="simpleline simpleTable">
                             <strong>入参示例：</strong>
                             <div class="prediv">
-                                <pre v-if="currentSchema">{{JSON.stringify(currentSchema.input, null, '  ')}}</pre>
+                                <pre v-if="sampleInput">{{JSON.stringify(sampleInput, null, '  ')}}</pre>
                             </div>
                         </div>
                         <div class="simpleline simpleTable">
                             <strong>返回示例：</strong>
                             <div class="prediv">
-                                <pre v-if="currentSchema">{{JSON.stringify(currentSchema.output, null, '  ')}}</pre>
+                                <pre v-if="sampleOutput">{{JSON.stringify(sampleOutput, null, '  ')}}</pre>
                             </div>
                         </div>
                         <div class="simpleline simpleTable">
@@ -421,11 +426,7 @@
                     <i-input v-model="product_info.product_name" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
-                    <strong>接口服务器：</strong>
-                    <i-input v-model="api_server"></i-input>
-                </div>
-                <div class="simpleline simpleTable">
-                    <strong>接口地址：</strong>
+                    <strong>接口地址：<span class="warning-tips">（*数据交易盒子请求地址可在设置接入点管理中修改）</span></strong>
                     <i-input v-model="product_info.current_url" readonly></i-input>
                 </div>
                 <div class="simpleline simpleTable">
@@ -460,7 +461,7 @@
                 </div>
                 <div class="api-test-btn">
                     <Button type="primary" @click="sendApiTest()" :loading="loading">发送请求</Button>
-                    <span>（*为了准确性，所有请求均基于真实环境请求，请悉知）</span>
+                    <span class="warning-tips">（*为了准确性，所有请求均基于真实环境请求，请悉知）</span>
                 </div>
             </Form>
             <div slot="footer" class="left">
@@ -471,6 +472,88 @@
                     </div>
                 </div>
                 <div class="simpleline simpleTable" v-if="apiTestResponse">
+                    <strong>返回数据：</strong>
+                    <div class="prediv">
+                        <pre v-if="apiTestData">{{'共耗时:' + apiTestCostTime +'ms'}}<br/>{{JSON.stringify(apiTestData, null, '  ')}}</pre>
+                        <pre v-if="apiTestTimeOut">请求超时，请稍后重试</pre>
+                        <pre class="pre-loading" v-show="loading"><Spin fix></Spin></pre>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal v-model="dataSourceTestModal" width="80%" class="api-test-modal product-tab">
+            <p slot="header">
+                <span>数据源测试工具</span>
+            </p>
+            <Form :label-width="60" label-position="top">
+                <div class="simpleline simpleTable">
+                    <strong>接口名称：</strong>
+                    <i-input v-model="product_info.product_name" readonly></i-input>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>接口地址：<span class="warning-tips">（*数据源请求地址可在设置配置管理中修改）</span></strong>
+                    <i-input v-model="config.datasource.service" readonly></i-input>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>请求方式：</strong>
+                    <Select v-model="apiTestType">
+                        <Option value="GET">GET</Option>
+                        <Option value="POST">POST</Option>
+                    </Select>
+                </div>
+                <div class="simpleline simpleTable">
+                    <strong>请求参数：</strong>
+                    <table class="api_table" border="0" cellspacing="0" cellpadding="0" v-if="currentSchema">
+                        <tbody>
+                        <tr class="title">
+                            <th width="20"></th>
+                            <th width="100">名称</th>
+                            <th width="80">类型</th>
+                            <th width="60">必填</th>
+                            <th>描述</th>
+                            <th>值</th>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="url">product id</td>
+                            <td class="url">string</td>
+                            <td class="url">是</td>
+                            <td>产品ID</td>
+                            <td><i-input v-model="dataSourceTestSender.product_id" readonly></i-input></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td class="url">request id</td>
+                            <td class="url">string</td>
+                            <td class="url">是</td>
+                            <td>请求ID</td>
+                            <td><i-input v-model="dataSourceTestSender.request_id" readonly></i-input></td>
+                        </tr>
+                        <tr v-for="(item, key, index) in currentSchema.input" :key="index">
+                            <td>&nbsp;</td>
+                            <td class="url">{{key}}</td>
+                            <td class="url">{{item.type}}</td>
+                            <td class="url">{{item.required ? '是' : '否'}}</td>
+                            <td>{{item.desc}}</td>
+                            <td><i-input v-model="dataSourceTestSender.params[key]"></i-input></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="api-test-btn">
+                    <Button type="primary" @click="sendDataSourceTest()" :loading="loading">发送请求</Button>
+                    <span class="warning-tips">（*为了准确性，所有请求均基于真实环境请求，请悉知）</span>
+                </div>
+            </Form>
+            <div slot="footer" class="left">
+                <div class="simpleline simpleTable">
+                    <strong>发送数据：</strong>
+                    <div class="prediv">
+                        <pre>{{JSON.stringify(dataSourceTestSender, null, '  ')}}</pre>
+                    </div>
+                </div>
+                <div class="simpleline simpleTable" v-if="apiTestData">
                     <strong>返回数据：</strong>
                     <div class="prediv">
                         <pre v-if="apiTestData">{{'共耗时:' + apiTestCostTime +'ms'}}<br/>{{JSON.stringify(apiTestData, null, '  ')}}</pre>
@@ -495,8 +578,16 @@
                 loaded: false,
                 product_info: {},
                 currentSchema: null,
+                sampleInput: {},
+                sampleOutput: {code: 0, message: '', data: {}},
                 api_server: '',
-                box_ip: '',
+                isSubscribed: false,
+                dataSourceTestModal: false,
+                dataSourceTestSender: {
+                    request_id: '',
+                    product_id: '',
+                    params: {}
+                },
                 apiTestModal: false,
                 apiTestType: 'GET',
                 apiTestParams: {},
@@ -517,8 +608,7 @@
         },
         created () {
             this.$http.get('/api/get_ip_address').then((res) => {
-                this.box_ip = res.data;
-                this.api_server = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') : 'http://' + this.box_ip + ':' + this.config.common.port;
+                this.api_server = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') + ':' + this.config.common.port : 'http://' + res.data + ':' + this.config.common.port;
                 if (this.product) {
                     this.formatterLeagueData(this.product);
                 } else {
@@ -534,13 +624,6 @@
         watch: {
             product: function (val) {
                 this.formatterLeagueData(val);
-            },
-            api_server: function (val) {
-                if (this.product) {
-                    this.formatterLeagueData(this.product);
-                } else {
-                    this.formatterFreeData(this.$route.query.id);
-                }
             }
         },
         computed: {
@@ -554,6 +637,14 @@
             },
             formatterFreeData (product_id) {
                 let product;
+                let subscribed_list = this.config.datasource.subscribed_data_product || [];
+                this.isSubscribed = false;
+                for (let i = 0; i < subscribed_list.length; i++) {
+                    if (product_id == subscribed_list[i]) {
+                        this.isSubscribed = true;
+                        break;
+                    }
+                }
                 this.$http.get('/api/fetch_free_data_product_details/' + product_id).then((res) => {
                     product = res.data;
                     product.id = product_id;
@@ -577,6 +668,15 @@
                             self.currentSchema = schema;
                         }
                     });
+                    if (this.currentSchema) {
+                        for (let key in this.currentSchema.input) {
+                            this.sampleInput[key] = this.getSampleVal(this.currentSchema.input[key]);
+                        }
+
+                        for (let key in this.currentSchema.output) {
+                            this.sampleOutput.data[key] = this.getSampleVal(this.currentSchema.output[key]);
+                        }
+                    }
                     product.privacy = this.currentSchema.privacy;
                     product.current_url = this.api_server + '/rpc/' + product.id + '/' + product.version;
                     product.curl_code = this.genCURLCode(this.currentSchema, product.current_url);
@@ -596,6 +696,14 @@
             },
             formatterLeagueData (product_info) {
                 let product = product_info;
+                let subscribed_list = this.config.datasource.subscribed_data_product || [];
+                this.isSubscribed = false;
+                for (let i = 0; i < subscribed_list.length; i++) {
+                    if (product.id == subscribed_list[i]) {
+                        this.isSubscribed = true;
+                        break;
+                    }
+                }
                 switch (product.status) {
                     case 0:
                         product.status = '未发布';
@@ -750,7 +858,6 @@
                     data: this.apiTestType === 'POST' ? qs.stringify(this.apiTestParams) : ''
                 }).then((res) => {
                     this.apiTestResponse = res.data;
-                    localStorage.setItem('__gxbBox__ApiServer', this.api_server);
                     if (this.apiTestResponse.data.request_id) {
                         let self = this;
                         this.apiInterval = setInterval(function () {
@@ -778,6 +885,30 @@
                             });
                         }, 500);
                     }
+                }).catch((err) => {
+                    this.$Message.error('请求失败:' + Handler.error(err));
+                    this.loading = false;
+                });
+            },
+            openDataSourceTest () {
+                this.dataSourceTestSender.request_id = Math.random().toString(36).substr(2);
+                this.dataSourceTestSender.product_id = this.product_info.id;
+                this.dataSourceTestModal = true;
+            },
+            sendDataSourceTest () {
+                let beginTime = new Date();
+                this.loading = true;
+                this.$http({
+                    method: this.apiTestType,
+                    url: this.config.datasource.service,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    params: this.apiTestType === 'GET' ? this.dataSourceTestSender : '',
+                    data: this.apiTestType === 'POST' ? qs.stringify(this.dataSourceTestSender) : ''
+                }).then((res) => {
+                    let endTime = new Date();
+                    this.apiTestCostTime = endTime - beginTime;
+                    this.apiTestData = res.data;
+                    this.loading = false;
                 }).catch((err) => {
                     this.$Message.error('请求失败:' + Handler.error(err));
                     this.loading = false;

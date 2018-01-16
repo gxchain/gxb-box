@@ -22,12 +22,15 @@
     <div class="setting-api">
         <div class="setting-header">
             <h2>接入点</h2>
-            <h3>修改API、启动端口及水龙头服务器</h3>
+            <h3>修改API、访问地址、启动端口及水龙头服务器</h3>
         </div>
         <div class="split-line"></div>
         <div class="setting-cont">
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
-                <FormItem label="启动端口" prop="port">
+                <FormItem label="盒子访问地址" prop="box_url">
+                    <i-input v-model="formValidate.box_url" placeholder="请输入访问地址"></i-input>
+                </FormItem>
+                <FormItem label="盒子启动端口" prop="port">
                     <InputNumber v-model="formValidate.port" placeholder="请输入端口"></InputNumber>
                 </FormItem>
                 <FormItem label="水龙头地址" prop="faucet_url">
@@ -71,9 +74,13 @@
             return {
                 formValidate: {
                     port: 3000,
+                    box_url: '',
                     faucet_url: ''
                 },
                 ruleValidate: {
+                    box_url: [
+                        {required: true, type: 'string', message: '请输入盒子访问地址', trigger: 'blur'}
+                    ],
                     port: [
                         {required: true, type: 'integer', message: '只能输入数字', trigger: 'blur'}
                     ],
@@ -89,9 +96,14 @@
             };
         },
         created () {
-            this.api_list = this.config.common.witnesses;
-            this.formValidate.port = Number(this.config.common.port);
-            this.formValidate.faucet_url = this.config.common.faucet_url;
+            this.$http.get('/api/get_ip_address').then((res) => {
+                this.api_list = this.config.common.witnesses;
+                this.formValidate.port = Number(this.config.common.port);
+                this.formValidate.faucet_url = this.config.common.faucet_url;
+                this.formValidate.box_url = localStorage.getItem('__gxbBox__ApiServer') ? localStorage.getItem('__gxbBox__ApiServer') : 'http://' + res.data;
+            }).catch((err) => {
+                Handler.error(err);
+            });
         },
         computed: {
             ...mapGetters({
@@ -123,6 +135,7 @@
                             this.config.common.port = Number(this.formValidate.port);
                             this.config.common.faucet_url = this.formValidate.faucet_url;
                             this.config.common.witnesses = this.api_list;
+                            localStorage.setItem('__gxbBox__ApiServer', this.formValidate.box_url);
                             this.$http({
                                 method: 'post',
                                 url: '/api/save_config',
