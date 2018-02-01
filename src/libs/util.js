@@ -165,7 +165,7 @@ let util = {
 
     testEnvConfig: {
         'port': 3000,
-        'ipfs_addr': '/ip4/139.196.138.193/tcp/5001',
+        'ipfs_addr': ['/ip4/192.168.1.118/tcp/5001'],
         'witnesses': [
             'ws://47.96.164.78:28090'
         ],
@@ -175,7 +175,7 @@ let util = {
 
     prodEnvConfig: {
         'port': 3000,
-        'ipfs_addr': '/ip4/139.196.138.193/tcp/5001',
+        'ipfs_addr': ['/ip4/139.196.138.193/tcp/5001', '/ip4/106.14.194.229/tcp/5001'],
         'witnesses': [
             'wss://node1.gxb.io',
             'wss://node5.gxb.io',

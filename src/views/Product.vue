@@ -57,7 +57,7 @@
         overflow: hidden;
     }
 
-    .product-icon .subscript{
+    .product-icon .subscript {
         color: #fff;
         height: 20px;
         width: 80px;
@@ -67,11 +67,11 @@
         text-align: center;
         line-height: 20px;
         background-color: #2d8cf0;
-        -moz-transform:rotate(45deg);
-        -webkit-transform:rotate(45deg);
-        -o-transform:rotate(45deg);
-        -ms-transform:rotate(45deg);
-        transform:rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
     }
 
     .product-icon img {
@@ -289,7 +289,9 @@
                         <div class="simpleline"><strong>请求方式：</strong><span class="url">get post</span></div>
                         <div class="simpleline"><strong>调用样例及调试工具：</strong>
                             <Button type="primary" icon="link" size="small" @click="openApiTest()">API测试工具</Button>
-                            <Button type="primary" icon="link" size="small" @click="openDataSourceTest()" v-if="isSubscribed">数据源测试工具</Button>
+                            <Button type="primary" icon="link" size="small" @click="openDataSourceTest()"
+                                    v-if="isSubscribed">数据源测试工具
+                            </Button>
                         </div>
                         <div class="simpleline simpleTable">
                             <strong>请求参数说明：</strong>
@@ -454,7 +456,9 @@
                             <td class="url">{{item.type}}</td>
                             <td class="url">{{item.required ? '是' : '否'}}</td>
                             <td>{{item.desc}}</td>
-                            <td><i-input v-model="apiTestParams[key]"></i-input></td>
+                            <td>
+                                <i-input v-model="apiTestParams[key]"></i-input>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -482,7 +486,7 @@
             </div>
         </Modal>
 
-        <Modal v-model="dataSourceTestModal" width="80%" class="api-test-modal product-tab">
+        <Modal v-model="dataSourceTestModal" width="80%" class="api-test-modal product-tab" v-if="config.datasource">
             <p slot="header">
                 <span>数据源测试工具</span>
             </p>
@@ -520,7 +524,9 @@
                             <td class="url">string</td>
                             <td class="url">是</td>
                             <td>产品ID</td>
-                            <td><i-input v-model="dataSourceTestSender.product_id" readonly></i-input></td>
+                            <td>
+                                <i-input v-model="dataSourceTestSender.product_id" readonly></i-input>
+                            </td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
@@ -528,7 +534,9 @@
                             <td class="url">string</td>
                             <td class="url">是</td>
                             <td>请求ID</td>
-                            <td><i-input v-model="dataSourceTestSender.request_id" readonly></i-input></td>
+                            <td>
+                                <i-input v-model="dataSourceTestSender.request_id" readonly></i-input>
+                            </td>
                         </tr>
                         <tr v-for="(item, key, index) in currentSchema.input" :key="index">
                             <td>&nbsp;</td>
@@ -536,7 +544,9 @@
                             <td class="url">{{item.type}}</td>
                             <td class="url">{{item.required ? '是' : '否'}}</td>
                             <td>{{item.desc}}</td>
-                            <td><i-input v-model="dataSourceTestSender.params[key]"></i-input></td>
+                            <td>
+                                <i-input v-model="dataSourceTestSender.params[key]"></i-input>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -637,7 +647,7 @@
             },
             formatterFreeData (product_id) {
                 let product;
-                let subscribed_list = this.config.datasource.subscribed_data_product || [];
+                let subscribed_list = this.config.datasource && this.config.datasource.subscribed_data_product || [];
                 this.isSubscribed = false;
                 for (let i = 0; i < subscribed_list.length; i++) {
                     if (product_id == subscribed_list[i]) {
@@ -846,6 +856,7 @@
             sendApiTest () {
                 let beginTime = new Date();
                 let timeOut = this.product_info.privacy ? this.config.merchant.privacy_request_timeout : this.config.merchant.default_timeout;
+                debugger; //eslint-disable-line
                 this.apiTestResponse = null;
                 this.apiTestData = null;
                 this.apiTestTimeOut = false;

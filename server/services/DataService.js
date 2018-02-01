@@ -41,18 +41,20 @@ const fetch_free_data_products = function (category_id, page, pageSize, keywords
 const fetch_free_data_product_details = function (product_id) {
     return Apis.instance().db_api().exec('get_free_data_products', [[product_id]]).then(function (res) {
         let result = res && res.length > 0 ? res[0] : {};
-        let schema_contexts = result.schema_contexts.map(function (schema) {
+        let schema_contexts = [];
+        result.schema_contexts.forEach(function (schema) {
             let schemaJSON = JSON.parse(schema.schema_context);
-            return {
+            schema_contexts.push({
                 version: schema.version,
                 input: schemaJSON.input,
                 output: schemaJSON.output,
-                code: schemaJSON.code
-            };
-        }).reverse();
+                code: schemaJSON.code,
+                privacy: schemaJSON.privacy
+            });
+        });
         let latestVersion = '';
         if (schema_contexts.length > 0) {
-            latestVersion = schema_contexts[0].version;
+            latestVersion = schema_contexts[schema_contexts.length - 1].version;
         }
         let data = {
             product_name: result.product_name,
