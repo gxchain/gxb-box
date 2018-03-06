@@ -12,7 +12,9 @@
     "clear": "rm -rf dist/box",
     "prebuild": "npm run clear",
     "build": "webpack --progress --hide-modules --config build/webpack.box.config.js",
-    "box": "pm2 start ./box/gxb-box.js --name gxb-box"
+    "build:gui": "webpack --progress --hide-modules --config build/webpack.gui-server.config.js && prod=1 node build/build.js",
+    "box": "pm2 start ./box/gxb-box.js --name gxb-box",
+    "gui": "NODE_ENV=production pm2 start ./gui-server/index.js --name gxb-gui"
   },
   "repository": {
     "type": "git",
