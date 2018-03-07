@@ -24,9 +24,36 @@ const box_start = function () {
                 max_memory_restart: '100M'
             }, function (err, apps) {
                 if (err) {
-                    reject(err);
+                    console.log(path.join(process.cwd(), 'box/gxb-box.js'));
+                    pm2.start({
+                        name: 'gxb-box-pm2',
+                        script: path.join(process.cwd(), 'box/gxb-box.js'),
+                        exec_mode: 'fork',
+                        max_memory_restart: '100M'
+                    }, function (err, apps) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(apps);
+                        }
+                    });
                 } else {
-                    resolve(apps);
+                    if (apps.length == 0) {
+                        pm2.start({
+                            name: 'gxb-box-pm2',
+                            script: path.join(process.cwd(), 'box/gxb-box.js'),
+                            exec_mode: 'fork',
+                            max_memory_restart: '100M'
+                        }, function (err, apps) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve(apps);
+                            }
+                        });
+                    } else {
+                        resolve(apps);
+                    }
                 }
             });
         });
